@@ -1,0 +1,295 @@
+HighRiskPropn[2]				
+0.3493	0.2495			
+PartnerRate20F				
+3.3				
+RRpartnerLow[2]
+0.1696	0.3032
+RRpartnerMarried[2]	
+0.2754	0.1666
+GammaMeanF, GammaSDF
+34.44	22.98		
+DebutMedian[2]				
+17.5	16.5			
+DebutLow[2]
+0.58	0.58
+DebutShape[2]
+6.00	7.00		
+MeanAgeDif, SDageDif				
+3	3			
+MeanAgeDifLT, SDageDifLT				
+6	5			
+Assortativeness				
+0.4743			
+FSWageMean, FSWageSD				
+29	9			
+ClientsPA				
+750				
+DurFSW				
+3				
+FSWcontactAge21				
+4.34				
+FSWcontactMarried				
+0.25				
+FSWcontactMean, FSWcontactSD				
+40	9			
+SexActsST				
+18				
+SexActsLT				
+5				
+RelFreqSexAge				
+0.5				
+AgeEffectCondom				
+0.98
+RRcondomMarital
+0.391
+ORcondomFSW
+7.9
+InitCondom
+0.039
+CondomBias 0.890
+0.713
+CondomAdjProv
+1.263
+RRcondomContracep
+0.343
+IncrCondomBCC
+0.597
+RiskCompensation
+0.016
+MedianCondomBCC
+15.9
+ShapeCondomBCC
+6.26
+VCTcondom
+0.307
+VCT_FSWentry 0.157
+0.00
+ARTcondom
+0.18
+HIVeffectSex[4]
+0.00	0.08	0.24	0.45
+HIVeffectFSWentry[4]
+0.00	0.12	0.35	0.60
+InitFSWprev
+0.000611
+TransmST[2]
+0.006336	0.012566
+TransmLT[2]	
+0.001479	0.002933
+TransmFSW[2]	
+0.006336	0.000706
+RRclientToFSW1985 5.69	
+14.1	
+EctopyEffect
+0.00	0.15
+RelInfecRiskST[2][2][2]
+1.23	1.20
+1.25	1.14
+1.08	1.09
+1.00	1.00
+RelInfecRiskLT[2][2][2]
+1.62	1.38
+1.57	1.35
+1.33	1.24
+1.00	1.00
+RelInfecStage[5]
+10.0	1.00	1.00	2.00	7.00
+MedianVLuntreated200
+4.94
+ShapeVL
+1.50
+VLeffectInfectivity
+2.456
+VLdifPer100CD4
+0.16
+ORsuppressionIeDEA
+0.676
+ORsuppressionCD4[4]
+1.92	1.73	1.49	1.00
+CondomEfficacy
+0.90
+InfToVirulenceRatio
+1.000
+CD4decline[3]
+0.2651	0.4241	0.2828
+CD4duration[0]
+0.25
+RRmort200to350
+0.13
+CD4mort[1]
+0.2297
+OIincidence[6]
+0.05	0.05	0.12	0.27	0.90	0.10
+WHO4incidence[5]
+0.01	0.01	0.02	0.06	0.28
+PTBincidence[5]
+0.01	0.01	0.015	0.04	0.07
+RR_ARTinitiation[5] 
+0.00	0.40	0.50	0.70	1.00
+Haemodilution[4]
+0.29	0.29	0.55	0.26
+RRper10yr
+1.166		
+RRperCalYr		
+1.000		
+RRuntreatedMortF		
+0.936		
+MinMort[3]		
+0.31	0.39	0.61
+RednLogMort[3]		
+8.364	8.364	8.364
+IeDEAbias
+1.000	0.741	
+ARTinterruptionRate
+0.202
+RRinterruptionM
+1.20
+ARTresumptionMin
+0.40	0.50
+RR_ARTstartM
+0.639
+RR_ARTstart1stMo
+10.0		
+COVIDimpactARTstart
+0.323
+UltARTdelay[2]				
+30.00	22.00			
+MinARTdelay[2]				
+1.00	1.00			
+ARTdataYr				
+2020				
+UltARTyr[2]				
+2025	2025			
+RRper10yrART[2]				
+1.12	1.09			
+AnnHIVmortART[5][4][2]				
+0.0002	0.0016	0.0146	0.2168
+0.0009	0.0050	0.0132	0.0533
+0.0027	0.0085	0.0116	0.0281
+0.0042	0.0076	0.0076	0.0185
+0.0049	0.0063	0.0063	0.0152
+0.0001	0.0016	0.0159	0.1699
+0.0008	0.0045	0.0101	0.0416
+0.0020	0.0057	0.0057	0.0216
+0.0027	0.0034	0.0034	0.0130
+0.0025	0.0025	0.0025	0.0094
+SwitchAdult
+0.0015	0.0040	0.0092	0.0230
+VCTmale2002 and -2010
+0.79	0.68
+VCTage	
+41.6	23.8
+QuadParam	
+27.7	21.9
+RetestAdj, RetestAdjMax	
+1.5	3.71
+RetestPos	
+1.06	
+RetestART	
+0.02	
+HIVeffectVCT 0.7219
+1.00
+OItoTBtestingRatio 0.3764
+1.00
+ORdiagOItreat
+0.42
+RapidDiagSp
+0.997		
+FreqRegHCT[2]				
+4	4			
+RegHCTdur[2]				
+2	2		
+SelfTestConfirm
+0.68
+SelfTestDataYr
+2019	2019	2019	2019	2019	2019
+SelfTestUptakeUlt
+0.00362	0.00179	0.00578	0.00072	0.01722	0.00000
+SelfTestWastage
+0.11	0.15	0.12	0.12	0.09	0.09
+STageTaxi
+14.1	0.469
+STageWork
+4.59	0.153
+2.94	0.122
+STtaxiMtoFratio
+7.50
+STworkMtoFratio
+0.95	9.20
+EmployedPropn
+0.026	0.267	0.483	0.543	0.577	0.603	0.593	0.511	0.449	0.241
+0.015	0.174	0.356	0.441	0.490	0.487	0.470	0.414	0.354	0.163
+RetestPosST
+0.50	0.15
+ORpartnerPosMetareg
+0.536	-1.218
+DiscloseAndTest 0.25
+0.25	
+CircPrevBirth				
+0.041				
+CircPrevUlt				
+0.499				
+MedianCirc				
+15.7				
+ShapeCirc				
+2.22				
+MCefficacy				
+0.6				
+MMCdataYear				
+2020				
+UltMMCprob				
+0.234				
+UltMMCyear				
+2021				
+PrEPefficacy[2]
+0.65	0.65
+PrEPefficacyMSM
+0.85
+CondomRednPrEP[2]
+0.10	0.10
+FreqHCTinPrEP[2]
+4.00	4.00
+PrEPdur[2]
+1.00	0.50
+PrEPdataYr 
+2020
+UltPrEPrateFSW
+0.06
+RR_PrEPlowPreg
+0.329	
+MicrobicideEff				
+0.25				
+CondomRednVM				
+0.1				
+FreqHCTinVM				
+4				
+VMdur				
+2.00				
+RecencyBiasANC
+0.04
+RRfertHIV
+1.428
+RRfertCD4
+1.91	1.00	0.99	0.90	0.66
+RRfertDiag
+0.768
+RRfertART
+1.35				
+SexRatio
+0.50388674747718				
+MSMpropn
+0.05
+MSMpartnersM20
+0.70
+RednMSMpartnersM
+1.00
+MeanAgeDifMSM25
+0.00
+ChangeAgeDifMSM
+0.45
+SDageDifMSM
+5.00
+MtoM_ST
+0.0294
+InitMSMprevRatio
+3.00

@@ -1,0 +1,12 @@
+Importance distributions should be specified only for the parameters included in the uncertainty analysis.
+85. Change in B-spline coefficient for paed ART initiations in 2012	
+-0.297043819	0.185643722
+86. Change in B-spline coefficient for paed ART initiations in 2014	
+-0.320283821	0.201348246
+87. Change in B-spline coefficient for paed ART initiations in 2016	
+-0.35	0.47
+
+
+
+
+

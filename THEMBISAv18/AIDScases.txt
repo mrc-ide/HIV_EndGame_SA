@@ -1,0 +1,13 @@
+Reported adult AIDS cases by year (1990-94)
+262	420	639	1598	3284
+Reported adult AIDS cases by age and sex (1993-4)
+41	265
+314	775
+539	664
+561	567
+387	291
+255	149
+166	82
+112	48
+47	22
+51	21

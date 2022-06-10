@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 
 # Compiles and runs the Thembisa model
 run_thembisa <- function(){

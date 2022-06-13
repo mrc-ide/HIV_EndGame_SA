@@ -26,8 +26,8 @@ read_output <- function(output_name){
 }
 
 # Plots the outputs over time 
-plot_outputs <- function(output, output_name, title_of_plot) {
-  ggplot(output, aes(Year, Simulation_1)) + 
+plot_outputs <- function(output_df = output_df, output_column, output_name, title_of_plot) {
+  ggplot(output_df, aes(Year, output_column)) + 
     geom_line() + 
     theme_bw() + 
     ggtitle(title_of_plot) + 

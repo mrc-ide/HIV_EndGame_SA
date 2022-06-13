@@ -10904,6 +10904,7 @@ void CalcSelfTestingRates()
 	for (ii = 0; ii < 6; ii++){
 		if (CurrYear>SelfTestDataYr[ii]){ SelfTestUptake[ii] = SelfTestUptakeUlt[ii]; }
 		else{ SelfTestUptake[ii] = SelfTestTotals[CurrYear - StartYear][ii]; }
+        if(CurrYear>=2020){ SelfTestUptake[ii] = 0.0;}
 	}
 
 	// (a) Fixed point distribution
@@ -16533,7 +16534,7 @@ void RunSample()
 	HIVtestsPosU15.RecordSample("HIVtestsPosU15.txt");
 	FalseNegPropn.RecordSample("FalseNegPropn.txt");
 	FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
-	/*TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
+	TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
 	TotSTestTaxi.RecordSample("TotSTestTaxi.txt");
 	TotSTestANC.RecordSample("TotSTestANC.txt");
 	TotSTestIndex.RecordSample("TotSTestIndex.txt");
@@ -16550,7 +16551,7 @@ void RunSample()
 	STtoART_ANC.RecordSample("STtoART_ANC.txt");
 	STtoARTindex.RecordSample("STtoARTindex.txt");
 	STtoARTwork1.RecordSample("STtoARTwork1.txt");
-	STtoARTwork2.RecordSample("STtoARTwork2.txt");*/
+	STtoARTwork2.RecordSample("STtoARTwork2.txt");
 	STuptakeByYr.RecordSample("STuptakeByYr.txt");
 	HIVtestUptakeF25.RecordSample("HIVtestUptakeF25.txt");
 	OItestingRate.RecordSample("OItestingRate.txt");

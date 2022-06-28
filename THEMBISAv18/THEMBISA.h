@@ -1875,7 +1875,7 @@ PostOutputArray HIVtestsPos18mo(86);
 PostOutputArray HIVtestsPos19to59mo(86);
 PostOutputArray HIVtestsPos5to14(86);
 PostOutputArray FalseNegPropn(86);
-PostOutputArray FirstHIVtestsPos(41);
+PostOutputArray FirstHIVtestsPos(86);
 PostOutputArray TotSTestANC(86);
 PostOutputArray TotSTestIndex(86);
 PostOutputArray TotSTestTaxi(86);

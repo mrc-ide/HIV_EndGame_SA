@@ -14,6 +14,7 @@ run_thembisa <- function(){
 read_output <- function(output_name){
   # Import output txt
   output_txt <- paste(output_name, "txt", sep = ".")
+  output_txt <- paste("THEMBISAv18", output_txt, sep = "/")
   output <- read.delim(output_txt, header=FALSE, row.names = 1)
   names(output)[2:87] <- seq(1985, 2070)
   # names(output)[1] <- "Simulation"
@@ -22,7 +23,7 @@ read_output <- function(output_name){
   output <- as.data.frame(as_tibble(t_output, rownames = "Year"))
   output$Year <- as.numeric(output$Year)
   names(output)[2] <- "Simulation_1"
-  return(output)
+  return(output$Simulation_1)
 }
 
 # Plots the outputs over time 

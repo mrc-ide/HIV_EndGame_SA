@@ -165,6 +165,10 @@ outputs_df$UndiagnosedHIV_2065 <- outputs_df$UndiagnosedHIV_F_2065 +
   outputs_df$UndiagnosedHIV_M_2065
 
 
+### write csv of outputs_df ####
+
+write.csv(outputs_df, "outputs_df.csv", row.names = FALSE)
+
 # Plot of baseline total new hiv 
 total_new_hiv_baseline <- 
   ggplot(outputs_df) + 

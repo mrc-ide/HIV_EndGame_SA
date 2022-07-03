@@ -94,6 +94,11 @@ for (i in 1:9){
   outputs_df[152+i] <- read_output("FirstHIVtestsPos")
 }
 
+### write csv of outputs_df ####
+
+write.csv(outputs_df, "outputs_df.csv", row.names = FALSE)
+
+
 ## Calculate total AIDS related mortality in Adults 
 
 outputs_df$TotalAIDSdeathsAdult_baseline <- outputs_df$AIDSdeathsAdultF_baseline + 

@@ -47,3 +47,42 @@ edit_formatted_data <- function(parameter_name, new_values, starting_year=1985, 
   return(formatted_data)
 }
 
+
+## create outputs_df 
+## output_names needs to be a vector/list of outputs as characters
+
+create_outputs_df <- function(output_parameter_names){
+  years <- formatted_data[['year']]
+  ## Make dataframe with same number of rows as years
+  outputs_df <- data.frame(years)
+  # calculate number of scenarios if there are 10 per output
+  
+  n_outputs <- length(output_parameter_names)
+  n_scenarios <- n_outputs * 10 + 1
+  
+  ## Add columns for all the outputs
+  outputs_df[2:n_scenarios] <- rep(NA, 86)
+  
+  ## Empty list for each output name
+  col_names <- rep(NA, n_scenarios)
+  
+  # make a vector of the scenarios including baseline
+  # reveresed so its in the right order in the next loop 
+  five_years <- c("2065", "2060", "2055", "2050", "2045", "2040", "2035", "2030",
+                  "2025", "baseline")
+  # makes a list of all the scenario namnes 
+  for (j in 1:length(five_years)){
+    for (i in 1:n_outputs){
+      col_names[((i+1)+(i*9)-j)+1] <- paste(output_parameter_names[i], five_years[j], sep = "_")
+    }
+  }
+  # assigns scenario names to columns in dataframe
+  for (i in 2:n_scenarios){
+    names(outputs_df)[i] <- col_names[i]
+  }
+  return(outputs_df)
+}
+
+
+  
+  

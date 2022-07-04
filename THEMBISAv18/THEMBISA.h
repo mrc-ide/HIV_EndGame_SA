@@ -2017,7 +2017,7 @@ PostOutputArray DiscART200to349(51);
 PostOutputArray DiscARTunder200(51);
 PostOutputArray AdolRegTests(51);
 PostOutputArray ChildrenOnExtNVP(51);
-PostOutputArray TotBirthDiagnosed(51);
+PostOutputArray TotBirthDiagnosed(86);
 
 // Age-specific output tables
 OutputByAge MalePopAS(91, 86);

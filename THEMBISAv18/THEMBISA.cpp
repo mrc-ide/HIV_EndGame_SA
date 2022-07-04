@@ -12947,19 +12947,19 @@ void ResultsAtEndOfYr2()
 	NewHIVmothersBF.out[CurrSim - 1][iy] = NewHIVlactating;
 	TotBirthsHIV.out[CurrSim-1][iy] = BirthsPosMothers;
 	TotBirthsART.out[CurrSim-1][iy] = BirthsARTmothers;
-	TotBirthDiagnosed.out[CurrSim - 1][iy] = BirthsDiagMothers;
-	MTCTrateAtBirth.out[CurrSim - 1][iy] = NewPerinatal/BirthsPosMothers;
-	MTCTrateBirthDiag.out[CurrSim - 1][iy] = VertTransmKnownPos.out[CurrSim - 1][iy] / BirthsDiagMothers;
-	MTCTrate18moDiag.out[CurrSim - 1][iy] = NewPostnatal18 / BirthsDiagMothers;
-	TotMTCTrate.out[CurrSim - 1][iy] = (NewPerinatal + NewPostnatal) / BirthsPosMothers;
-	TotMTCTallBirths.out[CurrSim - 1][iy] = (NewPerinatal + NewPostnatal) / TotBirths.out[CurrSim - 1][iy];
+	TotBirthDiagnosed.out[CurrSim-1][iy] = BirthsDiagMothers;
+	MTCTrateAtBirth.out[CurrSim-1][iy] = NewPerinatal/BirthsPosMothers;
+	MTCTrateBirthDiag.out[CurrSim-1][iy] = VertTransmKnownPos.out[CurrSim-1][iy] / BirthsDiagMothers;
+	MTCTrate18moDiag.out[CurrSim-1][iy] = NewPostnatal18 / BirthsDiagMothers;
+	TotMTCTrate.out[CurrSim-1][iy] = (NewPerinatal + NewPostnatal) / BirthsPosMothers;
+	TotMTCTallBirths.out[CurrSim-1][iy] = (NewPerinatal + NewPostnatal) / TotBirths.out[CurrSim-1][iy];
 	Temp1 = 0.0;
 	Temp2 = 0.0;
 	for (ia = 0; ia < 5; ia++){ Temp1 += NewHIVbyAgeSex[ia][0] + NewHIVbyAgeSex[ia][1]; }
 	for (ia = 0; ia < 15; ia++){
 		Temp2 += TotalPop_S[ia][0] + TotalPop_S[ia][1] - TotalPositive_S[ia][0] - TotalPositive_S[ia][1];}
-	HIVinc0to14.out[CurrSim - 1][iy] = (NewPerinatal + NewPostnatal + Temp1) / Temp2;
-	NewHIVU15.out[CurrSim - 1][iy] = NewPerinatal + NewPostnatal + Temp1;
+	HIVinc0to14.out[CurrSim-1][iy] = (NewPerinatal + NewPostnatal + Temp1) / Temp2;
+	NewHIVU15.out[CurrSim-1][iy] = NewPerinatal + NewPostnatal + Temp1;
 
 	// Age-specific incidence output table
 	for (ia = 0; ia < 81; ia++){
@@ -12978,7 +12978,7 @@ void ResultsAtEndOfYr2()
 		Temp2 += TotalPop_S[ia+10][0] - TotalPositive_S[ia+10][0];
 	}
 	HIVinc15to24M.out[CurrSim-1][iy] = Temp1/Temp2;
-	NewHIV15to24M.out[CurrSim - 1][iy] = Temp1;
+	NewHIV15to24M.out[CurrSim-1][iy] = Temp1;
 	Temp5 = Temp1;
 	Temp6 = Temp2;
 	for(ia=15; ia<40; ia++){
@@ -12988,9 +12988,9 @@ void ResultsAtEndOfYr2()
 		Temp2 += TotalPop_S[ia+10][0] - TotalPositive_S[ia+10][0];
 	}
 	HIVinc15to49M.out[CurrSim-1][iy] = Temp1/Temp2;
-	NewHIV15to49M.out[CurrSim - 1][iy] = Temp1;
+	NewHIV15to49M.out[CurrSim-1][iy] = Temp1;
 	HIVinc25to49M.out[CurrSim-1][iy] = (Temp1 - Temp5)/(Temp2 - Temp6);
-	NewHIV25to49M.out[CurrSim - 1][iy] = Temp1 - Temp5;
+	NewHIV25to49M.out[CurrSim-1][iy] = Temp1 - Temp5;
 	Temp3 = 0.0;
 	Temp4 = 0.0;
 	IncAdj[1] = 0.0;
@@ -13001,9 +13001,9 @@ void ResultsAtEndOfYr2()
 		Temp4 += TotalPop_S[ia+10][1] - TotalPositive_S[ia+10][1];
 	}
 	HIVinc15to24F.out[CurrSim-1][iy] = Temp3/Temp4;
-	NewHIV15to24F.out[CurrSim - 1][iy] = Temp3;
-	HIVinc15to24.out[CurrSim - 1][iy] = (Temp3 + Temp5) / (Temp4 + Temp6);
-	NewHIV15to24.out[CurrSim - 1][iy] = Temp3 + Temp5;
+	NewHIV15to24F.out[CurrSim-1][iy] = Temp3;
+	HIVinc15to24.out[CurrSim-1][iy] = (Temp3 + Temp5) / (Temp4 + Temp6);
+	NewHIV15to24.out[CurrSim-1][iy] = Temp3 + Temp5;
 	Temp5 = Temp3;
 	Temp6 = Temp4;
 	for(ia=15; ia<40; ia++){
@@ -13013,14 +13013,14 @@ void ResultsAtEndOfYr2()
 		Temp4 += TotalPop_S[ia+10][1] - TotalPositive_S[ia+10][1];
 	}
 	HIVinc15to49F.out[CurrSim-1][iy] = Temp3/Temp4;
-	NewHIV15to49F.out[CurrSim - 1][iy] = Temp3;
+	NewHIV15to49F.out[CurrSim-1][iy] = Temp3;
 	HIVinc25to49F.out[CurrSim-1][iy] = (Temp3 - Temp5)/(Temp4 - Temp6);
-	NewHIV25to49F.out[CurrSim - 1][iy] = Temp3 - Temp5;
-	NewHIV25to49.out[CurrSim - 1][iy] = Temp3 - Temp5 + NewHIV25to49M.out[CurrSim - 1][iy];
-	HIVinc25to49.out[CurrSim - 1][iy] = NewHIV25to49.out[CurrSim - 1][iy] / 
-		(Neg25to49M.out[CurrSim - 1][iy] + Neg25to49F.out[CurrSim - 1][iy]);
+	NewHIV25to49F.out[CurrSim-1][iy] = Temp3 - Temp5;
+	NewHIV25to49.out[CurrSim-1][iy] = Temp3 - Temp5 + NewHIV25to49M.out[CurrSim-1][iy];
+	HIVinc25to49.out[CurrSim-1][iy] = NewHIV25to49.out[CurrSim-1][iy] /
+		(Neg25to49M.out[CurrSim - 1][iy] + Neg25to49F.out[CurrSim-1][iy]);
 	HIVinc15to49.out[CurrSim-1][iy] = (Temp1 + Temp3)/(Temp2 + Temp4);
-	HIVinc15to49adj.out[CurrSim - 1][iy] = (Temp1 + Temp3 - IncAdj[0] - IncAdj[1]) / 
+	HIVinc15to49adj.out[CurrSim-1][iy] = (Temp1 + Temp3 - IncAdj[0] - IncAdj[1]) /
 		(Temp2 + Temp4);
 	NewHIV15to49.out[CurrSim - 1][iy] = Temp1 + Temp3;
 
@@ -13034,11 +13034,11 @@ void ResultsAtEndOfYr2()
 		Temp3 += NewHIVbyAgeSex[ia][1];
 	}
 	TotalNewHIV.out[CurrSim-1][iy] = Temp1 + Temp3 + NewPerinatal + NewPostnatal;
-	NewAdultHIV.out[CurrSim - 1][iy] = Temp1 + Temp3;
-	NewHIV_M.out[CurrSim - 1][iy] = Temp1;
-	NewHIV_F.out[CurrSim - 1][iy] = Temp3;
-	TotNegPop.out[CurrSim - 1][iy] = TotPop.out[CurrSim - 1][iy] - TotalHIV.out[CurrSim - 1][iy];
-	TotIncidence.out[CurrSim - 1][iy] = TotalNewHIV.out[CurrSim - 1][iy] / TotNegPop.out[CurrSim - 1][iy];
+	NewAdultHIV.out[CurrSim-1][iy] = Temp1 + Temp3;
+	NewHIV_M.out[CurrSim-1][iy] = Temp1;
+	NewHIV_F.out[CurrSim-1][iy] = Temp3;
+	TotNegPop.out[CurrSim-1][iy] = TotPop.out[CurrSim-1][iy] - TotalHIV.out[CurrSim-1][iy];
+	TotIncidence.out[CurrSim-1][iy] = TotalNewHIV.out[CurrSim-1][iy] / TotNegPop.out[CurrSim-1][iy];
 	NewHIVclients.out[CurrSim-1][iy] = NewHIVinClients;
 	PAFforCSW.out[CurrSim-1][iy] = (NewHIVinFSW.out[CurrSim-1][iy] + NewHIVinClients)/
 		(Temp1 + Temp3);
@@ -13050,11 +13050,11 @@ void ResultsAtEndOfYr2()
 		Temp1 += NewHIVbyAgeSex[ia][0];
 		Temp2 += TotalPop_S[ia + 10][0] - TotalPositive_S[ia + 10][0];
 	}
-	HIVinc50M.out[CurrSim - 1][iy] = Temp1 / Temp2;
-	NewHIV50M.out[CurrSim - 1][iy] = Temp1;
-	NewHIV15M.out[CurrSim - 1][iy] = Temp1 + NewHIV15to49M.out[CurrSim - 1][iy];
-	HIVinc15plusM.out[CurrSim - 1][iy] = NewHIV15M.out[CurrSim - 1][iy] /
-		(MalesOver15.out[CurrSim - 1][iy] * (1.0 - Prev15plusM.out[CurrSim - 1][iy]));
+	HIVinc50M.out[CurrSim-1][iy] = Temp1 / Temp2;
+	NewHIV50M.out[CurrSim-1][iy] = Temp1;
+	NewHIV15M.out[CurrSim-1][iy] = Temp1 + NewHIV15to49M.out[CurrSim-1][iy];
+	HIVinc15plusM.out[CurrSim-1][iy] = NewHIV15M.out[CurrSim-1][iy] /
+		(MalesOver15.out[CurrSim-1][iy] * (1.0 - Prev15plusM.out[CurrSim - 1][iy]));
 	Temp3 = 0.0;
 	Temp4 = 0.0;
 	for (ia = 40; ia<81; ia++){
@@ -16413,6 +16413,9 @@ void RunSample()
 	PAFforCSW.RecordSample("PAFforCSW.txt");
 	NewHIVatBirth.RecordSample("NewHIVatBirth.txt");
 	NewHIVafterBirth.RecordSample("NewHIVafterBirth.txt");
+    MTCTrateBirthDiag.RecordSample("MTCTrateBirthDiag.txt");
+    MTCTrateAtBirth.RecordSample("MTCTrateAtBirth.txt");
+    
 	NewHIVto18mo.RecordSample("NewHIVto18mo.txt");
 	NewHIVmothersBF.RecordSample("NewHIVmothersBF.txt");
 	VertTransmKnownPos.RecordSample("VertTransmKnownPos.txt");

@@ -23,11 +23,7 @@ outputs_df <- data.frame(years)
 
 # names of all the outputs of interest
 
-output_names <- c("TotalNewHIV", "TotalHIV", "TotalHIVtests", "LYlostAIDS", 
-                  "AIDSdeathsAdultM", "AIDSdeathsAdultF", "NewAdultHIV", 
-                  "DiagnosedHIV_M", "DiagnosedHIV_F", "UndiagnosedHIV_M", 
-                  "UndiagnosedHIV_F", "HIVtestsPos", "StartingARTtot",
-                  "BirthsDiagHIV", "TotBirthsHIV", "FirstHIVtestsPos")
+output_names <- c("MTCTrateAtBirth", "MTCTrateBirthDiag")
 
 # calculate number of scenarios if there are 10 per output
 
@@ -41,10 +37,10 @@ outputs_df[2:n_scenarios] <- rep(NA, 86)
 col_names <- rep(NA, n_scenarios)
 
 # make a vector of the scenarios including baseline
-# reveresed so its in the right order in the next loop 
+# reversed so its in the right order in the next loop 
 five_years <- c("2065", "2060", "2055", "2050", "2045", "2040", "2035", "2030",
                 "2025", "baseline")
-# makes a list of all the scenario namnes 
+# makes a list of all the scenario names 
 for (j in 1:length(five_years)){
   for (i in 1:n_outputs){
     col_names[((i+1)+(i*9)-j)+1] <- paste(output_names[i], five_years[j], sep = "_")
@@ -54,8 +50,6 @@ for (j in 1:length(five_years)){
 for (i in 2:n_scenarios){
   names(outputs_df)[i] <- col_names[i]
 }
-
-
 
 #### Outputs with baseline testing rates ####
 ## read in input parameter file
@@ -83,31 +77,17 @@ for (i in 1:9){
   rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
   write(rollout, "THEMBISAv18/Rollout.txt")
   run_thembisa()
-  outputs_df[2+i] <- read_output("TotalNewHIV")
-  outputs_df[12+i] <- read_output("TotalHIV")
-  outputs_df[22+i] <- read_output("TotalHIVtests")
-  outputs_df[32+i] <- read_output("LYlostAIDS")
-  outputs_df[42+i] <- read_output("AIDSdeathsAdultM")
-  outputs_df[52+i] <- read_output("AIDSdeathsAdultF")
-  outputs_df[62+i] <- read_output("NewAdultHIV")
-  outputs_df[72+i] <- read_output("DiagnosedHIV_M")
-  outputs_df[82+i] <- read_output("DiagnosedHIV_F")
-  outputs_df[92+i] <- read_output("UndiagnosedHIV_M")
-  outputs_df[102+i] <- read_output("UndiagnosedHIV_F")
-  outputs_df[112+i] <- read_output("HIVtestsPos")
-  outputs_df[122+i] <- read_output("StartingARTtot")
-  outputs_df[132+i] <- read_output("BirthsDiagHIV")
-  outputs_df[142+i] <- read_output("TotBirthsHIV")
-  outputs_df[152+i] <- read_output("FirstHIVtestsPos")
+  outputs_df[2+i] <- read_output("MTCTrateAtBirth")
+  outputs_df[12+i] <- read_output("MTCTrateBirthDiag")
 }
 
 ### write csv of outputs_df ####
 
-write.csv(outputs_df, "outputs_df.csv", row.names = FALSE)
+write.csv(outputs_df, "MTCTrateAtBirth.csv", row.names = FALSE)
 
 #### changing format of df to be used with facet_wrap ####
 
-df <- read_csv("outputs_df.csv")
+df <- read_csv("MTCTrateAtBirth.csv")
 
 df_long <- df %>%
   pivot_longer(-years,
@@ -122,12 +102,21 @@ df_long_facet <- df_long %>%
   pivot_longer(`2025`:last_col(), names_to = "intervention_year", values_to = "intervention") %>%
   pivot_longer(c(baseline, intervention), names_to = "scenario")
 
-
+# make plots of ANC / preganancy related outputs in reduced testing scenarios
 df_long_facet %>%
   filter(
-    indicator == "TotalNewHIV",
+    indicator == output_names[1],
     years >= 2020
   ) %>%
   ggplot(aes(years, value, color = scenario)) +
-  geom_line() +
+  geom_line() + ggtitle(output_names[1]) +
+  facet_wrap(~intervention_year)
+
+df_long_facet %>%
+  filter(
+    indicator == output_names[2],
+    years >= 2020
+  ) %>%
+  ggplot(aes(years, value, color = scenario)) +
+  geom_line() + ggtitle(output_names[2]) +
   facet_wrap(~intervention_year)

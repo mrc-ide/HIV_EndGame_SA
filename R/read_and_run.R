@@ -26,15 +26,6 @@ read_output <- function(output_name){
   return(output$Simulation_1)
 }
 
-# Plots the outputs over time 
-plot_outputs <- function(output_df = output_df, output_column, output_name, title_of_plot) {
-  ggplot(output_df, aes(Year, output_column)) + 
-    geom_line() + 
-    theme_bw() + 
-    ggtitle(title_of_plot) + 
-    ylab(as.character(output_name))
-}
-
 edit_formatted_data <- function(parameter_name, new_values, starting_year=1985, final_year=2070){
   # select parameter using dictionary
   parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
@@ -83,6 +74,81 @@ create_outputs_df <- function(output_parameter_names){
   return(outputs_df)
 }
 
+save_baseline_outputs <- function(output_parameter_names = output_names, df = outputs_df){
+  #### Outputs with baseline testing rates ####
+  ## read in input parameter file
+  data <- readLines("THEMBISAv18/Rollout_Original.txt")
+  n_outputs <- length(output_names)
+  ## write unedited input parameter file
+  formatted_data <- format_data(data, dictionary)
+  rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
+  write(rollout, "THEMBISAv18/Rollout.txt")
+  ## compile and model
+  run_thembisa()
+  ## Read all baseline outputs to columns 
+  # this gives a warning but it works
+  for (i in 1:n_outputs-1){
+    outputs_df[2] <- read_output(output_names[1])
+    outputs_df[2+i*10] <- read_output(output_names[i+1])
+  }
+  return(outputs_df)
+}
 
+change_testing_rate <- function(output_parameter_names = output_names, df = outputs_df){
+  #### Output with changed testing rates ####
+  ## loop for each 5-year interval between 2025 and 2065
+  ## make new output for each year intervention implemented
+  for (i in 1:9){
+    data <- readLines("THEMBISAv18/Rollout_Original.txt")
+    formatted_data <- format_data(data, dictionary)
+    formatted_data <- edit_formatted_data("rate_first_test_neg_fem_under_25", 
+                                          new_values = 0.0, starting_year = (2020+(i*5)))
+    rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
+    write(rollout, "THEMBISAv18/Rollout.txt")
+    run_thembisa()
+    n_outputs <- length(output_names)
+    for (j in 1:n_outputs-1){
+      outputs_df[2+i] <- read_output(output_names[1])
+      outputs_df[2+j*10+i] <- read_output(output_names[j+1])
+    }
+  }
+  return(outputs_df)
+}  
+
+make_long_df <- function(df_csv_name = "outputs_df.csv"){
   
+  #### changing format of df to be used with facet_wrap ####
   
+  df <- read_csv(df_csv_name)
+  
+  df_long <- df %>%
+    pivot_longer(-years,
+                 names_to = c("indicator", "intervention_year"),
+                 names_pattern = "(.+)_(baseline|20[0-9]{2})")
+  
+  #' create a 'baseline' entry for each intervention year
+  #' 
+  
+  df_long_facet <- df_long %>%
+    pivot_wider(names_from = "intervention_year", values_from = "value") %>%
+    pivot_longer(`2025`:last_col(), names_to = "intervention_year", values_to = "intervention") %>%
+    pivot_longer(c(baseline, intervention), names_to = "scenario")
+  
+  return(df_long_facet)
+}
+
+# Plots the outputs over time 
+plot_outputs <- function(df = df, output_name, title_of_plot = output_name) {
+  df %>%
+    filter(
+      indicator == output_name,
+      years >= 2020
+    ) %>%
+    ggplot(aes(years, value, color = scenario)) +
+    geom_line() + ggtitle(title_of_plot) +
+    facet_wrap(~intervention_year) -> plot
+  return(plot)
+}
+
+
+

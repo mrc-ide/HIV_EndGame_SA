@@ -19,10 +19,10 @@ source("R/read_and_run.R")
 
 output_names <- c("TotalNewHIV", "TotalHIV", "TotalHIVtests", "LYlostAIDS", 
                   "AIDSdeathsAdultM", "AIDSdeathsAdultF", 
-                  "DiagnosedHIV_M", "DiagnosedHIV_F", "UndiagnosedHIV_M", 
-                  "UndiagnosedHIV_F")
+                  "DiagnosedHIV_M", "DiagnosedHIV_F", 
+                  "Number1stHIVtestsPos", "StartingARTtot", "Prop1stHIVtestsPos")
 
-# create empty datafram
+# create empty dataframe
 
 outputs_df <- create_outputs_df(output_names)
 
@@ -55,6 +55,7 @@ plot_outputs(df, output_names[7])
 plot_outputs(df, output_names[8])
 plot_outputs(df, output_names[9])
 plot_outputs(df, output_names[10])
+plot_outputs(df, output_names[11])
 
 ## cumulative outputs
 
@@ -248,9 +249,12 @@ cumulative_outputs <- add_row(cumulative_outputs,
 # plot all in one grid
 
 cumulative_outputs %>%
+  filter(indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
+         indicator !="DiagnosedHIV_F", indicator != "TotalHIV") %>% 
   ggplot(aes(intervention_year, cumulative, color = scenario)) +
   geom_point() +
-  facet_wrap(~indicator)
+  facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +
+  ylab("Cumulative Value")
 
 # plot each individually
 

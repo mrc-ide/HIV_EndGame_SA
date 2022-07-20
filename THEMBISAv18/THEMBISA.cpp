@@ -12846,6 +12846,9 @@ void ResultsAtEndOfYr()
 		}
 		FirstHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) /
 			(NewlyTestedPos[0] + NewlyTestedPos[1]);
+        Number1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]);
+        Prop1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) / (NewlyTestedNeg[0] + NewlyTestedNeg[1] +
+        NewlyTestedPos[0] + NewlyTestedPos[1]);
 		TotalHIVtestsU15.out[CurrSim - 1][iy] = NewlyTestedNeg[2] + NewlyTestedPos[2];
 		TotalHIVtests15to24M.out[CurrSim - 1][iy] = NewlyTestedAdult[0][0];
 		TotalHIVtests15to24F.out[CurrSim - 1][iy] = NewlyTestedAdult[0][1];
@@ -16537,6 +16540,8 @@ void RunSample()
 	HIVtestsPosU15.RecordSample("HIVtestsPosU15.txt");
 	FalseNegPropn.RecordSample("FalseNegPropn.txt");
 	FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
+    Number1stHIVtestsPos.RecordSample("Number1stHIVtestsPos.txt");
+    Prop1stHIVtestsPos.RecordSample("Prop1stHIVtestsPos.txt");
 	TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
 	TotSTestTaxi.RecordSample("TotSTestTaxi.txt");
 	TotSTestANC.RecordSample("TotSTestANC.txt");

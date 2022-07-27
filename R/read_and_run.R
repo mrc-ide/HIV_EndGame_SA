@@ -146,7 +146,7 @@ plot_outputs <- function(df = df, output_name, title_of_plot = output_name) {
     ) %>%
     ggplot(aes(years, value, color = scenario)) +
     geom_line() + ggtitle(title_of_plot) +
-    facet_wrap(~intervention_year) -> plot
+    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw() -> plot
   return(plot)
 }
 

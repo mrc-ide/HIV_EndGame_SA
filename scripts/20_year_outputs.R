@@ -2,6 +2,7 @@
 
 setwd("/Users/stefanrautenbach/Documents/Imperial/Research_project/HIV_EndGame_SA")
 
+
 #### Load packages/functions ####
 
 library(readr)
@@ -19,10 +20,10 @@ source("R/read_and_run.R")
 
 output_names <- c("TotalNewHIV", "TotalHIV", "TotalHIVtests", "LYlostAIDS", 
                   "AIDSdeathsAdultM", "AIDSdeathsAdultF", 
-                  "DiagnosedHIV_M", "DiagnosedHIV_F", "UndiagnosedHIV_M", 
-                  "UndiagnosedHIV_F")
+                  "DiagnosedHIV_M", "DiagnosedHIV_F", 
+                  "Number1stHIVtestsPos", "StartingARTtot", "Prop1stHIVtestsPos")
 
-# create empty datafram
+# create empty dataframe
 
 outputs_df <- create_outputs_df(output_names)
 
@@ -33,6 +34,30 @@ outputs_df <- save_baseline_outputs()
 # change testing rates and save them 
 
 outputs_df <- change_testing_rate()
+
+## Calculate total AIDS related mortality in Adults 
+
+outputs_df$TotalAIDSdeathsAdult_baseline <- outputs_df$AIDSdeathsAdultF_baseline + 
+  outputs_df$AIDSdeathsAdultM_baseline
+outputs_df$TotalAIDSdeathsAdult_2025 <- outputs_df$AIDSdeathsAdultF_2025 + 
+  outputs_df$AIDSdeathsAdultM_2025
+outputs_df$TotalAIDSdeathsAdult_2030 <- outputs_df$AIDSdeathsAdultF_2030 + 
+  outputs_df$AIDSdeathsAdultM_2030
+outputs_df$TotalAIDSdeathsAdult_2035 <- outputs_df$AIDSdeathsAdultF_2035 + 
+  outputs_df$AIDSdeathsAdultM_2035
+outputs_df$TotalAIDSdeathsAdult_2040 <- outputs_df$AIDSdeathsAdultF_2040 + 
+  outputs_df$AIDSdeathsAdultM_2040
+outputs_df$TotalAIDSdeathsAdult_2045 <- outputs_df$AIDSdeathsAdultF_2045 + 
+  outputs_df$AIDSdeathsAdultM_2045
+outputs_df$TotalAIDSdeathsAdult_2050 <- outputs_df$AIDSdeathsAdultF_2050 + 
+  outputs_df$AIDSdeathsAdultM_2050
+outputs_df$TotalAIDSdeathsAdult_2055 <- outputs_df$AIDSdeathsAdultF_2055 + 
+  outputs_df$AIDSdeathsAdultM_2055
+outputs_df$TotalAIDSdeathsAdult_2060 <- outputs_df$AIDSdeathsAdultF_2060 + 
+  outputs_df$AIDSdeathsAdultM_2060
+outputs_df$TotalAIDSdeathsAdult_2065 <- outputs_df$AIDSdeathsAdultF_2065 + 
+  outputs_df$AIDSdeathsAdultM_2065
+
 
 ### write csv of outputs_df ####
 
@@ -55,6 +80,8 @@ plot_outputs(df, output_names[7])
 plot_outputs(df, output_names[8])
 plot_outputs(df, output_names[9])
 plot_outputs(df, output_names[10])
+plot_outputs(df, output_names[11])
+plot_outputs(df, output_name = "TotalAIDSdeathsAdult")
 
 ## cumulative outputs
 
@@ -248,9 +275,12 @@ cumulative_outputs <- add_row(cumulative_outputs,
 # plot all in one grid
 
 cumulative_outputs %>%
+  filter(indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
+         indicator !="DiagnosedHIV_F", indicator != "TotalHIV") %>% 
   ggplot(aes(intervention_year, cumulative, color = scenario)) +
   geom_point() +
-  facet_wrap(~indicator)
+  facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +
+  ylab("Cumulative Value")
 
 # plot each individually
 

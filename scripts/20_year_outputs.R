@@ -18,10 +18,11 @@ source("R/read_and_run.R")
 
 # names of all the outputs of interest
 
-output_names <- c("TotalNewHIV", "TotalHIV", "TotalHIVtests", "LYlostAIDS", 
+output_names <- c("TotalHIVtests", "TotalNewHIV", "LYlostAIDS", 
                   "AIDSdeathsAdultM", "AIDSdeathsAdultF", 
                   "DiagnosedHIV_M", "DiagnosedHIV_F", 
-                  "Number1stHIVtestsPos", "StartingARTtot", "Prop1stHIVtestsPos")
+                  "Number1stHIVtestsPos", "StartingARTtot", "Prop1stHIVtestsPos", 
+                  "NewDiagnosesPregnancy")
 
 # create empty dataframe
 

@@ -6483,6 +6483,11 @@ void GetBirthsByHIV()
 		VertTransmKnownPos.out[CurrSim - 1][CurrYear - StartYear] += (Temp + ChildPosPMTCT)/12.0; 
 		BirthsDiagMothers += (ARTmothers + PTP + PTNRP + PUTLP + RecentPosDet)/12.0;
 	}
+    // Calculate New Diagnoses amongst pregnant women
+    if (FixedUncertainty == 1){
+           NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] += ((PTP + PTNRP + PUTLP) *
+                  (1.0 - (TotBirthsByStage[7] - ARTmothers) / PosMothers) + NTNRP + NUTLP) / 12.0;
+    }
 }
 
 void GetPrevPregnant()
@@ -8835,6 +8840,10 @@ void ResetMonthlyCum()
 				CumARTunder15.out[CurrSim - 1][CurrYear - StartYear - 1];
 		}
 	}
+    
+    // New Diagnoses amongst pregnant women
+    if (FixedUncertainty == 1){
+     NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] = 0.0; }
 
 	// AIDS deaths by stage
 	AIDSdeathsUndiag.out[CurrSim - 1][CurrYear - StartYear] = 0.0;
@@ -16420,6 +16429,7 @@ void RunSample()
 	NewHIVmothersBF.RecordSample("NewHIVmothersBF.txt");
 	VertTransmKnownPos.RecordSample("VertTransmKnownPos.txt");
 	TotalNewHIV.RecordSample("TotalNewHIV.txt");
+    NewDiagnosesPregnancy.RecordSample("NewDiagnosesPregnancy.txt");
 	
 	// Write mortality outputs to text files
 	Deaths0M.RecordSample("Deaths0M.txt");

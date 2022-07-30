@@ -277,7 +277,8 @@ cumulative_outputs <- add_row(cumulative_outputs,
 
 cumulative_outputs %>%
   filter(indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
-         indicator !="DiagnosedHIV_F", indicator != "TotalHIV") %>% 
+         indicator !="DiagnosedHIV_F", indicator != "TotalHIV", 
+         indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM") %>% 
   ggplot(aes(intervention_year, cumulative, color = scenario)) +
   geom_point() +
   facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +
@@ -285,76 +286,76 @@ cumulative_outputs %>%
 
 # plot each individually
 
-cumulative_outputs %>% 
-  filter(
-    indicator == "TotalNewHIV",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("TotalNewHIV") 
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "TotalHIV",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("TotalHIV") 
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "TotalHIVtests",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("TotalHIVtests")
-
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "LYlostAIDS",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("LYlostAIDS") 
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "AIDSdeathsAdultF",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("AIDSdeathsAdultF") 
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "AIDSdeathsAdultM",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("AIDSdeathsAdultM") 
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "DiagnosedHIV_F",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("DiagnosedHIV_F")
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "DiagnosedHIV_M",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("DiagnosedHIV_M")
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "UndiagnosedHIV_F",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("UndiagnosedHIV_F")
-
-cumulative_outputs %>% 
-  filter(
-    indicator == "UndiagnosedHIV_M",
-  ) %>%
-  ggplot(aes(intervention_year, cumulative, color = scenario)) +
-  geom_point() + geom_line() + ggtitle("UndiagnosedHIV_M")
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "TotalNewHIV",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("TotalNewHIV") 
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "TotalHIV",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("TotalHIV") 
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "TotalHIVtests",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("TotalHIVtests")
+# 
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "LYlostAIDS",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("LYlostAIDS") 
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "AIDSdeathsAdultF",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("AIDSdeathsAdultF") 
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "AIDSdeathsAdultM",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("AIDSdeathsAdultM") 
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "DiagnosedHIV_F",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("DiagnosedHIV_F")
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "DiagnosedHIV_M",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("DiagnosedHIV_M")
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "UndiagnosedHIV_F",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("UndiagnosedHIV_F")
+# 
+# cumulative_outputs %>% 
+#   filter(
+#     indicator == "UndiagnosedHIV_M",
+#   ) %>%
+#   ggplot(aes(intervention_year, cumulative, color = scenario)) +
+#   geom_point() + geom_line() + ggtitle("UndiagnosedHIV_M")
 
 
 

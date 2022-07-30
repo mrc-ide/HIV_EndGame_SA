@@ -1596,6 +1596,8 @@ PostOutputArray NewHIVafterBirth(86);
 PostOutputArray NewHIVto18mo(86);
 PostOutputArray NewHIVmothersBF(86);
 PostOutputArray NewDiagnosesPregnancy(86);
+PostOutputArray RediagnosesPregnancy(86);
+PostOutputArray TotANCtests(86);
 PostOutputArray VertTransmKnownPos(86);
 PostOutputArray MTCTrateAtBirth(86);
 PostOutputArray MTCTrateBirthDiag(86);

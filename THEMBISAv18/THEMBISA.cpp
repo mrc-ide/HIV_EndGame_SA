@@ -6488,6 +6488,14 @@ void GetBirthsByHIV()
            NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] += ((PTP + PTNRP + PUTLP) *
                   (1.0 - (TotBirthsByStage[7] - ARTmothers) / PosMothers) + NTNRP + NUTLP) / 12.0;
     }
+    // Calculate Rediagnoses amongst pregnant women
+    if (FixedUncertainty == 1){
+        RediagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] += ((PTP + PTNRP + PUTLP) * (TotBirthsByStage[7] - ARTmothers) / PosMothers + NTNRP + NUTLP) / 12.0;
+    }
+    // Total tests on pregnant women at ANC
+    if (FixedUncertainty == 1){
+        TotANCtests.out[CurrSim - 1][CurrYear - StartYear] += (NegMothers * (VCTuptake * (1.0 + RescreenLate) + (1.0 - VCTuptake) * RescreenLate * UntestedRescreen) + PosMothers * (VCTuptake * Sensitivity + (1.0 - VCTuptake) * RescreenLate * UntestedRescreen + VCTuptake * (1 - Sensitivity) * RescreenLate)) / 12.0;
+    }
 }
 
 void GetPrevPregnant()
@@ -8844,7 +8852,14 @@ void ResetMonthlyCum()
     // New Diagnoses amongst pregnant women
     if (FixedUncertainty == 1){
      NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] = 0.0; }
-
+    // Readiagnoses amongst pregnant women
+    if (FixedUncertainty == 1){
+        RediagnosesPregnancy.out[CurrSim -1][CurrYear - StartYear] = 0.0;
+    }
+    // Total ANC tests
+    if (FixedUncertainty == 1){
+        TotANCtests.out[CurrSim -1][CurrYear - StartYear] = 0.0;
+    }
 	// AIDS deaths by stage
 	AIDSdeathsUndiag.out[CurrSim - 1][CurrYear - StartYear] = 0.0;
 	AIDSdeathsDiagPreART.out[CurrSim - 1][CurrYear - StartYear] = 0.0;
@@ -16433,6 +16448,8 @@ void RunSample()
 	VertTransmKnownPos.RecordSample("VertTransmKnownPos.txt");
 	TotalNewHIV.RecordSample("TotalNewHIV.txt");
     NewDiagnosesPregnancy.RecordSample("NewDiagnosesPregnancy.txt");
+    RediagnosesPregnancy.RecordSample("RediagnosesPregnancy.txt");
+    TotANCtests.RecordSample("TotANCtests.txt");
 	
 	// Write mortality outputs to text files
 	Deaths0M.RecordSample("Deaths0M.txt");

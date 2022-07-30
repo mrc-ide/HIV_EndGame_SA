@@ -2,7 +2,6 @@
 
 setwd("/Users/stefanrautenbach/Documents/Imperial/Research_project/HIV_EndGame_SA")
 
-
 #### Load packages/functions ####
 
 library(readr)
@@ -22,7 +21,8 @@ output_names <- c("TotalHIVtests", "TotalNewHIV", "LYlostAIDS",
                   "AIDSdeathsAdultM", "AIDSdeathsAdultF", 
                   "DiagnosedHIV_M", "DiagnosedHIV_F", 
                   "Number1stHIVtestsPos", "StartingARTtot", "Prop1stHIVtestsPos", 
-                  "NewDiagnosesPregnancy")
+                  "NewDiagnosesPregnancy", "TotalART15F", "TotalART15M", 
+                  "RediagnosesPregnancy", "TotANCtests")
 
 # create empty dataframe
 
@@ -59,6 +59,29 @@ outputs_df$TotalAIDSdeathsAdult_2060 <- outputs_df$AIDSdeathsAdultF_2060 +
 outputs_df$TotalAIDSdeathsAdult_2065 <- outputs_df$AIDSdeathsAdultF_2065 + 
   outputs_df$AIDSdeathsAdultM_2065
 
+## Calculate total ART in Adults 
+
+outputs_df$TotalARTAdult_baseline <- outputs_df$TotalART15F_baseline + 
+  outputs_df$TotalART15M_baseline
+outputs_df$TotalARTAdult_2025 <- outputs_df$TotalART15F_2025 + 
+  outputs_df$TotalART15M_2025
+outputs_df$TotalARTAdult_2030 <- outputs_df$TotalART15F_2030 + 
+  outputs_df$TotalART15M_2030
+outputs_df$TotalARTAdult_2035 <- outputs_df$TotalART15F_2035 + 
+  outputs_df$TotalART15M_2035
+outputs_df$TotalARTAdult_2040 <- outputs_df$TotalART15F_2040 + 
+  outputs_df$TotalART15M_2040
+outputs_df$TotalARTAdult_2045 <- outputs_df$TotalART15F_2045 + 
+  outputs_df$TotalART15M_2045
+outputs_df$TotalARTAdult_2050 <- outputs_df$TotalART15F_2050 + 
+  outputs_df$TotalART15M_2050
+outputs_df$TotalARTAdult_2055 <- outputs_df$TotalART15F_2055 + 
+  outputs_df$TotalART15M_2055
+outputs_df$TotalARTAdult_2060 <- outputs_df$TotalART15F_2060 + 
+  outputs_df$TotalART15M_2060
+outputs_df$TotalARTAdult_2065 <- outputs_df$TotalART15F_2065 + 
+  outputs_df$TotalART15M_2065
+
 
 ### write csv of outputs_df ####
 
@@ -82,7 +105,12 @@ plot_outputs(df, output_names[8])
 plot_outputs(df, output_names[9])
 plot_outputs(df, output_names[10])
 plot_outputs(df, output_names[11])
+plot_outputs(df, output_names[12])
+plot_outputs(df, output_names[13])
+plot_outputs(df, output_names[14])
+plot_outputs(df, output_names[15])
 plot_outputs(df, output_name = "TotalAIDSdeathsAdult")
+plot_outputs(df, output_name = "TotalARTAdult")
 
 ## cumulative outputs
 
@@ -278,7 +306,9 @@ cumulative_outputs <- add_row(cumulative_outputs,
 cumulative_outputs %>%
   filter(indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
          indicator !="DiagnosedHIV_F", indicator != "TotalHIV", 
-         indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM") %>% 
+         indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
+         indicator != "TotalART15M", indicator != "TotalART15F",
+         indicator != "TotalARTAdult") %>% 
   ggplot(aes(intervention_year, cumulative, color = scenario)) +
   geom_point() +
   facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +

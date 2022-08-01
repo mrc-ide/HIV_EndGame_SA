@@ -462,3 +462,5 @@ THEMBISAv18/Prop1stHIVtestsPos.txt
 *.txt
 THEMBISAv18/.DS_Store
 THEMBISAv18/Debug/.DS_Store
+.RData
+.Rhistory

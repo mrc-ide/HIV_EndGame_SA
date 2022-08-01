@@ -138,7 +138,7 @@ make_long_df <- function(df_csv_name = "outputs_df.csv"){
 }
 
 # Plots the outputs over time 
-plot_outputs <- function(df = df, output_name, title_of_plot = output_name) {
+plot_outputs <- function(df = df, output_name, title_of_plot = output_name, value=value) {
   df %>%
     filter(
       indicator == output_name,
@@ -150,5 +150,16 @@ plot_outputs <- function(df = df, output_name, title_of_plot = output_name) {
   return(plot)
 }
 
+plot_pct_trend <- function(df=intervention_only, output_name, title_of_plot = output_name, 
+                           percent_change = percent_change) {
+  df %>%
+    filter(
+      indicator == output_name,
+      years >= 2020
+    ) %>%
+    ggplot(aes(years, percent_change)) +
+    geom_line() + ggtitle(title_of_plot) + ylab("Change from baseline (%)") +
+    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+}
 
 

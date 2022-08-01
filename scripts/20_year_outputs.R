@@ -112,6 +112,35 @@ plot_outputs(df, output_names[15])
 plot_outputs(df, output_name = "TotalAIDSdeathsAdult")
 plot_outputs(df, output_name = "TotalARTAdult")
 
+# calculate percentage from baseline for trends
+
+baseline_only <- df %>% 
+  filter(scenario == "baseline")
+intervention_only <- df %>%
+  filter(scenario == "intervention")
+intervention_only$percent_change <- 
+  ((intervention_only$value - baseline_only$value) / baseline_only$value) * 100
+
+# plot percentage change from baseline 
+
+plot_pct_trend(output_name = output_names[1])
+plot_pct_trend(output_name = output_names[2])
+plot_pct_trend(output_name = output_names[3])
+plot_pct_trend(output_name = output_names[4])
+plot_pct_trend(output_name = output_names[5])
+plot_pct_trend(output_name = output_names[6])
+plot_pct_trend(output_name = output_names[7])
+plot_pct_trend(output_name = output_names[8])
+plot_pct_trend(output_name = output_names[9])
+plot_pct_trend(output_name = output_names[10])
+plot_pct_trend(output_name = output_names[11])
+plot_pct_trend(output_name = output_names[12])
+plot_pct_trend(output_name = output_names[13])
+plot_pct_trend(output_name = output_names[14])
+plot_pct_trend(output_name = output_names[15])
+plot_pct_trend(output_name = "TotalAIDSdeathsAdult")
+plot_pct_trend(output_name = "TotalARTAdult")
+
 ## cumulative outputs
 
 # make a dataframe of the cumulative results 
@@ -313,6 +342,63 @@ cumulative_outputs %>%
   geom_point() +
   facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +
   ylab("Cumulative Value")
+
+# calculate cumulative percent change from baseline 
+
+cumulative_baseline_only <- cumulative_outputs %>% 
+  filter(scenario == "baseline")
+cumulative_intervention_only <- cumulative_outputs %>%
+  filter(scenario == "intervention")
+cumulative_intervention_only$percent_change <- 
+  ((cumulative_intervention_only$cumulative - cumulative_baseline_only$cumulative)
+   / cumulative_baseline_only$cumulative) * 100
+
+# plot percentage change  in one grid
+
+cumulative_intervention_only %>%
+  filter(indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
+         indicator !="DiagnosedHIV_F", indicator != "TotalHIV", 
+         indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
+         indicator != "TotalART15M", indicator != "TotalART15F",
+         indicator != "TotalARTAdult") %>% 
+  ggplot(aes(intervention_year, percent_change)) +
+  geom_point() +
+  facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +
+  ylab("Percentage of baseline (%)")
+
+# epidemiologic outcomes only 
+
+cumulative_intervention_only %>%
+  filter(indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
+         indicator !="DiagnosedHIV_F", indicator != "TotalHIV", 
+         indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
+         indicator != "TotalART15M", indicator != "TotalART15F",
+         indicator != "TotalARTAdult", indicator != "NewDiagnosesPregnancy", 
+         indicator != "Number1stHIVtestsPos", indicator != "RediagnosesPregnancy",
+         indicator!= "StartingARTtot", indicator != "TotalHIVtests", 
+         indicator != "TotANCtests") %>% 
+  ggplot(aes(intervention_year, percent_change)) +
+  geom_point() +
+  facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +
+  ylab("Change from baseline (%)")
+
+
+# epidemiologic outcomes only 
+
+cumulative_intervention_only %>%
+  filter(indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
+         indicator !="DiagnosedHIV_F", indicator != "TotalHIV", 
+         indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
+         indicator != "TotalART15M", indicator != "TotalART15F",
+         indicator != "TotalARTAdult", indicator != "TotalNewHIV", 
+         indicator != "LYlostAIDS", indicator != "TotalHIVtests", 
+         indicator != "TotalAIDSdeathsAdult") %>% 
+  ggplot(aes(intervention_year, percent_change)) +
+  geom_point() +
+  facet_wrap(~indicator,scales = "free_y") + theme_bw() + xlab("Intervention Year") +
+  ylab("Change from baseline (%)")
+
+
 
 # plot each individually
 

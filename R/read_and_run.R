@@ -138,7 +138,7 @@ make_long_df <- function(df_csv_name = "outputs_df.csv"){
 }
 
 # Plots the outputs over time 
-plot_outputs <- function(df = df, output_name, title_of_plot = output_name, value=value) {
+plot_outputs <- function(output_name, title_of_plot = output_name, value=value, ylab) {
   df %>%
     filter(
       indicator == output_name,
@@ -146,6 +146,7 @@ plot_outputs <- function(df = df, output_name, title_of_plot = output_name, valu
     ) %>%
     ggplot(aes(years, value, color = scenario)) +
     geom_line() + ggtitle(title_of_plot) +
+    xlab("Years") + ylab(ylab) +
     facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw() -> plot
   return(plot)
 }

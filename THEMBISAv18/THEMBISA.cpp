@@ -6908,6 +6908,12 @@ void UpdateTestingRates()
 		if (ib > 80){ ib = 80; }
 		IndexTesting[0][1] = PosPartnerProb[ia][0][1] * AvePosTesting[ib][0] * DiscloseAndTest;
 		IndexTesting[1][1] = PosPartnerProb[ia][1][1] * AvePosTesting[ib][0] * DiscloseAndTest;
+        if (CurrYear == StartYear){
+               for (ig = 0; ig < 2; ig++){
+                      IndexTesting[0][ig] = 0.0;
+                      IndexTesting[1][ig] = 0.0;
+               }
+        }
 		for(is=0; is<5; is++){
 			// Rates of testing in positives (including index testing)
 			TestingRateSE[ia][is + 2][0] = TestingRateSE[ia][0][0] + IndexTesting[1][0] +
@@ -6924,6 +6930,7 @@ void UpdateTestingRates()
 				TestingRateSE[ia][is + 2][1] += SelfTestingRate[ia][is + 2][1] * SelfTestConfirm;
 				TestingRateSE[ia][is + 7][1] += SelfTestingRate[ia][is + 7][1] * SelfTestConfirm;
 			}
+            
 			// Rates of testing, multiplied by ART-eligible fraction
 			if (is>0 && ia<5){
 				if (is == 4){ PaedElig = 1.0; }
@@ -16382,33 +16389,33 @@ void RunSample()
 	}
 
 	// Write prevalence outputs to text files
-	PrevPreg15to49.RecordSample("PrevPreg15to49.txt");
-	PrevPreg15to19.RecordSample("PrevPreg15to19.txt");
-	PrevPreg20to24.RecordSample("PrevPreg20to24.txt");
-	PrevPreg25to29.RecordSample("PrevPreg25to29.txt");
-	PrevPreg30to34.RecordSample("PrevPreg30to34.txt");
-	PrevPreg35to39.RecordSample("PrevPreg35to39.txt");
-	PrevPreg40to49.RecordSample("PrevPreg40to49.txt");
-	ANCbias.RecordSample("ANCbias.txt");
-	ErrorVariance.RecordSample("ErrorVar.txt");
-	PrevFSW.RecordSample("PrevFSW.txt");
+	// PrevPreg15to49.RecordSample("PrevPreg15to49.txt");
+    // PrevPreg15to19.RecordSample("PrevPreg15to19.txt");
+    // PrevPreg20to24.RecordSample("PrevPreg20to24.txt");
+    // PrevPreg25to29.RecordSample("PrevPreg25to29.txt");
+    // PrevPreg30to34.RecordSample("PrevPreg30to34.txt");
+    // PrevPreg35to39.RecordSample("PrevPreg35to39.txt");
+    // PrevPreg40to49.RecordSample("PrevPreg40to49.txt");
+    // ANCbias.RecordSample("ANCbias.txt");
+    // ErrorVariance.RecordSample("ErrorVar.txt");
+    // PrevFSW.RecordSample("PrevFSW.txt");
 	//PrevFSW15to24.RecordSample("PrevFSW15to24.txt");
 	//PrevFSW25plus.RecordSample("PrevFSW25plus.txt");
-	NegFSW.RecordSample("NegFSW.txt");
-	PrevClients.RecordSample("PrevClients.txt");
-	NegClients.RecordSample("NegClients.txt");
-	TotalHIV.RecordSample("TotalHIV.txt");
-	Prev15to24.RecordSample("Prev15to24.txt");
-	Prev15to49.RecordSample("Prev15to49.txt");
-	Prev25plus.RecordSample("Prev25plus.txt");
-	Prev0to14.RecordSample("Prev0to14.txt");
-	Prev2to14.RecordSample("Prev2to14.txt");
-	HSRCcalib2002.RecordSample("HSRCcalib2002.txt");
-	HSRCcalib2005.RecordSample("HSRCcalib2005.txt");
-	HSRCcalib2008.RecordSample("HSRCcalib2008.txt");
-	HSRCcalib2012.RecordSample("HSRCcalib2012.txt");
-	HSRCcalib2017.RecordSample("HSRCcalib2017.txt");
-	DHScalib2016.RecordSample("DHScalib2016.txt");
+    // NegFSW.RecordSample("NegFSW.txt");
+    // PrevClients.RecordSample("PrevClients.txt");
+    // NegClients.RecordSample("NegClients.txt");
+	// TotalHIV.RecordSample("TotalHIV.txt");
+    // Prev15to24.RecordSample("Prev15to24.txt");
+    // Prev15to49.RecordSample("Prev15to49.txt");
+    // Prev25plus.RecordSample("Prev25plus.txt");
+    // Prev0to14.RecordSample("Prev0to14.txt");
+    // Prev2to14.RecordSample("Prev2to14.txt");
+    // HSRCcalib2002.RecordSample("HSRCcalib2002.txt");
+    // HSRCcalib2005.RecordSample("HSRCcalib2005.txt");
+    // HSRCcalib2008.RecordSample("HSRCcalib2008.txt");
+    // HSRCcalib2012.RecordSample("HSRCcalib2012.txt");
+    // HSRCcalib2017.RecordSample("HSRCcalib2017.txt");
+    // DHScalib2016.RecordSample("DHScalib2016.txt");
 	/*Prev0to1.RecordSample("Prev0to1.txt");
 	Prev2to4M.RecordSample("Prev2to4M.txt");
 	Prev2to4F.RecordSample("Prev2to4F.txt");
@@ -16416,15 +16423,15 @@ void RunSample()
 	Prev5to9F.RecordSample("Prev5to9F.txt");
 	Prev10to14M.RecordSample("Prev10to14M.txt");
 	Prev10to14F.RecordSample("Prev10to14F.txt");*/
-	MSMprev18to24.RecordSample("MSMprev18to24.txt");
+	/*MSMprev18to24.RecordSample("MSMprev18to24.txt");
 	MSMprev25plus.RecordSample("MSMprev25plus.txt");
-	MSMprev18plus.RecordSample("MSMprev18plus.txt");
+	MSMprev18plus.RecordSample("MSMprev18plus.txt");*/
 
 	// Write HIV incidence outputs to text files
-	NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
-	NewHIVclients.RecordSample("NewHIVclients.txt");
-	NewAdultHIV.RecordSample("NewAdultHIV.txt");
-	HIVinc15to49.RecordSample("HIVinc15to49.txt");
+    // NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
+    // NewHIVclients.RecordSample("NewHIVclients.txt");
+    // NewAdultHIV.RecordSample("NewAdultHIV.txt");
+	/*HIVinc15to49.RecordSample("HIVinc15to49.txt");
 	HIVinc15to49M.RecordSample("HIVinc15to49M.txt");
 	HIVinc15to49F.RecordSample("HIVinc15to49F.txt");
 	HIVinc15to24M.RecordSample("HIVinc15to24M.txt");
@@ -16445,14 +16452,14 @@ void RunSample()
     
 	NewHIVto18mo.RecordSample("NewHIVto18mo.txt");
 	NewHIVmothersBF.RecordSample("NewHIVmothersBF.txt");
-	VertTransmKnownPos.RecordSample("VertTransmKnownPos.txt");
+	VertTransmKnownPos.RecordSample("VertTransmKnownPos.txt");*/
 	TotalNewHIV.RecordSample("TotalNewHIV.txt");
     NewDiagnosesPregnancy.RecordSample("NewDiagnosesPregnancy.txt");
     RediagnosesPregnancy.RecordSample("RediagnosesPregnancy.txt");
     TotANCtests.RecordSample("TotANCtests.txt");
 	
 	// Write mortality outputs to text files
-	Deaths0M.RecordSample("Deaths0M.txt");
+	/*Deaths0M.RecordSample("Deaths0M.txt");
 	Deaths1M.RecordSample("Deaths1M.txt");
 	Deaths5M.RecordSample("Deaths5M.txt");
 	Deaths10M.RecordSample("Deaths10M.txt");
@@ -16476,10 +16483,10 @@ void RunSample()
 	Deaths45F.RecordSample("Deaths45F.txt");
 	Deaths50F.RecordSample("Deaths50F.txt");
 	Deaths55F.RecordSample("Deaths55F.txt");
-	AIDSdeathsPaed.RecordSample("AIDSdeathsPaed.txt");
+	AIDSdeathsPaed.RecordSample("AIDSdeathsPaed.txt");*/
 	AIDSdeathsAdultM.RecordSample("AIDSdeathsAdultM.txt");
 	AIDSdeathsAdultF.RecordSample("AIDSdeathsAdultF.txt");
-	AIDSdeaths0.RecordSample("AIDSdeaths0.txt");
+	/*AIDSdeaths0.RecordSample("AIDSdeaths0.txt");
 	AIDSdeaths1to4.RecordSample("AIDSdeaths1to4.txt");
 	AIDSdeaths5to9.RecordSample("AIDSdeaths5to9.txt");
 	AIDSdeaths10to14.RecordSample("AIDSdeaths10to14.txt");
@@ -16501,10 +16508,10 @@ void RunSample()
 	ARTdeaths1to4.RecordSample("ARTdeaths1to4.txt");
 	ARTdeaths5to9.RecordSample("ARTdeaths5to9.txt");
 	CompletenessPaed.RecordSample("CompletenessPaed.txt");
-	CompletenessAdj.RecordSample("CompletenessAdj.txt");
+	CompletenessAdj.RecordSample("CompletenessAdj.txt");*/
 
 	// Write ART/disease stage outputs to text files
-	AdultsUnder200.RecordSample("AdultsUnder200.txt");
+	/*AdultsUnder200.RecordSample("AdultsUnder200.txt");
 	Adults200to349.RecordSample("Adults200to349.txt");
 	Adults350to499.RecordSample("Adults350to499.txt");
 	AdultsOver500.RecordSample("AdultsOver500.txt");
@@ -16519,15 +16526,15 @@ void RunSample()
 	StartingART15to24F.RecordSample("StartingART15to24F.txt");
 	StartingART25to34F.RecordSample("StartingART25to34F.txt");
 	StartingART35to44F.RecordSample("StartingART35to44F.txt");
-	StartingART45F.RecordSample("StartingART45F.txt");
+	StartingART45F.RecordSample("StartingART45F.txt");*/
 	StartingARTtot.RecordSample("StartingARTtot.txt");
-	NewARTunder200.RecordSample("NewARTunder200.txt");
+	/*NewARTunder200.RecordSample("NewARTunder200.txt");
 	NewART200to349.RecordSample("NewART200to349.txt");
 	NewART350to499.RecordSample("NewART350to499.txt");
-	NewARTover500.RecordSample("NewARTover500.txt");
+	NewARTover500.RecordSample("NewARTover500.txt");*/
 	TotalART15F.RecordSample("TotalART15F.txt");
 	TotalART15M.RecordSample("TotalART15M.txt");
-	TotalARTunder15.RecordSample("TotalARTunder15.txt");
+	/*TotalARTunder15.RecordSample("TotalARTunder15.txt");
 	TotUnmet15F.RecordSample("TotUnmet15F.txt");
 	TotUnmet15M.RecordSample("TotUnmet15M.txt");
 	TotUnmetUnder15.RecordSample("TotUnmetUnder15.txt");
@@ -16559,17 +16566,17 @@ void RunSample()
 	PrevTested12.RecordSample("PrevTested12.txt");
 	PrevTested16.RecordSample("PrevTested16.txt");
 	PrevTested17.RecordSample("PrevTested17.txt");
-	AdultsEverTested.RecordSample("AdultsEverTested.txt");
+	AdultsEverTested.RecordSample("AdultsEverTested.txt");*/
 	//TestingBias.RecordSample("TestingBias.txt");
 	TotalHIVtests.RecordSample("TotalHIVtests.txt");
-	HIVtestsPos.RecordSample("HIVtestsPos.txt");
+	/*HIVtestsPos.RecordSample("HIVtestsPos.txt");
 	TotalHIVtestsU15.RecordSample("TotalHIVtestsU15.txt");
 	HIVtestsPosU15.RecordSample("HIVtestsPosU15.txt");
-	FalseNegPropn.RecordSample("FalseNegPropn.txt");
-	FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
+	FalseNegPropn.RecordSample("FalseNegPropn.txt");*/
+	// FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
     Number1stHIVtestsPos.RecordSample("Number1stHIVtestsPos.txt");
     Prop1stHIVtestsPos.RecordSample("Prop1stHIVtestsPos.txt");
-	TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
+	/*TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
 	TotSTestTaxi.RecordSample("TotSTestTaxi.txt");
 	TotSTestANC.RecordSample("TotSTestANC.txt");
 	TotSTestIndex.RecordSample("TotSTestIndex.txt");
@@ -16590,10 +16597,10 @@ void RunSample()
 	STuptakeByYr.RecordSample("STuptakeByYr.txt");
 	HIVtestUptakeF25.RecordSample("HIVtestUptakeF25.txt");
 	OItestingRate.RecordSample("OItestingRate.txt");
-	ProbTestedNextYr.RecordSample("ProbTestedNextYr.txt");
+	ProbTestedNextYr.RecordSample("ProbTestedNextYr.txt");*/
 	DiagnosedHIV_M.RecordSample("DiagnosedHIV_M.txt");
 	DiagnosedHIV_F.RecordSample("DiagnosedHIV_F.txt");
-	UndiagnosedHIV_M.RecordSample("UndiagnosedHIV_M.txt");
+	/*UndiagnosedHIV_M.RecordSample("UndiagnosedHIV_M.txt");
 	UndiagnosedHIV_F.RecordSample("UndiagnosedHIV_F.txt");
 	UndiagnosedHIV_U15.RecordSample("UndiagnosedHIV_U15.txt");
 	Undiagnosed2012.RecordSample("Undiagnosed2012.txt");
@@ -16608,13 +16615,13 @@ void RunSample()
 	MarriedPropn1996.RecordSample("MarriedPropn1996.txt");
 	MarriedPropn2001.RecordSample("MarriedPropn2001.txt");
 	MarriedPropn2007.RecordSample("MarriedPropn2007.txt");
-	MarriedPropn2016.RecordSample("MarriedPropn2016.txt");
+	MarriedPropn2016.RecordSample("MarriedPropn2016.txt");*/
 
 	// Investment case outputs
-	NonAIDSdeaths.RecordSample("NonAIDSdeaths.txt");
-	AIDSdeathsART.RecordSample("AIDSdeathsART.txt");
+    // NonAIDSdeaths.RecordSample("NonAIDSdeaths.txt");
+    // AIDSdeathsART.RecordSample("AIDSdeathsART.txt");
 	LYlostAIDS.RecordSample("LYlostAIDS.txt");
-	TotBirths.RecordSample("TotBirths.txt");
+	/*TotBirths.RecordSample("TotBirths.txt");
 	MalesOver15.RecordSample("MalesOver15.txt");
 	FemalesOver15.RecordSample("FemalesOver15.txt");
 	MarriedM17to49.RecordSample("MarriedM17to49.txt");
@@ -16679,10 +16686,10 @@ void RunSample()
 	FSWonPrEP.RecordSample("FSWonPrEP.txt");
 	WomenOnVM.RecordSample("WomenOnVM.txt");
 	AdolescOnPrEP.RecordSample("AdolescOnPrEP.txt");
-	FSWonART.RecordSample("FSWonART.txt");
+	FSWonART.RecordSample("FSWonART.txt");*/
 	//DiscordantARTelig.RecordSample("DiscordantARTelig.txt");
 	//DiscordantPrEPelig.RecordSample("DiscordantPrEPelig.txt");
-	OnARTover500.RecordSample("OnARTover500.txt");
+	/*OnARTover500.RecordSample("OnARTover500.txt");
 	OnART350to499.RecordSample("OnART350to499.txt");
 	OnART200to349.RecordSample("OnART200to349.txt");
 	OnARTunder200.RecordSample("OnARTunder200.txt");
@@ -16696,7 +16703,7 @@ void RunSample()
 
 	GetSummaryOutputs("SummaryOutput.txt");
 	GetAddedOutputs("AddnalOutput.txt");
-	GetOutputsByAge("OutputByAge.txt");
+	GetOutputsByAge("OutputByAge.txt");*/
 }
 
 void ReadPriors()

@@ -94,6 +94,26 @@ save_baseline_outputs <- function(output_parameter_names = output_names, df = ou
   return(outputs_df)
 }
 
+save_baseline_medians <- function(output_parameter_names = output_names, df = outputs_df){
+  #### Outputs with baseline testing rates ####
+  ## read in input parameter file
+  data <- readLines("THEMBISAv18/Rollout_Original.txt")
+  n_outputs <- length(output_names)
+  ## write unedited input parameter file
+  formatted_data <- format_data(data, dictionary)
+  rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
+  write(rollout, "THEMBISAv18/Rollout.txt")
+  ## compile and model
+  run_thembisa()
+  ## Read all baseline outputs to columns 
+  # this gives a warning but it works
+  for (i in 1:n_outputs-1){
+    outputs_df[2] <- select_median(output_names[1])
+    outputs_df[2+i*10] <- select_median(output_names[i+1])
+  }
+  return(outputs_df)
+}
+
 change_testing_rate <- function(output_parameter_names = output_names, df = outputs_df){
   #### Output with changed testing rates ####
   ## loop for each 5-year interval between 2025 and 2065
@@ -108,8 +128,8 @@ change_testing_rate <- function(output_parameter_names = output_names, df = outp
     run_thembisa()
     n_outputs <- length(output_names)
     for (j in 1:n_outputs-1){
-      outputs_df[2+i] <- read_output(output_names[1])
-      outputs_df[2+j*10+i] <- read_output(output_names[j+1])
+      outputs_df[2+i] <- select_median(output_names[1])
+      outputs_df[2+j*10+i] <- select_median(output_names[i+1])
     }
   }
   return(outputs_df)
@@ -142,9 +162,9 @@ plot_outputs <- function(output_name, title_of_plot = output_name, value=value, 
   df %>%
     filter(
       indicator == output_name,
-      years >= 2020
+      year >= 2020
     ) %>%
-    ggplot(aes(years, value, color = scenario)) +
+    ggplot(aes(year, value, color = scenario)) +
     geom_line() + ggtitle(title_of_plot) +
     xlab("Years") + ylab(ylab) +
     facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw() -> plot
@@ -156,11 +176,119 @@ plot_pct_trend <- function(df=intervention_only, output_name, title_of_plot = ou
   df %>%
     filter(
       indicator == output_name,
-      years >= 2020
+      year >= 2020
     ) %>%
-    ggplot(aes(years, percent_change)) +
+    ggplot(aes(year, percent_change)) +
     geom_line() + ggtitle(title_of_plot) + ylab("Change from baseline (%)") +
     facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
 }
 
+# adapted read_output to handle multiple parameter sets and add median to outputs_df
 
+select_median <- function(output_name){
+  output_txt <- paste(output_name, "txt", sep = ".")
+  output_txt <- paste("THEMBISAv18", output_txt, sep = "/")
+  output <- read.delim(output_txt, header=FALSE, row.names = 1)
+  names(output)[2:87] <- seq(1985, 2070)
+  output <- output %>% select(-V2)
+  t_output <- t(output)
+  output_new <- as.data.frame(as_tibble(t_output))
+  output_new$median <- rep(NA, 86)
+  for (i in 1:86){
+    output_new$median[i] <- median(t_output[i,])
+  }
+  return(output_new$median)
+}
+
+read_thembisa_output <- function(output_name){
+  output_txt <- paste(output_name, "txt", sep = ".")
+  output_txt <- paste("THEMBISAv18", output_txt, sep = "/")
+  output <- read.delim(output_txt, header=FALSE, row.names = 1)
+  output <- output %>% select(-V2)
+  t_output <- t(output)
+  output_new <- as.data.frame(as_tibble(t_output))
+  names(output_new) <- seq_along(output_new)
+  output_new$year <- seq(1985, 2070)
+  pivot_longer(output_new, -year, names_to = "parameter_set")
+}
+
+
+read_thembisa_scenario <- function(output_names){
+  temp <- lapply(output_names, read_thembisa_output)
+  names(temp) <- output_names
+  bind_rows(temp, .id = "indicator")
+}
+
+run_thembisa_scenario <- function(intervention_year, output_names){
+  ## read in input parameter file
+  data <- readLines("THEMBISAv18/Rollout_Original.txt")
+  ## write unedited input parameter file
+  formatted_data <- format_data(data, dictionary)
+  if (!is.na(intervention_year)){
+    formatted_data <- edit_formatted_data("rate_first_test_neg_fem_under_25", 
+                                          new_values = 0.0, 
+                                          starting_year = intervention_year)
+  }
+  rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
+  write(rollout, "THEMBISAv18/Rollout.txt")
+  ## compile and model
+  run_thembisa()
+  read_thembisa_scenario(output_names)
+}
+
+# dir.create("results", FALSE, TRUE)
+# intervention_years <- seq(2025, 2050, 5)
+# baseline <- run_thembisa_scenario(NA, output_names)
+# write.csv(baseline, "results/baseline.csv", row.names = FALSE)
+
+# for (intervention_year in intervention_years){
+#   temp <- run_thembisa_scenario(intervention_year, output_names)
+#   write.csv(temp, paste0("results/scenario_", intervention_year, ".csv"),
+#             row.names = FALSE)
+# }
+
+read_thembisa_results <- function(intervention_years){
+  filepaths <- paste0("results/scenario_", intervention_years, ".csv")
+  temp <- lapply(filepaths, read.csv)
+  names(temp) <- intervention_years
+  baseline <- read.csv("results/baseline.csv")
+  bind_rows(temp, .id = "intervention_year") %>% 
+    dplyr::rename(intervention = value) %>% 
+    dplyr::left_join(baseline) %>% 
+    dplyr::rename(baseline = value) %>% 
+    tidyr::pivot_longer(c(intervention, baseline), names_to = "scenario")
+}
+
+# df <- read_thembisa_results(intervention_years)
+
+plot_outputs_with_uncertainty <- function(output_name){
+  df %>% filter(
+    indicator == output_name,
+    year >= 2020,
+    scenario != "percent_change") %>% 
+    group_by(year, scenario, intervention_year) %>% 
+    summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
+              lower_CI = quantile(value, probs = 0.025)) %>% 
+    ggplot(aes(year, median, fill = scenario)) +
+    geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, group = scenario), alpha = 0.25) +
+    geom_line(aes(color = scenario)) +
+    ggtitle(output_name) +
+    xlab("Years") +
+    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+}
+
+plot_pct_chg_uncertainty <- function(output_name){
+  df %>% 
+    filter(scenario == "percent_change",
+           indicator == output_name, 
+           year >= 2020) %>% 
+    group_by(year, intervention_year, scenario) %>% 
+    summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
+              lower_CI = quantile(value, probs = 0.025)) %>% 
+    ggplot(aes(year, median, fill = scenario)) +
+    geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.25) +
+    geom_line(aes(colour = scenario)) +
+    ggtitle(output_name) +
+    xlab("Years") + ylab("Change from baseline (%)") +
+    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+}

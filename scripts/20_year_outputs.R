@@ -24,243 +24,154 @@ output_names <- c("TotalHIVtests", "TotalNewHIV", "LYlostAIDS",
                   "NewDiagnosesPregnancy", "TotalART15F", "TotalART15M", 
                   "RediagnosesPregnancy", "TotANCtests")
 
-# create empty dataframe
+# create empty folder for results
 
-outputs_df <- create_outputs_df(output_names)
+dir.create("results", FALSE, TRUE)
 
-# run and save baseline outputs
+# establish intervention years
+intervention_years <- seq(2025, 2050, 5)
 
-outputs_df <- save_baseline_outputs()
+# run baseline model
+t1 <- Sys.time()
+baseline <- run_thembisa_scenario(NA, output_names)
 
-# change testing rates and save them 
+# save baseline outputs
+write.csv(baseline, "results/baseline.csv", row.names = FALSE)
 
-outputs_df <- change_testing_rate()
+# for loop that changes testing rate at different years and saves outputs
+for (intervention_year in intervention_years){
+  one_scenario <- run_thembisa_scenario(intervention_year, output_names)
+  write.csv(one_scenario, paste0("results/scenario_", intervention_year, ".csv"),
+            row.names = FALSE)
+}
+
+# make a new data frame joining all results 
+df <- read_thembisa_results(intervention_years)
+write_csv(df, "results/all_scenarios.csv")
+df <- read_csv("results/all_scenarios.csv")
+
+t2 <- Sys.time()
+time_elapsed <- t2 - t1
 
 ## Calculate total AIDS related mortality in Adults 
-
-outputs_df$TotalAIDSdeathsAdult_baseline <- outputs_df$AIDSdeathsAdultF_baseline + 
-  outputs_df$AIDSdeathsAdultM_baseline
-outputs_df$TotalAIDSdeathsAdult_2025 <- outputs_df$AIDSdeathsAdultF_2025 + 
-  outputs_df$AIDSdeathsAdultM_2025
-outputs_df$TotalAIDSdeathsAdult_2030 <- outputs_df$AIDSdeathsAdultF_2030 + 
-  outputs_df$AIDSdeathsAdultM_2030
-outputs_df$TotalAIDSdeathsAdult_2035 <- outputs_df$AIDSdeathsAdultF_2035 + 
-  outputs_df$AIDSdeathsAdultM_2035
-outputs_df$TotalAIDSdeathsAdult_2040 <- outputs_df$AIDSdeathsAdultF_2040 + 
-  outputs_df$AIDSdeathsAdultM_2040
-outputs_df$TotalAIDSdeathsAdult_2045 <- outputs_df$AIDSdeathsAdultF_2045 + 
-  outputs_df$AIDSdeathsAdultM_2045
-outputs_df$TotalAIDSdeathsAdult_2050 <- outputs_df$AIDSdeathsAdultF_2050 + 
-  outputs_df$AIDSdeathsAdultM_2050
-outputs_df$TotalAIDSdeathsAdult_2055 <- outputs_df$AIDSdeathsAdultF_2055 + 
-  outputs_df$AIDSdeathsAdultM_2055
-outputs_df$TotalAIDSdeathsAdult_2060 <- outputs_df$AIDSdeathsAdultF_2060 + 
-  outputs_df$AIDSdeathsAdultM_2060
-outputs_df$TotalAIDSdeathsAdult_2065 <- outputs_df$AIDSdeathsAdultF_2065 + 
-  outputs_df$AIDSdeathsAdultM_2065
-
 ## Calculate total ART in Adults 
-
-outputs_df$TotalARTAdult_baseline <- outputs_df$TotalART15F_baseline + 
-  outputs_df$TotalART15M_baseline
-outputs_df$TotalARTAdult_2025 <- outputs_df$TotalART15F_2025 + 
-  outputs_df$TotalART15M_2025
-outputs_df$TotalARTAdult_2030 <- outputs_df$TotalART15F_2030 + 
-  outputs_df$TotalART15M_2030
-outputs_df$TotalARTAdult_2035 <- outputs_df$TotalART15F_2035 + 
-  outputs_df$TotalART15M_2035
-outputs_df$TotalARTAdult_2040 <- outputs_df$TotalART15F_2040 + 
-  outputs_df$TotalART15M_2040
-outputs_df$TotalARTAdult_2045 <- outputs_df$TotalART15F_2045 + 
-  outputs_df$TotalART15M_2045
-outputs_df$TotalARTAdult_2050 <- outputs_df$TotalART15F_2050 + 
-  outputs_df$TotalART15M_2050
-outputs_df$TotalARTAdult_2055 <- outputs_df$TotalART15F_2055 + 
-  outputs_df$TotalART15M_2055
-outputs_df$TotalARTAdult_2060 <- outputs_df$TotalART15F_2060 + 
-  outputs_df$TotalART15M_2060
-outputs_df$TotalARTAdult_2065 <- outputs_df$TotalART15F_2065 + 
-  outputs_df$TotalART15M_2065
-
 ## Calculate total number of diagnosed adults
 
-outputs_df$TotalDiagnosedHIV_baseline <- outputs_df$DiagnosedHIV_F_baseline + 
-  outputs_df$DiagnosedHIV_M_baseline
-outputs_df$TotalDiagnosedHIV_2025 <- outputs_df$DiagnosedHIV_F_2025 + 
-  outputs_df$DiagnosedHIV_M_2025
-outputs_df$TotalDiagnosedHIV_2030 <- outputs_df$DiagnosedHIV_F_2030 + 
-  outputs_df$DiagnosedHIV_M_2030
-outputs_df$TotalDiagnosedHIV_2035 <- outputs_df$DiagnosedHIV_F_2035 + 
-  outputs_df$DiagnosedHIV_M_2035
-outputs_df$TotalDiagnosedHIV_2040 <- outputs_df$DiagnosedHIV_F_2040 + 
-  outputs_df$DiagnosedHIV_M_2040
-outputs_df$TotalDiagnosedHIV_2045 <- outputs_df$DiagnosedHIV_F_2045 + 
-  outputs_df$DiagnosedHIV_M_2045
-outputs_df$TotalDiagnosedHIV_2050 <- outputs_df$DiagnosedHIV_F_2050 + 
-  outputs_df$DiagnosedHIV_M_2050
-outputs_df$TotalDiagnosedHIV_2055 <- outputs_df$DiagnosedHIV_F_2055 + 
-  outputs_df$DiagnosedHIV_M_2055
-outputs_df$TotalDiagnosedHIV_2060 <- outputs_df$DiagnosedHIV_F_2060 + 
-  outputs_df$DiagnosedHIV_M_2060
-outputs_df$TotalDiagnosedHIV_2065 <- outputs_df$DiagnosedHIV_F_2065 + 
-  outputs_df$DiagnosedHIV_M_2065
+df <- df %>%
+  pivot_wider(names_from = indicator) %>%
+  mutate(TotalAIDSdeathsadult = AIDSdeathsAdultF + AIDSdeathsAdultM) %>%
+  mutate(TotalARTAdult = TotalART15F + TotalART15M) %>% 
+  mutate(TotalDiagnosedHIV = DiagnosedHIV_F + DiagnosedHIV_M) %>% 
+  pivot_longer(-(intervention_year:scenario), names_to = "indicator")
 
-# test positivity in the total population
-# number of diagnoses / number of tests
-
-outputs_df$TotalTestPositivity_baseline <- outputs_df$Number1stHIVtestsPos_baseline / 
-  outputs_df$TotalHIVtests_baseline * 100
-outputs_df$TotalTestPositivity_2025 <- outputs_df$Number1stHIVtestsPos_2025 / 
-  outputs_df$TotalHIVtests_2025 * 100
-outputs_df$TotalTestPositivity_2030 <- outputs_df$Number1stHIVtestsPos_2030 / 
-  outputs_df$TotalHIVtests_2030 * 100
-outputs_df$TotalTestPositivity_2035 <- outputs_df$Number1stHIVtestsPos_2035 / 
-  outputs_df$TotalHIVtests_2035 * 100
-outputs_df$TotalTestPositivity_2040 <- outputs_df$Number1stHIVtestsPos_2040 / 
-  outputs_df$TotalHIVtests_2040 * 100
-outputs_df$TotalTestPositivity_2045 <- outputs_df$Number1stHIVtestsPos_2045 / 
-  outputs_df$TotalHIVtests_2045 * 100
-outputs_df$TotalTestPositivity_2050 <- outputs_df$Number1stHIVtestsPos_2050 / 
-  outputs_df$TotalHIVtests_2050 * 100
-outputs_df$TotalTestPositivity_2055 <- outputs_df$Number1stHIVtestsPos_2055 / 
-  outputs_df$TotalHIVtests_2055 * 100
-outputs_df$TotalTestPositivity_2060 <- outputs_df$Number1stHIVtestsPos_2060 / 
-  outputs_df$TotalHIVtests_2060 * 100
-outputs_df$TotalTestPositivity_2065 <- outputs_df$Number1stHIVtestsPos_2065 / 
-  outputs_df$TotalHIVtests_2065 * 100
-
-# number of ANC diagnoses / number of ANC tests
-
-outputs_df$ANCTestPositivity_baseline <- outputs_df$NewDiagnosesPregnancy_baseline / 
-  outputs_df$TotANCtests_baseline * 100
-outputs_df$ANCTestPositivity_2025 <- outputs_df$NewDiagnosesPregnancy_2025 / 
-  outputs_df$TotANCtests_2025 * 100
-outputs_df$ANCTestPositivity_2030 <- outputs_df$NewDiagnosesPregnancy_2030 / 
-  outputs_df$TotANCtests_2030 * 100
-outputs_df$ANCTestPositivity_2035 <- outputs_df$NewDiagnosesPregnancy_2035 / 
-  outputs_df$TotANCtests_2035 * 100
-outputs_df$ANCTestPositivity_2040 <- outputs_df$NewDiagnosesPregnancy_2040 / 
-  outputs_df$TotANCtests_2040 * 100
-outputs_df$ANCTestPositivity_2045 <- outputs_df$NewDiagnosesPregnancy_2045 / 
-  outputs_df$TotANCtests_2045 * 100
-outputs_df$ANCTestPositivity_2050 <- outputs_df$NewDiagnosesPregnancy_2050 / 
-  outputs_df$TotANCtests_2050 * 100
-outputs_df$ANCTestPositivity_2055 <- outputs_df$NewDiagnosesPregnancy_2055 / 
-  outputs_df$TotANCtests_2055 * 100
-outputs_df$ANCTestPositivity_2060 <- outputs_df$NewDiagnosesPregnancy_2060 / 
-  outputs_df$TotANCtests_2060 * 100
-outputs_df$ANCTestPositivity_2065 <- outputs_df$NewDiagnosesPregnancy_2065 / 
-  outputs_df$TotANCtests_2065 * 100
-
-# ratio of number of people who start ART to number of people diagnosed 
-
-outputs_df$ARTinitiationRatio_baseline <- outputs_df$StartingARTtot_baseline / 
-  outputs_df$Number1stHIVtestsPos_baseline 
-outputs_df$ARTinitiationRatio_2025 <- outputs_df$StartingARTtot_2025 / 
-  outputs_df$Number1stHIVtestsPos_2025 
-outputs_df$ARTinitiationRatio_2030 <- outputs_df$StartingARTtot_2030 / 
-  outputs_df$Number1stHIVtestsPos_2030 
-outputs_df$ARTinitiationRatio_2035 <- outputs_df$StartingARTtot_2035 / 
-  outputs_df$Number1stHIVtestsPos_2035
-outputs_df$ARTinitiationRatio_2040 <- outputs_df$StartingARTtot_2040 / 
-  outputs_df$Number1stHIVtestsPos_2040 
-outputs_df$ARTinitiationRatio_2045 <- outputs_df$StartingARTtot_2045 / 
-  outputs_df$Number1stHIVtestsPos_2045
-outputs_df$ARTinitiationRatio_2050 <- outputs_df$StartingARTtot_2050 / 
-  outputs_df$Number1stHIVtestsPos_2050
-outputs_df$ARTinitiationRatio_2055 <- outputs_df$StartingARTtot_2055 / 
-  outputs_df$Number1stHIVtestsPos_2055
-outputs_df$ARTinitiationRatio_2060 <- outputs_df$StartingARTtot_2060 / 
-  outputs_df$Number1stHIVtestsPos_2060
-outputs_df$ARTinitiationRatio_2065 <- outputs_df$StartingARTtot_2065 / 
-  outputs_df$Number1stHIVtestsPos_2065
-
-# ratio of number of people who total number on ART to total people diagnosed
-
-outputs_df$TotalARTRatio_baseline <- outputs_df$TotalARTAdult_baseline / 
-  outputs_df$TotalDiagnosedHIV_baseline 
-outputs_df$TotalARTRatio_2025 <- outputs_df$TotalARTAdult_2025 / 
-  outputs_df$TotalDiagnosedHIV_2025 
-outputs_df$TotalARTRatio_2030 <- outputs_df$TotalARTAdult_2030 / 
-  outputs_df$TotalDiagnosedHIV_2030 
-outputs_df$TotalARTRatio_2035 <- outputs_df$TotalARTAdult_2035 / 
-  outputs_df$TotalDiagnosedHIV_2035
-outputs_df$TotalARTRatio_2040 <- outputs_df$TotalARTAdult_2040 / 
-  outputs_df$TotalDiagnosedHIV_2040 
-outputs_df$TotalARTRatio_2045 <- outputs_df$TotalARTAdult_2045 / 
-  outputs_df$TotalDiagnosedHIV_2045
-outputs_df$TotalARTRatio_2050 <- outputs_df$TotalARTAdult_2050 / 
-  outputs_df$TotalDiagnosedHIV_2050
-outputs_df$TotalARTRatio_2055 <- outputs_df$TotalARTAdult_2055 / 
-  outputs_df$TotalDiagnosedHIV_2055
-outputs_df$TotalARTRatio_2060 <- outputs_df$TotalARTAdult_2060 / 
-  outputs_df$TotalDiagnosedHIV_2060
-outputs_df$TotalARTRatio_2065 <- outputs_df$TotalARTAdult_2065 / 
-  outputs_df$TotalDiagnosedHIV_2065
 
 ### write csv of outputs_df ####
 
-write.csv(outputs_df, "outputs_df.csv", row.names = FALSE)
-outputs_df <- read.csv("outputs_df.csv")
-# make long format pivoted df
+write.csv(df, "results/df.csv", row.names = FALSE)
+df <- read.csv("results/df.csv")
 
-df <- make_long_df()
-
-# plot outputs 
+### plot yearly outputs #### 
 # for some reason I can't loop over these
 
-plot_outputs(output_names[1], title_of_plot = "Annual number of HIV tests performed", ylab = "HIV tests")
-plot_outputs(output_names[2], title_of_plot = "Annual number of new HIV infections", ylab = "New HIV infections") 
-plot_outputs(output_names[3], title_of_plot = "Annual life-years lost to AIDS", ylab = "Life-years lost")
-plot_outputs(output_names[4], title_of_plot = "Annual adult male AIDS-related mortality", ylab = "AIDS-related deaths")
-plot_outputs(output_names[5], title_of_plot = "Annual adult female AIDS-related mortality", ylab = "AIDS-related deaths")
-plot_outputs(output_names[6], title_of_plot = "Total number of adult males with diagnosed HIV", ylab = "HIV diagnosed adults")
-plot_outputs(output_names[7], title_of_plot = "Total number of adult females with diagnosed HIV", ylab = "HIV diagnosed adults")
-plot_outputs(output_names[8], title_of_plot = "Annual number of adults with newly diagnosed HIV", ylab = "New HIV diagnoses")
-plot_outputs(output_names[9], title_of_plot = "Annual number of adults initiating ART", ylab = "Adults initating ART")
-plot_outputs(output_names[10], title_of_plot = "Proportion of HIV tests that are first-time positive", ylab = "Proportion")
-plot_outputs(output_names[11], title_of_plot = "Annual number of first-time diagnoses at ANC", ylab = "New HIV diagnoses")
-plot_outputs(output_names[12], title_of_plot = "Total number of female adults on ART", ylab = "Adults on ART")
-plot_outputs(output_names[13], title_of_plot = "Total number of male adults on ART", ylab = "Adults on ART")
-plot_outputs(output_names[14], title_of_plot = "Annual number of rediagnoses at ANC", ylab = "HIV re-diagnoses")
-plot_outputs(output_names[15], title_of_plot = "Annual number of HIV tests performed at ANC", ylab = "HIV tests")
-plot_outputs(output_name = "TotalAIDSdeathsAdult", title_of_plot = "Annual adult AIDS-related mortality", ylab = "AIDS-related deaths")
-plot_outputs(output_name = "TotalARTAdult", title_of_plot = "Total number of adults on ART", ylab = "Adults on ART")
-plot_outputs(output_name = "TotalDiagnosedHIV", title_of_plot = "Total number of adults with diagnosed HIV", ylab = "HIV diagnosed adults")
-plot_outputs("TotalTestPositivity", title_of_plot = "Percentage of HIV tests that are first-time positive", ylab = "Percentage (%)")
-plot_outputs("ANCTestPositivity", title_of_plot = "Percentage of HIV tests at ANC that are first-time positive", ylab = "Percentage (%)")
-plot_outputs("ARTinitiationRatio", title_of_plot = "Ratio of ART initiation to new HIV diagnoses", ylab = "Ratio")
-plot_outputs("TotalARTRatio", title_of_plot = "Ratio of total number on ART to total number with diagnosed HIV", ylab = "Ratio")
+df %>% filter(
+  scenario != "percent_change",
+  indicator == output_names[1],
+  year >= 2020) %>% 
+  group_by(year, scenario, intervention_year) %>% 
+  summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(year, median, fill = scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, group = scenario), alpha = 0.5) +
+  geom_line(aes(color = scenario)) +
+  geom_vline(intervention_year) +
+  ggtitle(output_names[1]) +
+  xlab("Years") +
+  facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+
+
+
+df %>% filter(indicator == "TotalHIVtests" & parameter_set == 695, year < 2025) %>% 
+  group_by(year, scenario) %>% summarise(mean(value),sd(value))
+
+plot_outputs_with_uncertainty(output_names[1]) + ggtitle("Annual number of HIV tests performed") + ylab("Number of HIV tests")
+plot_outputs_with_uncertainty(output_names[2]) + ggtitle ("Annual number of new HIV infections") + ylab ("New HIV infections") 
+plot_outputs_with_uncertainty(output_names[3]) + ggtitle ("Annual life-years lost to AIDS") + ylab ("Life-years lost")
+plot_outputs_with_uncertainty(output_names[4]) + ggtitle ("Annual adult male AIDS-related mortality") + ylab ("AIDS-related deaths")
+plot_outputs_with_uncertainty(output_names[5]) + ggtitle ("Annual adult female AIDS-related mortality") + ylab ("AIDS-related deaths")
+plot_outputs_with_uncertainty(output_names[6]) + ggtitle ("Total number of adult males with diagnosed HIV") + ylab ("HIV diagnosed adults")
+plot_outputs_with_uncertainty(output_names[7]) + ggtitle ("Total number of adult females with diagnosed HIV") + ylab ("HIV diagnosed adults")
+plot_outputs_with_uncertainty(output_names[8]) + ggtitle ("Annual number of adults with newly diagnosed HIV") + ylab ("New HIV diagnoses")
+plot_outputs_with_uncertainty(output_names[9]) + ggtitle ("Annual number of adults initiating ART") + ylab ("Adults initating ART")
+plot_outputs_with_uncertainty(output_names[10]) + ggtitle ("Proportion of HIV tests that are first-time positive") + ylab ("Proportion")
+plot_outputs_with_uncertainty(output_names[11]) + ggtitle ("Annual number of first-time diagnoses at ANC") + ylab ("New HIV diagnoses")
+plot_outputs_with_uncertainty(output_names[12]) + ggtitle ("Total number of female adults on ART") + ylab ("Adults on ART")
+plot_outputs_with_uncertainty(output_names[13]) + ggtitle ("Total number of male adults on ART") + ylab ("Adults on ART")
+plot_outputs_with_uncertainty(output_names[14]) + ggtitle ("Annual number of rediagnoses at ANC") + ylab ("HIV re-diagnoses")
+plot_outputs_with_uncertainty(output_names[15]) + ggtitle ("Annual number of HIV tests performed at ANC") + ylab ("HIV tests")
+plot_outputs_with_uncertainty("TotalAIDSdeathsadult") + ggtitle ("Annual adult AIDS-related mortality") + ylab ("AIDS-related deaths")
+plot_outputs_with_uncertainty("TotalARTAdult") + ggtitle ("Total number of adults on ART") + ylab ("Adults on ART")
+plot_outputs_with_uncertainty("TotalDiagnosedHIV") + ggtitle ("Total number of adults with diagnosed HIV") + ylab ("HIV diagnosed adults")
+
+
 
 # calculate percentage from baseline for trends
 
-baseline_only <- df %>% 
-  filter(scenario == "baseline")
-intervention_only <- df %>%
-  filter(scenario == "intervention")
-intervention_only$percent_change <- 
-  ((intervention_only$value - baseline_only$value) / baseline_only$value) * 100
+df <- df %>%
+  pivot_wider(names_from = scenario) %>% 
+  mutate(percent_change = ((intervention - baseline)/baseline)*100) %>% 
+  pivot_longer(-(intervention_year:indicator), names_to = "scenario") 
+
+df %>% 
+  filter(scenario == "percent_change",
+         indicator == "TotalNewHIV", 
+         year >= 2020) %>% 
+  group_by(year, intervention_year) %>% 
+  summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(year, median)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.5) +
+  geom_line() +
+  ggtitle("TotalNewHIV") +
+  xlab("Years") + ylab("Change from baseline (%)") +
+  facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+
+
+# baseline_only <- df %>% 
+#   filter(scenario == "baseline")
+# intervention_only <- df %>%
+#   filter(scenario == "intervention")
+# intervention_only$percent_change <- 
+#   ((intervention_only$value - baseline_only$value) / baseline_only$value) * 100
 
 # plot percentage change from baseline 
 
-plot_pct_trend(output_name = output_names[1])
-plot_pct_trend(output_name = output_names[2])
-plot_pct_trend(output_name = output_names[3])
-plot_pct_trend(output_name = output_names[4])
-plot_pct_trend(output_name = output_names[5])
-plot_pct_trend(output_name = output_names[6])
-plot_pct_trend(output_name = output_names[7])
-plot_pct_trend(output_name = output_names[8])
-plot_pct_trend(output_name = output_names[9])
-plot_pct_trend(output_name = output_names[10])
-plot_pct_trend(output_name = output_names[11])
-plot_pct_trend(output_name = output_names[12])
-plot_pct_trend(output_name = output_names[13])
-plot_pct_trend(output_name = output_names[14])
-plot_pct_trend(output_name = output_names[15])
-plot_pct_trend(output_name = "TotalAIDSdeathsAdult")
-plot_pct_trend(output_name = "TotalARTAdult")
-plot_pct_trend(output_name = "TotalDiagnosedHIV")
+intervention_only %>% filter(
+  indicator == output_names[4],
+  year >= 2020) %>% 
+  group_by(year, scenario, intervention_year) %>% 
+  summarise(median = median(percent_change), upper_CI = quantile(percent_change, probs = 0.975), 
+            lower_CI = quantile(percent_change, probs = 0.025)) %>% 
+  ggplot(aes(year, median, fill = scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, group = scenario), alpha = 0.5) +
+  geom_line(aes(color = scenario)) +
+  ggtitle(output_names[1]) +
+  xlab("Years") + ylab("Change from baseline (%)") +
+  facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+
+plot_pct_chg_uncertainty(output_names[1]) + ggtitle("Percentage change of annual HIV tests performed")
+plot_pct_chg_uncertainty(output_names[2]) + ggtitle ("Percentage change of annual new HIV infections")
+plot_pct_chg_uncertainty(output_names[3])
+plot_pct_chg_uncertainty(output_names[4])
+plot_pct_chg_uncertainty(output_names[5])
+plot_pct_chg_uncertainty(output_names[6])
+plot_pct_chg_uncertainty(output_names[7])
+plot_pct_chg_uncertainty(output_names[8])
+plot_pct_chg_uncertainty(output_names[9])
+plot_pct_chg_uncertainty(output_names[11])
+plot_pct_chg_uncertainty(output_names[12])
+plot_pct_chg_uncertainty(output_names[13])
+plot_pct_chg_uncertainty(output_names[14])
+plot_pct_chg_uncertainty(output_names[15])
 
 ## cumulative outputs
 
@@ -268,11 +179,10 @@ plot_pct_trend(output_name = "TotalDiagnosedHIV")
 # start with the baseline results from 2025 to 2045 
 
 df %>%
-  filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2025,
-    years <= 2025+20, 
+    year >= 2025,
+    year <= 2025+20, 
     scenario == "baseline",
     intervention_year == 2025
   ) %>% 
@@ -284,8 +194,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2030,
-    years <= 2030+20, 
+    year >= 2030,
+    year <= 2030+20, 
     scenario == "baseline",
     intervention_year == 2030
   ) %>% 
@@ -301,8 +211,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2035,
-    years <= 2035+20, 
+    year >= 2035,
+    year <= 2035+20, 
     scenario == "baseline",
     intervention_year == 2035
   ) %>% 
@@ -318,8 +228,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2040,
-    years <= 2040+20, 
+    year >= 2040,
+    year <= 2040+20, 
     scenario == "baseline",
     intervention_year == 2040
   ) %>% 
@@ -336,8 +246,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2045,
-    years <= 2045+20, 
+    year >= 2045,
+    year <= 2045+20, 
     scenario == "baseline",
     intervention_year == 2045
   ) %>% 
@@ -354,8 +264,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2050,
-    years <= 2050+20, 
+    year >= 2050,
+    year <= 2050+20, 
     scenario == "baseline",
     intervention_year == 2050
   ) %>% 
@@ -371,8 +281,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2025,
-    years <= 2025+20, 
+    year >= 2025,
+    year <= 2025+20, 
     scenario == "intervention",
     intervention_year == 2025
   ) %>% 
@@ -385,8 +295,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2030,
-    years <= 2030+20, 
+    year >= 2030,
+    year <= 2030+20, 
     scenario == "intervention",
     intervention_year == 2030
   ) %>% 
@@ -399,8 +309,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2035,
-    years <= 2035+20, 
+    year >= 2035,
+    year <= 2035+20, 
     scenario == "intervention",
     intervention_year == 2035
   ) %>% 
@@ -413,8 +323,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2040,
-    years <= 2040+20, 
+    year >= 2040,
+    year <= 2040+20, 
     scenario == "intervention",
     intervention_year == 2040,
   ) %>% 
@@ -427,8 +337,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2045,
-    years <= 2045+20, 
+    year >= 2045,
+    year <= 2045+20, 
     scenario == "intervention",
     intervention_year == 2045
   ) %>% 
@@ -441,8 +351,8 @@ df %>%
   filter(intervention_year <= 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   filter(
-    years >= 2050,
-    years <= 2050+20, 
+    year >= 2050,
+    year <= 2050+20, 
     scenario == "intervention",
     intervention_year == 2050
   ) %>% 

@@ -263,6 +263,7 @@ read_thembisa_results <- function(intervention_years){
 
 plot_outputs_with_uncertainty <- function(output_name){
   df %>% filter(
+    scenario != "percent_change",
     indicator == output_name,
     year >= 2020,
     scenario != "percent_change") %>% 

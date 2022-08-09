@@ -26,29 +26,29 @@ output_names <- c("TotalHIVtests", "TotalNewHIV", "LYlostAIDS",
 
 # create empty folder for results
 
-dir.create("results", FALSE, TRUE)
+dir.create("results_25_years", FALSE, TRUE)
 
 # establish intervention years
-intervention_years <- seq(2025, 2050, 5)
+intervention_years <- seq(2025, 2045, 5)
 
 # run baseline model
 t1 <- Sys.time()
 baseline <- run_thembisa_scenario(NA, output_names)
 
 # save baseline outputs
-write.csv(baseline, "results/baseline.csv", row.names = FALSE)
+write.csv(baseline, "results_25_years/baseline.csv", row.names = FALSE)
 
 # for loop that changes testing rate at different years and saves outputs
 for (intervention_year in intervention_years){
   one_scenario <- run_thembisa_scenario(intervention_year, output_names)
-  write.csv(one_scenario, paste0("results/scenario_", intervention_year, ".csv"),
+  write.csv(one_scenario, paste0("results_25_years/scenario_", intervention_year, ".csv"),
             row.names = FALSE)
 }
 
 # make a new data frame joining all results 
 df <- read_thembisa_results(intervention_years)
-write_csv(df, "results/all_scenarios.csv")
-df <- read_csv("results/all_scenarios.csv")
+write_csv(df, "results_25_years/all_scenarios.csv")
+df <- read_csv("results_25_years/all_scenarios.csv")
 
 t2 <- Sys.time()
 time_elapsed <- t2 - t1
@@ -79,7 +79,7 @@ df <- df %>%
 
 df <- df %>% pivot_wider(names_from = c(indicator, scenario)) %>% 
   mutate(LifeYrsSaved_intervention = 
-    LYlostAIDS_baseline - LYlostAIDS_intervention) %>%
+           LYlostAIDS_baseline - LYlostAIDS_intervention) %>%
   mutate(TestEfficiency_intervention = LifeYrsSaved_intervention / (TotalHIVtests_intervention *1000)) %>% 
   pivot_longer(-(intervention_year:parameter_set), 
                names_to = c("indicator", "scenario"), 
@@ -94,8 +94,8 @@ df <- df %>%
 
 ### write csv of df ####
 
-write.csv(df, "results/df.csv", row.names = FALSE)
-df <- read.csv("results/df.csv")
+write.csv(df, "results_25_years/df.csv", row.names = FALSE)
+df <- read.csv("results_25_years/df.csv")
 
 ### plot yearly outputs #### 
 # for some reason I can't loop over these
@@ -169,18 +169,9 @@ plot_pct_chg_uncertainty("TotalAIDSdeathsadult") + ggtitle ("Adult AIDS-related 
 plot_pct_chg_uncertainty("TotalARTAdult") + ggtitle ("Adults on ART")
 plot_pct_chg_uncertainty("TotalDiagnosedHIV") + ggtitle ("Adults with diagnosed HIV")
 
-df %>% filter(
-  scenario == "baseline",
-  indicator == "TotalDiagnosedHIV",
-  year >= 2030, year <= 2040) %>% 
-  group_by(year, scenario, intervention_year) %>% 
-  summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
-            lower_CI = quantile(value, probs = 0.025)) %>% 
-  summarise(max(median))
-  
 # Cumulative values ####
 
-cumulative_values <- calc_all_cumulatives(intervention_years, 20)
+cumulative_values <- calc_all_cumulatives(intervention_years, 25)
 
 # calculate cumulative percent change from baseline 
 
@@ -210,7 +201,7 @@ cumulative_values %>% filter(
 plot_cumulative_uncertainty()
 
 # plot percentage change  in one grid
-  
+
 plot_cumulative_pct_chg()
 
 # epidemiologic outcomes only 
@@ -232,7 +223,6 @@ plot_cumulative_surv_uncertainty()
 
 plot_cumulative_surv_pct_chg()
 
-# relationship between HIV infections and  new diagnoses
 
 cumulative_values %>% filter(
   scenario != "percent_change", 
@@ -245,4 +235,5 @@ cumulative_values %>% filter(
   geom_point(aes(color = indicator), shape = 15) +
   geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI, color = indicator), width = 0.1) +
   xlab("Years")
+
 

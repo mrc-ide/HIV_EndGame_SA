@@ -1021,7 +1021,7 @@ double RandPrior[MCMCdim]; // Random numbers used to sample from prior in curren
 double Cholesky1[MCMCdim][MCMCdim];
 double Covariance[MCMCdim][MCMCdim]; // The covariance matrix for the MCMC parameters
 const int InitSample = 10000;
-const int ResampleSize = 2;
+const int ResampleSize = 1000;
 int SampleID[ResampleSize];
 int CurrSim;
 double temp[ResampleSize][41]; // Previously local to the SampleInput function in OutputArray class

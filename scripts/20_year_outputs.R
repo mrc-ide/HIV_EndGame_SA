@@ -61,7 +61,10 @@ df <- df %>%
   pivot_wider(names_from = indicator) %>%
   mutate(TotalAIDSdeathsadult = AIDSdeathsAdultF + AIDSdeathsAdultM) %>%
   mutate(TotalARTAdult = TotalART15F + TotalART15M) %>% 
-  mutate(TotalDiagnosedHIV = DiagnosedHIV_F + DiagnosedHIV_M) %>% 
+  mutate(TotalDiagnosedHIV = DiagnosedHIV_F + DiagnosedHIV_M) %>%
+  mutate(NewDiagPerInfection = Number1stHIVtestsPos/ TotalNewHIV) %>% 
+  mutate(NewANCDiagPerInfection = NewDiagnosesPregnancy/TotalNewHIV) %>% 
+  mutate(ARTInitPerNewInfection = StartingARTtot / TotalNewHIV) %>% 
   pivot_longer(-(intervention_year:scenario), names_to = "indicator")
 
 # calculate test positivity for all diagnoses
@@ -122,6 +125,10 @@ plot_outputs_with_uncertainty("Pct1stHIVTestPos") + ggtitle("Test positivity of 
 plot_outputs_with_uncertainty("PctANCTestPos") + ggtitle("Test positivity of ANC HIV tests") + ylab("Positive tests (%)")
 plot_outputs_with_uncertainty("ARTinititationRatio") + ggtitle("Ratio of new diagnoses initiating ART") + ylab("Ratio (ART initiation : new diganoses)")
 plot_outputs_with_uncertainty("TotalARTratio") + ggtitle("Proportion of diagnosed adults on ART") + ylab("Proportion of diagnosed adults on ART")
+plot_outputs_with_uncertainty("NewDiagPerInfection")
+plot_outputs_with_uncertainty("NewANCDiagPerInfection")
+plot_outputs_with_uncertainty("ARTInitPerNewInfection")
+
 
 df %>% filter(
   scenario != "percent_change",
@@ -168,6 +175,10 @@ plot_pct_chg_uncertainty(output_names[15]) + ggtitle ("HIV tests at ANC")
 plot_pct_chg_uncertainty("TotalAIDSdeathsadult") + ggtitle ("Adult AIDS-related mortality")
 plot_pct_chg_uncertainty("TotalARTAdult") + ggtitle ("Adults on ART")
 plot_pct_chg_uncertainty("TotalDiagnosedHIV") + ggtitle ("Adults with diagnosed HIV")
+plot_pct_chg_uncertainty("NewDiagPerInfection") + ggtitle("New HIV diagnoses : new infections")
+plot_pct_chg_uncertainty("NewANCDiagPerInfection") + ggtitle("New HIV diagnoses at ANC : new infections")
+plot_pct_chg_uncertainty("ARTInitPerNewInfection") + ggtitle("ART initation : new infections")
+
 
 df %>% filter(
   scenario == "baseline",
@@ -207,6 +218,16 @@ cumulative_values %>% filter(
 
 # plot all baseline and intervention for all outcomes in one plot
 
+cumulative_values$indicator <- 
+  factor(cumulative_values$indicator, 
+         levels = c("TotalHIVtests","TotalNewHIV",
+                    "TotalAIDSdeathsadult", "LYlostAIDS",
+                    "Number1stHIVtestsPos", "NewDiagnosesPregnancy",
+                    "StartingARTtot", "TotANCtests", "TotalARTratio",
+                    "Pct1stHIVTestPos", "PctANCTestPos","NewDiagPerInfection",
+                    "NewANCDiagPerInfection",
+                    "ARTinititationRatio", "ARTInitPerNewInfection"))
+
 plot_cumulative_uncertainty()
 
 # plot percentage change  in one grid
@@ -216,13 +237,6 @@ plot_cumulative_pct_chg()
 # epidemiologic outcomes only 
 
 plot_cumulative_epi_uncertainty()
-
-cumulative_values$indicator <- 
-  factor(cumulative_values$indicator, 
-         levels = c("TotalHIVtests","TotalNewHIV",
-                    "TotalAIDSdeathsadult", "LYlostAIDS",
-                    "Number1stHIVtestsPos", "NewDiagnosesPregnancy",
-                    "StartingARTtot", "TotANCtests"))
 
 plot_cumulative_epi_pct_chg()
 

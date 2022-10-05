@@ -236,30 +236,17 @@ run_thembisa_scenario <- function(intervention_year, output_names){
   read_thembisa_scenario(output_names)
 }
 
-# dir.create("results", FALSE, TRUE)
-# intervention_years <- seq(2025, 2050, 5)
-# baseline <- run_thembisa_scenario(NA, output_names)
-# write.csv(baseline, "results/baseline.csv", row.names = FALSE)
-
-# for (intervention_year in intervention_years){
-#   temp <- run_thembisa_scenario(intervention_year, output_names)
-#   write.csv(temp, paste0("results/scenario_", intervention_year, ".csv"),
-#             row.names = FALSE)
-# }
-
 read_thembisa_results <- function(intervention_years){
-  filepaths <- paste0("results/scenario_", intervention_years, ".csv")
+  filepaths <- paste0("results_three_quarter_rate/scenario_", intervention_years, ".csv")
   temp <- lapply(filepaths, read.csv)
   names(temp) <- intervention_years
-  baseline <- read.csv("results/baseline.csv")
+  baseline <- read.csv("results_three_quarter_rate/baseline.csv")
   bind_rows(temp, .id = "intervention_year") %>% 
     dplyr::rename(intervention = value) %>% 
     dplyr::left_join(baseline) %>% 
     dplyr::rename(baseline = value) %>% 
     tidyr::pivot_longer(c(intervention, baseline), names_to = "scenario")
 }
-
-# df <- read_thembisa_results(intervention_years)
 
 plot_outputs_with_uncertainty <- function(output_name){
   df %>% filter(
@@ -274,7 +261,7 @@ plot_outputs_with_uncertainty <- function(output_name){
     geom_line(aes(color = scenario)) +
     ggtitle(output_name) +
     xlab("Years") +
-    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
 }
 
 plot_pct_chg_uncertainty <- function(output_name){
@@ -293,8 +280,8 @@ plot_pct_chg_uncertainty <- function(output_name){
     facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
 }
 
-calc_cumulative <- function(year, follow_up_years){
-  end_year <- year + follow_up_years
+calc_cumulative <- function(start_year, follow_up_years){
+  end_year <- start_year + follow_up_years
   df %>%
     filter(
       indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
@@ -302,14 +289,14 @@ calc_cumulative <- function(year, follow_up_years){
       indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
       indicator != "TotalART15M", indicator != "TotalART15F",
       indicator != "TotalARTAdult", scenario != "percent_change", 
-      indicator!= "TotalDiagnosedHIV",
-      year >= year,
+      indicator != "TotalDiagnosedHIV", indicator!= "ARTinititationRatio", 
+      indicator != "ARTInitPerNewInfection",
+      year >= start_year,
       year <= end_year,
-      intervention_year == year
+      intervention_year == start_year
     )  %>% 
     group_by(indicator, intervention_year, scenario, parameter_set) %>% 
-    summarise(cumulative = sum(value)) %>% 
-    filter(intervention_year == year)
+    summarise(cumulative = sum(value))
 }
 
 calc_all_cumulatives <- function(intervention_years, follow_up_years){
@@ -365,9 +352,9 @@ plot_cumulative_pct_chg <- function(){
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
     ggplot(aes(intervention_year, median, fill = scenario)) +
-    geom_point(aes(), shape = 15, color = , fill = "#00BFC4") +
+    geom_point(aes(), shape = 15 , color = "#00BFC4") +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
-    xlab("Years") + ylab("Median change from baseline (%)") +
+    xlab("Years") + ylab("Change from baseline (%)") +
     facet_wrap(~indicator, scales = "free_y",  
                labeller = labeller(indicator = c(
                  "LYlostAIDS" = "Life-years lost to AIDS", 
@@ -389,20 +376,19 @@ plot_cumulative_pct_chg <- function(){
     expand_limits(y=0) + theme_bw()
 }
 
-plot_cumulative_epi_uncertainty <- function(indicators){
-  cumulative_values %>% filter(
+plot_cumulative_epi_uncertainty <- function(df){
+    df %>% filter(
     scenario != "percent_change", 
-    indicator == "TotalNewHIV" | 
+    indicator == "NewAdultHIV" | 
     indicator == "LYlostAIDS" | 
-    indicator =="TotalAIDSdeathsadult" | 
-    indicator == "TotalHIVtests") %>% 
+    indicator =="TotalAIDSdeathsadult") %>% 
     group_by(indicator, intervention_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
     ggplot(aes(intervention_year, median, fill = scenario)) +
     geom_point(aes(color = scenario), shape = 15) +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI, color = scenario), width = 0.1) +
-    xlab("Years") + ylab("Median (IQR)") +
+    xlab("Years") + ylab("Cumulative value") +
     facet_wrap(~indicator, scales = "free_y", 
                labeller = labeller(indicator = c(
                  "LYlostAIDS" = "Life-years lost to AIDS", 
@@ -410,7 +396,7 @@ plot_cumulative_epi_uncertainty <- function(indicators){
                  "Number1stHIVtestsPos" = "First-time diagnoses",
                  "RediagnosesPregnancy" = "Re-diagnoses at ANC",
                  "StartingARTtot" = "ART inititation",
-                 "TotalAIDSdeathsadult" = "AIDS-related mortality",
+                 "TotalAIDSdeathsadult" = "AIDS-related deaths in adults",
                  "TotalHIVtests" = "Total HIV tests",
                  "TotalNewHIV" = "New HIV infections",
                  "TotANCtests" = "HIV tests at ANC",
@@ -420,24 +406,24 @@ plot_cumulative_epi_uncertainty <- function(indicators){
                  "NewDiagPerInfection" = "New diagnosis : New infections",
                  "Pct1stHIVTestPos" = "Percentage first test positive",
                  "PctANCTestPos" = "Percentage first test positive at ANC",
-                 "TotalARTratio" = "Total ART : Total HIV diagnoses"))) + 
-    expand_limits(y=0) + theme_bw()
+                 "TotalARTratio" = "Total ART : Total HIV diagnoses",
+                 "NewAdultHIV" = "New HIV infections in adults")),nrow = 3) + 
+    expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
 }
 
-plot_cumulative_epi_pct_chg <- function(){
-  cumulative_values %>% filter(
+plot_cumulative_epi_pct_chg <- function(df){
+  df %>% filter(
     scenario == "percent_change", 
-    indicator == "TotalNewHIV" | 
+    indicator == "NewAdultHIV" | 
       indicator == "LYlostAIDS" | 
-      indicator =="TotalAIDSdeathsadult" | 
-      indicator == "TotalHIVtests") %>% 
+      indicator =="TotalAIDSdeathsadult") %>% 
     group_by(indicator, intervention_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median)) +
+    ggplot(aes(intervention_year, median, fill = scenario)) +
     geom_point(shape = 15, color = "#00BFC4") +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
-    xlab("Years") + ylab("Median change from baseline (%)") +
+    xlab("Years") + ylab("Change from baseline (%)") +
     facet_wrap(~indicator, scales = "free_y",  
                labeller = labeller(indicator = c(
                  "LYlostAIDS" = "Life-years lost to AIDS", 
@@ -445,7 +431,7 @@ plot_cumulative_epi_pct_chg <- function(){
                  "Number1stHIVtestsPos" = "First-time diagnoses",
                  "RediagnosesPregnancy" = "Re-diagnoses at ANC",
                  "StartingARTtot" = "ART inititation",
-                 "TotalAIDSdeathsadult" = "AIDS-related mortality",
+                 "TotalAIDSdeathsadult" = "AIDS-related deaths in adults",
                  "TotalHIVtests" = "Total HIV tests",
                  "TotalNewHIV" = "New HIV infections",
                  "TotANCtests" = "HIV tests at ANC",
@@ -455,8 +441,9 @@ plot_cumulative_epi_pct_chg <- function(){
                  "NewDiagPerInfection" = "New diagnosis : New infections",
                  "Pct1stHIVTestPos" = "Percentage first test positive",
                  "PctANCTestPos" = "Percentage first test positive at ANC",
-                 "TotalARTratio" = "Total ART : Total HIV diagnoses"))) +
-    expand_limits(y=0) + theme_bw()
+                 "TotalARTratio" = "Total ART : Total HIV diagnoses",
+                 "NewAdultHIV" = "New HIV infections in adults")),nrow = 3) +
+    expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
 }
 
 plot_cumulative_surv_uncertainty <- function(indicators){
@@ -508,7 +495,7 @@ plot_cumulative_surv_pct_chg <- function(){
     ggplot(aes(intervention_year, median)) +
     geom_point(shape = 15, color = "#00BFC4") +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
-    xlab("Years") + ylab("Median change from baseline (%)") +
+    xlab("Years") + ylab("Change from baseline (%)") +
     facet_wrap(~indicator, scales = "free_y",  
                labeller = labeller(indicator = c(
                  "LYlostAIDS" = "Life-years lost to AIDS", 
@@ -528,4 +515,71 @@ plot_cumulative_surv_pct_chg <- function(){
                  "PctANCTestPos" = "Percentage first test positive at ANC",
                  "TotalARTratio" = "Total ART : Total HIV diagnoses"))) +
     expand_limits(y=0) + theme_bw()
+}
+
+plot_cumulative_diag_uncertainty <- function(df){
+    df %>% filter(
+    scenario != "percent_change", 
+    indicator == "Number1stHIVtestsPos" | 
+    indicator == "NewDiagnosesPregnancy") %>% 
+    group_by(indicator, intervention_year, scenario) %>% 
+    summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
+              lower_CI = quantile(value, probs = 0.025)) %>% 
+    ggplot(aes(intervention_year, median, fill = scenario)) +
+    geom_point(aes(color = scenario), shape = 15) +
+    geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI, color = scenario), width = 0.1) +
+    xlab("Years") + ylab("New HIV diagnoses") +
+    facet_wrap(~indicator, scales = "free_y", 
+               labeller = labeller(indicator = c(
+                 "LYlostAIDS" = "Life-years lost to AIDS", 
+                 "NewDiagnosesPregnancy" = "New HIV diagnoses at ANC",
+                 "Number1stHIVtestsPos" = "New HIV diagnoses in adults",
+                 "RediagnosesPregnancy" = "Re-diagnoses at ANC",
+                 "StartingARTtot" = "ART inititation",
+                 "TotalAIDSdeathsadult" = "AIDS-related mortality",
+                 "TotalHIVtests" = "Total HIV tests",
+                 "TotalNewHIV" = "New HIV infections",
+                 "TotANCtests" = "HIV tests at ANC",
+                 "ARTinititationRatio" = "ART initation : New diagnoses",
+                 "ARTInitPerNewInfection" = "ART initation : New infections",
+                 "NewANCDiagPerInfection" = "New ANC diagnosis : New infections",
+                 "NewDiagPerInfection" = "New diagnosis : New infections",
+                 "Pct1stHIVTestPos" = "Percentage first test positive",
+                 "PctANCTestPos" = "Percentage first test positive at ANC",
+                 "TotalARTratio" = "Total ART : Total HIV diagnoses")), nrow = 2) + 
+    expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
+}
+
+
+plot_cumulative_diag_pct_chg <- function(df){
+    df %>% filter(
+    scenario == "percent_change", 
+    indicator == "Number1stHIVtestsPos" | 
+      indicator == "NewDiagnosesPregnancy") %>% 
+    group_by(indicator, intervention_year, scenario) %>% 
+    summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
+              lower_CI = quantile(value, probs = 0.025)) %>% 
+    ggplot(aes(intervention_year, median, color = scenario)) +
+    geom_point(shape = 15, color = "#00BFC4") +
+    geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
+    xlab("Years") + ylab("Change from baseline (%)") +
+    facet_wrap(~indicator, scales = "free_y",  
+               labeller = labeller(indicator = c(
+                 "LYlostAIDS" = "Life-years lost to AIDS", 
+                 "NewDiagnosesPregnancy" = "New HIV diagnoses at ANC",
+                 "Number1stHIVtestsPos" = "New HIV diagnoses in adults",
+                 "RediagnosesPregnancy" = "Re-diagnoses at ANC",
+                 "StartingARTtot" = "ART inititation",
+                 "TotalAIDSdeathsadult" = "AIDS-related mortality",
+                 "TotalHIVtests" = "Total HIV tests",
+                 "TotalNewHIV" = "New HIV infections",
+                 "TotANCtests" = "HIV tests at ANC",
+                 "ARTinititationRatio" = "ART initation : New diagnoses",
+                 "ARTInitPerNewInfection" = "ART initation : New infections",
+                 "NewANCDiagPerInfection" = "New ANC diagnosis : New infections",
+                 "NewDiagPerInfection" = "New diagnosis : New infections",
+                 "Pct1stHIVTestPos" = "Percentage first test positive",
+                 "PctANCTestPos" = "Percentage first test positive at ANC",
+                 "TotalARTratio" = "Total ART : Total HIV diagnoses")), nrow =2) +
+    expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
 }

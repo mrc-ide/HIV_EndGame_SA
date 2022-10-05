@@ -13,6 +13,24 @@ source("R/support_modify_inputs.R")
 source("scripts/modify_rollout.R")
 source("R/read_and_run.R")
 
+run_thembisa_scenario <- function(intervention_year, output_names){
+  ## read in input parameter file
+  data <- readLines("THEMBISAv18/Rollout_Original.txt")
+  ## write unedited input parameter file
+  formatted_data <- format_data(data, dictionary)
+  if (!is.na(intervention_year)){
+    formatted_data <- edit_formatted_data("rate_first_test_neg_fem_under_25", 
+                                          new_values = 0.14385, 
+                                          starting_year = intervention_year)
+  }
+  rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
+  write(rollout, "THEMBISAv18/Rollout.txt")
+  ## compile and model
+  run_thembisa()
+  read_thembisa_scenario(output_names)
+}
+
+
 #### Make empty dataframe for outputs ####
 
 # names of all the outputs of interest
@@ -27,7 +45,7 @@ output_names <- c("TotalHIVtests", "NewAdultHIV",
 
 # create empty folder for results
 
-dir.create("results", FALSE, TRUE)
+dir.create("results_three_quarter_rate", FALSE, TRUE)
 
 # establish intervention years
 intervention_years <- seq(2025, 2050, 5)
@@ -37,19 +55,19 @@ t1 <- Sys.time()
 baseline <- run_thembisa_scenario(NA, output_names)
 
 # save baseline outputs
-write.csv(baseline, "results/baseline.csv", row.names = FALSE)
+write.csv(baseline, "results_three_quarter_rate/baseline.csv", row.names = FALSE)
 
 # for loop that changes testing rate at different years and saves outputs
 for (intervention_year in intervention_years){
   one_scenario <- run_thembisa_scenario(intervention_year, output_names)
-  write.csv(one_scenario, paste0("results/scenario_", intervention_year, ".csv"),
+  write.csv(one_scenario, paste0("results_three_quarter_rate/scenario_", intervention_year, ".csv"),
             row.names = FALSE)
 }
 
 # make a new data frame joining all results 
 df <- read_thembisa_results(intervention_years)
-write_csv(df, "results/all_scenarios.csv")
-df <- read_csv("results/all_scenarios.csv")
+write_csv(df, "results_three_quarter_rate/all_scenarios.csv")
+df <- read_csv("results_three_quarter_rate/all_scenarios.csv")
 
 t2 <- Sys.time()
 time_elapsed <- t2 - t1
@@ -78,14 +96,13 @@ df <- df %>%
   mutate(PctANCTestPos = (NewDiagnosesPregnancy /TotANCtests)*100 ) %>% 
   mutate(PropAdultsDiag = TotalDiagnosedHIV / TotHIV15) %>% 
   mutate(TotalARTratio = TotalARTAdult / TotalDiagnosedHIV) %>% 
-  mutate(TotalAdultsOnART = TotalARTAdult / TotHIV15) %>% 
   pivot_longer(-(intervention_year:scenario), names_to = "indicator")
 
 df <- df %>% pivot_wider(names_from = c(indicator, scenario)) %>% 
   mutate(LifeYrsSaved_intervention = LYlostAIDS_baseline - LYlostAIDS_intervention) %>%
-  mutate(TestEfficiencyLYS_intervention = ((LYlostAIDS_baseline - LYlostAIDS_intervention) / (TotalHIVtests_intervention - TotalHIVtests_baseline) ) *1000) %>% 
+  mutate(TestEfficiencyLYS_intervention = (LifeYrsSaved_intervention / TotalHIVtests_intervention) *1000) %>% 
   mutate(InfectionsAverted_intervention = NewAdultHIV_baseline - NewAdultHIV_intervention) %>%
-  mutate(TestEfficiencyIA_intervention = ((NewAdultHIV_baseline - NewAdultHIV_intervention) / (TotalHIVtests_intervention - TotalHIVtests_baseline)) *1000) %>% 
+  mutate(TestEfficiencyIA_intervention = (InfectionsAverted_intervention / TotalHIVtests_intervention) *1000) %>% 
   pivot_longer(-(intervention_year:parameter_set), 
                names_to = c("indicator", "scenario"), 
                names_pattern = "(.+)_(baseline|intervention|percent_change)")
@@ -99,15 +116,14 @@ df <- df %>%
 
 ### write csv of df ####
 
-write.csv(df, "results/df.csv", row.names = FALSE)
-df <- read.csv("results/df.csv")
+write.csv(df, "results_three_quarter_rate/df.csv", row.names = FALSE)
+df <- read.csv("results_three_quarter_rate/df.csv")
 
 ### plot yearly outputs #### 
 # for some reason I can't loop over these
 
 # testing
-plot_outputs_with_uncertainty(output_names[1]) + ggtitle ("") + scale_y_continuous("Number of HIV tests (millions)", breaks = c(0, 10e6, 20e6, 30e6), labels = c(0, 10, 20, 30))
-plot_outputs_with_uncertainty("TotANCtests") + ggtitle ("") + scale_y_continuous("Number of HIV tests (millions)", breaks = c(0, 0.5e6, 1e6, 1.5e6, 2e6), labels = c(0, 0.5, 1, 1.5, 2))
+plot_outputs_with_uncertainty(output_names[1]) + ggtitle ("") + ylab("Number of HIV tests")
 
 # epidemiologic outcomes
 plot_outputs_with_uncertainty(output_names[2]) + ggtitle ("") + ylab ("New HIV infections") 
@@ -118,13 +134,11 @@ plot_outputs_with_uncertainty("TotalAIDSdeathsadult") + ggtitle ("") + ylab ("AI
 plot_outputs_with_uncertainty(output_names[8]) + ggtitle ("") + ylab ("New HIV diagnoses")
 plot_outputs_with_uncertainty(output_names[11]) + ggtitle ("") + ylab ("New HIV diagnoses")
 plot_outputs_with_uncertainty("TotalDiagnosedHIV") + ggtitle ("") + ylab ("HIV diagnosed adults")
-plot_outputs_with_uncertainty("TotHIV15") + ggtitle ("") + ylab ("Adults with HIV")
 
 # test positivity
 
 plot_outputs_with_uncertainty("Pct1stHIVTestPos") + ggtitle("") + ylab("Positive tests (%)")
 plot_outputs_with_uncertainty("PctANCTestPos") + ggtitle("") + ylab("Positive tests (%)")
-
 
 #diagnoses to infections 
 
@@ -133,7 +147,7 @@ plot_outputs_with_uncertainty("NewANCDiagPerInfection")+ ggtitle("") + ylab("New
 
 # 90-90-90
 
-plot_outputs_with_uncertainty("PropAdultsDiag") + ggtitle("") + ylab("Proportion of adults with HIV who know their status")
+plot_outputs_with_uncertainty("PropAdultsDiag") + ggtitle("") + ylab("Proportion of adults with HIV")
 plot_outputs_with_uncertainty("TotalARTratio") + ggtitle("") + ylab("Proportion of HIV diagnosed adults")
 plot_outputs_with_uncertainty("VLsuppressed") + ggtitle("") + ylab("Proportion of adults on ART")
 
@@ -212,7 +226,7 @@ plot_pct_chg_uncertainty("TotalDiagnosedHIV") + ggtitle ("Adults with diagnosed 
 plot_pct_chg_uncertainty("NewDiagPerInfection") + ggtitle("New HIV diagnoses : new infections")
 plot_pct_chg_uncertainty("NewANCDiagPerInfection") + ggtitle("New HIV diagnoses at ANC : new infections")
 plot_pct_chg_uncertainty("TotalARTratio")
-  
+
 # Cumulative values over 20 years ####
 
 cumulative_values <- calc_all_cumulatives(intervention_years, 20)
@@ -224,12 +238,12 @@ cumulative_values <- cumulative_values %>%
   mutate(percent_change = ((intervention - baseline)/baseline)*100) %>% 
   pivot_longer(-(indicator:parameter_set), names_to = "scenario") 
 
-# test efficiency
+ # test efficiency
 
 cumulative_values %>% filter(
   scenario != "percent_change", 
   indicator == "TestEfficiencyLYS" |
-  indicator == "TestEfficiencyIA",
+    indicator == "TestEfficiencyIA",
   scenario == "intervention") %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
@@ -240,16 +254,17 @@ cumulative_values %>% filter(
   xlab("Years") + ylab("Test efficiency") +
   facet_wrap(~indicator, scales = "free_y", 
              labeller = labeller(indicator = c(
-               "TestEfficiencyLYS" = "Additional life years lost per 1000 tests",
-               "TestEfficiencyIA" = "Additional infections per 1000 tests",
+               "TestEfficiencyLYS" = "Life years saved per 1000 tests",
+               "TestEfficiencyIA" = "Infections averted per 1000 tests",
                "LifeYrsSaved" = "Life years saved",
                "InfectionsAverted" = "Infections averted",
                "TotalHIVtests" = "HIV tests"))) + 
-  expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
+  expand_limits(y=0) + theme_bw()
 
 cumulative_values %>% filter(
   scenario != "percent_change", 
-  indicator == "TotalHIVtests",
+  indicator == "TestEfficiencyLYS" |
+    indicator == "TotalHIVtests",
   scenario == "intervention") %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
@@ -270,16 +285,14 @@ cumulative_values$indicator <-
 plot_cumulative_uncertainty()
 
 # plot percentage change  in one grid
-  
+
 plot_cumulative_pct_chg()
 
 # epidemiologic outcomes only 
 
-p3 <- plot_cumulative_epi_uncertainty(cumulative_values) + ggtitle("") + scale_y_continuous("Cumulative values (millions)", labels = (function(l) {round(l/1e6,1)})) 
+plot_cumulative_epi_uncertainty(cumulative_values) + ggtitle("")
 
-p4 <- plot_cumulative_epi_pct_chg(cumulative_values) + ggtitle("")
-
-grid.arrange(p3, p4, nrow = 1)
+plot_cumulative_epi_pct_chg(cumulative_values) + ggtitle("")
 
 epi_cumulative_value <- cumulative_values %>% filter(
   scenario != "percent_change", 
@@ -305,26 +318,23 @@ write_csv(epi_pct_chg, "epi_pct_chg.csv")
 
 # cumulative new diagnoses
 
+plot_cumulative_diag_uncertainty(cumulative_values)
 
-p1 <- plot_cumulative_diag_uncertainty(cumulative_values) + scale_y_continuous("HIV diagnoses (millions)", labels = (function(l) {round(l/1e6,1)})) 
-
-p2 <- plot_cumulative_diag_pct_chg(cumulative_values)
-
-grid.arrange(p1, p2, nrow = 1)
+plot_cumulative_diag_pct_chg(cumulative_values)
 
 diag_cumulative <- cumulative_values %>% filter(
-    scenario != "percent_change", 
-    indicator == "Number1stHIVtestsPos" | 
+  scenario != "percent_change", 
+  indicator == "Number1stHIVtestsPos" | 
     indicator == "NewDiagnosesPregnancy") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
-    summarise(median = median(value),lower_CI = quantile(value, probs = 0.025), 
-              upper_CI = quantile(value, probs = 0.975), 
-              )
+  group_by(indicator, intervention_year, scenario) %>% 
+  summarise(median = median(value),lower_CI = quantile(value, probs = 0.025), 
+            upper_CI = quantile(value, probs = 0.975), 
+  )
 
 diag_cum_pct_chg <- cumulative_values %>% filter(
   scenario == "percent_change", 
   indicator == "Number1stHIVtestsPos" | 
-  indicator == "NewDiagnosesPregnancy") %>% 
+    indicator == "NewDiagnosesPregnancy") %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   summarise(median = median(value),lower_CI = quantile(value, probs = 0.025), 
             upper_CI = quantile(value, probs = 0.975), 
@@ -377,15 +387,15 @@ cumulative_values_25 <- cumulative_values_25 %>%
 
 # epidemiologic outcomes only 
 
-plot_cumulative_epi_uncertainty(cumulative_values_25) + ggtitle("") 
+plot_cumulative_epi_uncertainty(cumulative_values_25) + ggtitle("")
 
 plot_cumulative_epi_pct_chg(cumulative_values_25) + ggtitle("")
 
 epi_cumulative_value_25 <- cumulative_values_25 %>% filter(
   scenario != "percent_change", 
   indicator == "NewAdultHIV" | 
-  indicator == "LYlostAIDS" | 
-  indicator =="TotalAIDSdeathsadult", 
+    indicator == "LYlostAIDS" | 
+    indicator =="TotalAIDSdeathsadult", 
   intervention_year != 2050) %>% 
   group_by(indicator, intervention_year, scenario) %>% 
   summarise(median = median(value), 
@@ -488,130 +498,3 @@ diag_cum_pct_chg_30 <- cumulative_values_30 %>% filter(
   group_by(indicator, intervention_year, scenario) %>% 
   summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
             lower_CI = quantile(value, probs = 0.025))
-
-# quick calculation of the % of adults that were tested
-
-output <- read.delim("/Users/stefanrautenbach/Documents/Imperial/Research_project/Thembisa/THEMBISAv18/MalesOver15.txt", header=FALSE, row.names = 1)
-output <- output %>% select(-V2)
-t_output <- t(output)
-output_new <- as.data.frame(as_tibble(t_output))
-names(output_new) <- seq_along(output_new)
-output_new$year <- seq(1985, 2070)
-total_males <- pivot_longer(output_new, -year, names_to = "parameter_set")
-
-output <- read.delim("/Users/stefanrautenbach/Documents/Imperial/Research_project/Thembisa/THEMBISAv18/FemalesOver15.txt", header=FALSE, row.names = 1)
-output <- output %>% select(-V2)
-t_output <- t(output)
-output_new <- as.data.frame(as_tibble(t_output))
-names(output_new) <- seq_along(output_new)
-output_new$year <- seq(1985, 2070)
-total_females <- pivot_longer(output_new, -year, names_to = "parameter_set")
-
-
-total_adults <- left_join(total_males, total_females, by = c("year", "parameter_set"), suffix =c("_males", "_females"))
-total_adults <- total_adults %>% mutate(total_adults = value_males + value_females) %>% filter(year >= 2020)
-total_adults$parameter_set <- as.integer(total_adults$parameter_set)
-total_test <- df %>% filter(indicator == "TotalHIVtests", parameter_set <= 10, scenario == "baseline", year >= 2020, intervention_year == 2025)
-
-pct_adults_tested <- left_join(total_test, total_adults, by = c("year", "parameter_set")) %>% 
-  mutate(pct_tested = (value / total_adults) *100)
-
-pct_adults_tested %>% filter(year == 2020 | year == 2070) %>% group_by(indicator, intervention_year, year, scenario) %>% 
-  summarise(median = median(pct_tested), upper_CI = quantile(pct_tested, probs = 0.975), 
-            lower_CI = quantile(pct_tested, probs = 0.025))
-
-df %>% filter(indicator == "TotalHIVtests", scenario == "baseline", intervention_year == 2025, year == 2020 | year == 2070, indicator == "TotalHIVtests") %>%
-  group_by(indicator, intervention_year, year, scenario) %>% 
-  summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
-            lower_CI = quantile(value, probs = 0.025))
-
-df %>% filter(indicator == "TotalHIVtests", 
-              year == 2020 | year == 2070, 
-              intervention_year == 2025, 
-              scenario == "baseline") %>%
-  group_by(indicator, intervention_year, year, scenario) %>% 
-  summarise(median = median(value), lower_CI = quantile(value, probs = 0.025),
-            upper_CI = quantile(value, probs = 0.975)
-            )
-
-cumulative_values %>% filter(indicator == "NewAdultHIV",
-                             intervention_year == 2025,
-                             scenario != "percent_change") %>% 
-  pivot_wider(names_from = "scenario") %>% 
-  mutate(difference = intervention - baseline) %>% 
-  select(-c(intervention, baseline)) %>% 
-  group_by(indicator, intervention_year) %>% 
-  summarise(median = median(difference), upper_CI = quantile(difference, probs = 0.975), 
-            lower_CI = quantile(difference, probs = 0.025))
-
-
-cumulative_values %>% filter(indicator == "NewAdultHIV",
-                             intervention_year == 2040,
-                             scenario != "percent_change") %>% 
-  pivot_wider(names_from = "scenario") %>% 
-  mutate(difference = intervention - baseline) %>% 
-  select(-c(intervention, baseline)) %>% 
-  group_by(indicator, intervention_year) %>% 
-  summarise(median = median(difference), upper_CI = quantile(difference, probs = 0.975), 
-            lower_CI = quantile(difference, probs = 0.025))
-
-cumulative_values %>% filter(indicator == "NewAdultHIV",
-                             intervention_year == 2045,
-                             scenario != "percent_change") %>% 
-  pivot_wider(names_from = "b") %>% 
-  mutate(difference = intervention - baseline) %>% 
-  select(-c(intervention, baseline)) %>% 
-  group_by(indicator, intervention_year) %>% 
-  summarise(median = median(difference), upper_CI = quantile(difference, probs = 0.975), 
-            lower_CI = quantile(difference, probs = 0.025))
-
-cumulative_values %>% filter(indicator == "NewAdultHIV",
-                             intervention_year == 2050,
-                             scenario != "percent_change") %>% 
-  pivot_wider(names_from = "scenario") %>% 
-  mutate(difference = intervention - baseline) %>% 
-  select(-c(intervention, baseline)) %>% 
-  group_by(indicator, intervention_year) %>% 
-  summarise(median = median(difference), upper_CI = quantile(difference, probs = 0.975), 
-            lower_CI = quantile(difference, probs = 0.025))
-  
-
-
-df %>% filter(indicator == "VLsuppressed", 
-              year == 2050 | year >= 2050 & year <= 2060 | year == 2070,
-              intervention_year == 2050, 
-              scenario == "baseline" | scenario == "intervention") %>% 
-  pivot_wider(names_from = "scenario") %>%
-  mutate(difference = intervention - baseline) %>% 
-  select(-c(intervention, baseline)) %>% 
-  group_by(indicator, intervention_year, year) %>% 
-  summarise(median = median(difference), 
-            lower_CI = quantile(difference, probs = 0.025),
-            upper_CI = quantile(difference, probs = 0.975))
-
-
-cumulative_values %>% filter(indicator == "LYlostAIDS",
-                             intervention_year == 2025,
-                             scenario != "percent_change") %>% 
-  pivot_wider(names_from = "scenario") %>% 
-  mutate(difference = intervention - baseline) %>% 
-  select(-c(intervention, baseline)) %>% 
-  group_by(indicator, intervention_year) %>% 
-  summarise(median = median(difference), upper_CI = quantile(difference, probs = 0.975), 
-            lower_CI = quantile(difference, probs = 0.025))
-
-cumulative_values %>% filter(indicator == "TestEfficiencyIA",
-                             intervention_year == 2025 | intervention_year == 2050,
-                             scenario == "intervention") %>% 
-  group_by(indicator, intervention_year) %>% 
-  summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
-            lower_CI = quantile(value, probs = 0.025))
-
-df %>% filter(indicator == "LYlostAIDS", 
-              year == 2050 | year == 2051 | year == 2052 | year == 2053 | year == 2054, 
-              intervention_year == 2050, 
-              scenario == "intervention") %>%
-  group_by(indicator, intervention_year, year, scenario) %>% 
-  summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
-            lower_CI = quantile(value, probs = 0.025))
-

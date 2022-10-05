@@ -16404,7 +16404,8 @@ void RunSample()
     // NegFSW.RecordSample("NegFSW.txt");
     // PrevClients.RecordSample("PrevClients.txt");
     // NegClients.RecordSample("NegClients.txt");
-	// TotalHIV.RecordSample("TotalHIV.txt");
+	TotalHIV.RecordSample("TotalHIV.txt");
+    TotHIV15.RecordSample("TotHIV15.txt");
     // Prev15to24.RecordSample("Prev15to24.txt");
     // Prev15to49.RecordSample("Prev15to49.txt");
     // Prev25plus.RecordSample("Prev25plus.txt");
@@ -16430,7 +16431,7 @@ void RunSample()
 	// Write HIV incidence outputs to text files
     // NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
     // NewHIVclients.RecordSample("NewHIVclients.txt");
-    // NewAdultHIV.RecordSample("NewAdultHIV.txt");
+    NewAdultHIV.RecordSample("NewAdultHIV.txt");
 	/*HIVinc15to49.RecordSample("HIVinc15to49.txt");
 	HIVinc15to49M.RecordSample("HIVinc15to49M.txt");
 	HIVinc15to49F.RecordSample("HIVinc15to49F.txt");
@@ -16539,9 +16540,9 @@ void RunSample()
 	TotUnmet15M.RecordSample("TotUnmet15M.txt");
 	TotUnmetUnder15.RecordSample("TotUnmetUnder15.txt");
 	TotNewNeed15F.RecordSample("TotNewNeed15F.txt");
-	TotNewNeed15M.RecordSample("TotNewNeed15M.txt");
+	TotNewNeed15M.RecordSample("TotNewNeed15M.txt");*/
 	VLsuppressed.RecordSample("VLsuppressed.txt");
-	ARTerror.RecordSample("ARTerror.txt");
+	/*ARTerror.RecordSample("ARTerror.txt");
 	AdultRootM.RecordSample("AdultRootM.txt");
 	AdultRootF.RecordSample("AdultRootF.txt");
 	AgeDbnOnART_M.RecordSample("AgeDbnOnART_M.txt");

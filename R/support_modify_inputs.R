@@ -29,11 +29,8 @@ create_data_dictionary <- function(data) {
 
 
 save_dictionary <- function(dictionary, file) {
-  if (file.exists(file)) {
-    message(sprintf("%s already exists, delete manually to overwrite", file))
-  } else {
-    write.csv(rollout_dictionary, file, row.names = FALSE)
-  }
+  write.csv(rollout_dictionary, file, row.names = FALSE)
+  
 }
 
 ## Convert Thembisa inputs into easily modifiable format

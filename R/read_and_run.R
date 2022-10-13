@@ -10,21 +10,7 @@ run_thembisa <- function(){
   setwd("/Users/stefan/Documents/HIV_EndGame_SA")
 }
 
-# Read output from Thembisa and assign column headers
-read_output <- function(output_name){
-  # Import output txt
-  output_txt <- paste(output_name, "txt", sep = ".")
-  output_txt <- paste("THEMBISAv18", output_txt, sep = "/")
-  output <- read.delim(output_txt, header=FALSE, row.names = 1)
-  names(output)[2:87] <- seq(1985, 2070)
-  # names(output)[1] <- "Simulation"
-  output <- output %>% select(-V2) 
-  t_output <- as.data.frame(t(output))
-  output <- as.data.frame(as_tibble(t_output, rownames = "Year"))
-  output$Year <- as.numeric(output$Year)
-  names(output)[2] <- "Simulation_1"
-  return(output$Simulation_1)
-}
+#change values of one parameter
 
 edit_formatted_data <- function(parameter_name, new_values, starting_year=1985, final_year=2070){
   # select parameter using dictionary
@@ -61,7 +47,6 @@ edit_formatted_data_incremental <- function(parameter_name, new_values, starting
   parameter -> formatted_data$data[,which(dictionary$name == parameter_name)]
   return(formatted_data)
 }
-
 
 read_thembisa_output <- function(output_name){
   output_txt <- paste(output_name, "txt", sep = ".")

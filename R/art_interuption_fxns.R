@@ -50,6 +50,4 @@ run_thembisa_scenario <- function(intervention_year, output_names, base_rate_red
   read_thembisa_scenario(output_names)
 }
 
-art_interuption_rate = 0.4
-art_increase_year = 2050
-temp <- read_thembisa_scenario(output_names)
+

@@ -1,17 +1,15 @@
-#### Set working directory ####
-
-setwd("/Users/stefan/Documents/HIV_EndGame_SA")
-
 #### Load packages/functions ####
 
 library(readr)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(here)
 
-source("scripts/modify_rollout.R")
-source("R/read_and_run.R")
-source("R/art_interuption_fxns.R")
+
+source(here("scripts/modify_rollout.R"))
+source(here("R/read_and_run.R"))
+source(here("R/art_interuption_fxns.R"))
 
 #### Make empty dataframe for outputs ####
 

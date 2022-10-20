@@ -4,10 +4,10 @@ library(gridExtra)
 
 # Compiles and runs the Thembisa model
 run_thembisa <- function(){
-  setwd("/Users/stefan/Documents/HIV_EndGame_SA/THEMBISAv18")
+  setwd(here("THEMBISAv18"))
   system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
   system("./thembisa")
-  setwd("/Users/stefan/Documents/HIV_EndGame_SA")
+  setwd(here())
 }
 
 #change values of one parameter
@@ -26,6 +26,8 @@ edit_formatted_data <- function(parameter_name, new_values, starting_year=1985, 
 
 edit_formatted_data_incremental <- function(parameter_name, new_values, starting_year=1985, final_year=2070){
   # select parameter using dictionary
+  data <- readLines(here("THEMBISAv18/Rollout.txt"))
+  formatted_data <- format_data(data, dictionary)
   parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
   # Edit value
   for (i in ((starting_year+1)-1985):((starting_year+1)-1985)){
@@ -67,22 +69,22 @@ read_thembisa_scenario <- function(output_names){
   bind_rows(temp, .id = "indicator")
 }
 
-run_thembisa_scenario <- function(intervention_year, output_names, base_rate_reduction){
-  ## read in input parameter file
-  data <- readLines("THEMBISAv18/Rollout_Original.txt")
-  ## write unedited input parameter file
-  formatted_data <- format_data(data, dictionary)
-  if (!is.na(intervention_year)){
-    formatted_data <- edit_formatted_data_incremental("rate_first_test_neg_fem_under_25", 
-                                                      new_values = 0.2877 * base_rate_reduction, 
-                                                      starting_year = intervention_year)
-  }
-  rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
-  write(rollout, "THEMBISAv18/Rollout.txt")
-  ## compile and model
-  run_thembisa()
-  read_thembisa_scenario(output_names)
-}
+# run_thembisa_scenario <- function(intervention_year, output_names, base_rate_reduction){
+#   ## read in input parameter file
+#   data <- readLines("THEMBISAv18/Rollout_Original.txt")
+#   ## write unedited input parameter file
+#   formatted_data <- format_data(data, dictionary)
+#   if (!is.na(intervention_year)){
+#     formatted_data <- edit_formatted_data_incremental("rate_first_test_neg_fem_under_25", 
+#                                                       new_values = 0.2877 * base_rate_reduction, 
+#                                                       starting_year = intervention_year)
+#   }
+#   rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
+#   write(rollout, "THEMBISAv18/Rollout.txt")
+#   ## compile and model
+#   run_thembisa()
+#   read_thembisa_scenario(output_names)
+# }
 
 read_thembisa_results <- function(intervention_years){
   filepaths <- paste0("results/scenario_", intervention_years, ".csv")

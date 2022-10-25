@@ -26,7 +26,7 @@ output_names <- c("TotalHIVtests", "NewAdultHIV",
 
 #### create empty folder for results - only if there isn't one already
 
-#dir.create("results", FALSE, TRUE) 
+dir.create("results", FALSE, TRUE) 
 
 ### establish intervention years
 intervention_years <- seq(2025, 2050, 5)

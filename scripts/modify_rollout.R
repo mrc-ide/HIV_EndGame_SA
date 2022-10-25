@@ -1,12 +1,12 @@
 source("R/support_modify_inputs.R")
 
 # Read in input in Thembisa format
-data <- readLines("THEMBISAv18/Rollout_Original.txt")
+data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
 
 # Create data dictionary and save to manually add names
 rollout_dictionary <- create_data_dictionary(data)
 
-dir.create("data_dictionaries", FALSE, TRUE)
+dir.create(here("data_dictionaries"), FALSE, TRUE)
 filepath <- "data_dictionaries/rollout.csv"
 
 # Manually add in descriptive names for each row of data

@@ -4,10 +4,10 @@ library(gridExtra)
 
 # Compiles and runs the Thembisa model
 run_thembisa <- function(){
-  setwd("/Users/stefan/Documents/HIV_EndGame_SA/THEMBISAv18")
+  setwd(here("THEMBISAv18"))
   system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
   system("./thembisa")
-  setwd("/Users/stefan/Documents/HIV_EndGame_SA")
+  setwd(here())
 }
 
 # Read output from Thembisa and assign column headers
@@ -43,18 +43,9 @@ edit_formatted_data_incremental <- function(parameter_name, new_values, starting
   parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
   # Edit value
   for (i in ((starting_year+1)-1985):((starting_year+1)-1985)){
-    parameter[i] <- 0.2877 - ((0.2877 - new_values) * 0.2)
+    parameter[i] <- 0.2877 - ((0.2877 - new_values) * 0.5)
   }
-  for (i in ((starting_year+2)-1985):((starting_year+2)-1985)){
-    parameter[i] <- 0.2877 - ((0.2877 - new_values) * 0.4)
-  }
-  for (i in ((starting_year+3)-1985):((starting_year+3)-1985)){
-    parameter[i] <- 0.2877 - ((0.2877 - new_values) * 0.6)
-  }
-  for (i in ((starting_year+4)-1985):((starting_year+4)-1985)){
-    parameter[i] <- 0.2877 - ((0.2877 - new_values) * 0.8)
-  }
-  for (i in ((starting_year+5)-1985):((final_year+1)-1985)){
+  for (i in ((starting_year+2)-1985):((final_year+1)-1985)){
     parameter[i] <- new_values
   }
   # reassign to formatted data
@@ -84,7 +75,7 @@ read_thembisa_scenario <- function(output_names){
 
 run_thembisa_scenario <- function(intervention_year, output_names, base_rate_reduction){
   ## read in input parameter file
-  data <- readLines("THEMBISAv18/Rollout_Original.txt")
+  data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   ## write unedited input parameter file
   formatted_data <- format_data(data, dictionary)
   if (!is.na(intervention_year)){
@@ -93,7 +84,7 @@ run_thembisa_scenario <- function(intervention_year, output_names, base_rate_red
                                                       starting_year = intervention_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
-  write(rollout, "THEMBISAv18/Rollout.txt")
+  write(rollout, here("THEMBISAv18/Rollout.txt"))
   ## compile and model
   run_thembisa()
   read_thembisa_scenario(output_names)

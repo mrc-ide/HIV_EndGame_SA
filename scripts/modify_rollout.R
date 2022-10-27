@@ -82,9 +82,9 @@ dict_names <- c("rate_first_test_neg_fem_under_25",
 "rel_rate_mmc_25_to_49_yr",
 "rel_rate_mmc_over_50_yr",
 "pct_early_inf_mc",
-"odds_ratio_condom_sex_work",
-"odds_ratio_condom_st_relationships",
-"odds_ratio_condom_lt_relationships")
+"reduction_condom_fsw",
+"reduction_condom_st",
+"reduction_condom_lt")
 
 # assign names to dictionary 
 for (i in 1:length(rollout_dictionary$name)) {

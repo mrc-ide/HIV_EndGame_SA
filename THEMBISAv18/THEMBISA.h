@@ -221,7 +221,7 @@ double STageTaxi[2]; // Alpha and lambda parameters for age effects on self-test
 double STageWork[2][2]; // Alpha and lambda parameters for age effects on ST uptake through work, by sex
 double STtaxiMtoFratio; // M-to-F ratio of self-test uptake through taxi ranks
 double STworkMtoFratio[2]; // M-to-F ratio of ST uptake through workplace campaigns (primary & 2ndary)
-double EmployedPropn[10][2]; // Proportion employed, by age (15-19, 20-24, ..., 60-64) and sex 
+double EmployedPropn[10][2]; // Proportion employed, by age (15-19, 20-24, ..., 60-64) and sex
 double RetestPosST[2]; // RR retesting in previously diagnosed ART-naive and ART-experienced
 double ORpartnerPosMetareg[2]; // Constant and log(prevalence) coefficients in meta-regression of
 // log OR for HIV if partner is positive compared to negative
@@ -247,7 +247,7 @@ double FreqHCTinPrEP[2]; // Frequency of HIV testing (per annum) if receiving Pr
 double PrEPdur[2]; // Average duration of retention in PrEP programme (years)
 double PrEPdataYr; // Last year for which we have data on number initiating PrEP
 double UltPrEPrateFSW; // Monthly rate at which FSWs start PrEP after PrEPdataYr
-double CurrPrEPrateFSW; // Current monthly rate at which FSWs start PrEP 
+double CurrPrEPrateFSW; // Current monthly rate at which FSWs start PrEP
 double StoredPrEPrateFSW; // monthly rate at which FSWs start PrEP in PrEPdataYr
 //double RR_PrEPlow[2]; // Relative rate of PrEP initiation in low risk heterosexuals
 double RR_PrEPlowPreg; // Relative rate of PrEP initiation in low risk pregnant women
@@ -299,7 +299,7 @@ double ProgAdjNoPMTCT; // factor by which the excess progression is adjusted if 
 double AIDSmortLT; // annual AIDS mortality rate in older children who are ART-eligible & untreated
 double ExcessAIDSmort; //excess rate of AIDS mortality in untreated ART-eligible newborn
 double ExcessMortRedn; // factor by which excess rate of AIDS mortality reduces per year of age
-double ProvAdjPaedMort; // RR mortality in province relative to national 
+double ProvAdjPaedMort; // RR mortality in province relative to national
 
 // Paed ART
 double RRmortART1; // relative rate of mortality on ART during the initial high risk phase
@@ -369,7 +369,7 @@ double ShapeFeed[3]; // shape parameter for duration of feeding
 double SwitchingToFF; // propn of mothers who switch to formula if they discover they're HIV+
 double AbruptWeaningFirst3; // propn of women who practise abrupt weaning if stopping EBF in
 							// 1st 3 months of feeding
-double AbruptWeaningAfter3; // propn of women who practise abrupt weaning if stopping EBF 
+double AbruptWeaningAfter3; // propn of women who practise abrupt weaning if stopping EBF
 							// after 1st 3 months of feeding
 double InitAbruptWeaning1; // baseline parameter for first 3 months
 double InitAbruptWeaning2; // baseline parameter after first 3 months
@@ -387,7 +387,7 @@ double HCT1stTimeF25[86]; // rate of 1st-time HIV testing in women aged 25
 double HCT1stTimeF25init[86];
 double NumbersTested[86]; // Numbers of individuals 15+ tested for HIV
 double NumbersTested5to14[86]; // Numbers of individuals 5-14 tested for HIV
-double OIsDiagnosed[86]; // propn of HIV-positive OI patients who are diagnosed 
+double OIsDiagnosed[86]; // propn of HIV-positive OI patients who are diagnosed
 double OIsTested[86]; // propn of OIs that lead to HIV diagnosis
 double RegHCT_FSW[86]; // rate of initiation into regular HCT in FSWs
 double RegHCT_15[86]; // rate of initiation into regular HCT in 15-19 yr olds
@@ -444,8 +444,8 @@ double EligibleAsym500[86]; // propn of asymptomatic non-pregnant people, CD4 35
 double EligibleAsymPre500[86]; // propn of asymptomatic non-pregnant people, CD4 500+, who are eligible
 double EligibleInfants[86]; // propn of infected infants eligible to start ART in early disease
 double EligInfants; // propn of infected infants eligible to start ART in early disease in current year
-double EarlyART1to4[86]; // % eligible in early disease in kids aged 1-4 
-double EarlyART5to14[86]; // % eligible in early disease in kids aged 5-14 
+double EarlyART1to4[86]; // % eligible in early disease in kids aged 1-4
+double EarlyART5to14[86]; // % eligible in early disease in kids aged 5-14
 double MatARTuptake[86]; // propn of newly-diagnosed ART-eligible women starting ART prior to delivery
 double MatARTpropn; // propn of ART-eligible women starting ART prior to delivery in current yr
 double OI_ARTuptake[86]; // propn of newly-diagnosed ART-eligible OI patients who start ART
@@ -494,11 +494,13 @@ double RR_MMCpromo50[86]; // RR of MMC promotion at ages 50+
 double NeonatalMMC[86]; // % of children circumcised at birth
 double CurrCircPrev10; // prevalence of circumcision in 10-year olds at end of yr
 
-// Other assumptions
-double ORcondomModel2_FSW[86]; // ratio of odds of condom use in model 2 to model 1 (FSW)
-double ORcondomModel2_ST[86]; // ratio of odds of condom use in model 2 to model 1 (ST)
-double ORcondomModel2_LT[86]; // ratio of odds of condom use in model 2 to model 1 (LT)
-
+// Condom usage reduction assumptions
+double CondomFSWreduction[86]; // Proportion reduction of FSW condom usage probability
+double FSWreduction;
+double CondomSTreduction[86]; // Proportion reduction of ST condom usage probability
+double STreduction;
+double CondomLTreduction[86]; // Proportion reduction of LT condom usage probability
+double LTreduction;
 //============================================================================
 // Parameters and arrays in the 'Results' sheet
 //============================================================================
@@ -561,14 +563,14 @@ double CurrBehavDbnMSM[81][2]; // Current MSM sex activity distribution by risk 
 double PartnerAcqF[81]; // Age adjustment factor for female partnership formation rate
 double MinPartnerAge[81]; // Minimum partner age, by female age
 double GammaParametersST[81][2]; // Alpha and beta parameters for ST partner age prefs
-double AgePrefST[81][81][2]; // Proportion of ST partners in different age groups (3rd 
+double AgePrefST[81][81][2]; // Proportion of ST partners in different age groups (3rd
 							 // index is sex of selecting indiv, whose age is 1st index)
 double GammaParametersLT[81][2]; // Alpha and beta parameters for LT partner age prefs
 double AgePrefLT[81][81][2]; // Proportion of LT partners in different age groups
 double MSMpartnersM[81]; // Fraction of MSM partners who are male
-double InitWidowhoodRate[76][2]; // Initial rates at which married individuals become 
+double InitWidowhoodRate[76][2]; // Initial rates at which married individuals become
 								 // widowed, indexed by sex of the partner
-double CurrWidowhoodRate[76][2]; // Current rates at which married individuals become 
+double CurrWidowhoodRate[76][2]; // Current rates at which married individuals become
 								 // widowed, due to non-AIDS mort
 double FSWageDbn[81]; // Propn of sex workers at each age
 double PartnerAcqM[81]; // Rate at which high risk unmarried men form ST partnerships
@@ -577,9 +579,9 @@ double TotalFSW; // Total demand for sex workers in current period
 double DebutProb[21][2][2]; // Prob of debut by age, risk group and sex (last index)
 double AnnAIDSmortM[76][2][2]; // By risk of male (2nd index) & risk of female (3rd index)
 double AnnAIDSmortF[76][2][2]; // By risk of female (2nd index) & risk of male (3rd index)
-double ProbDivorceOrWidowM[76][2][2]; // Prob male of age x (1st index) in risk group y 
+double ProbDivorceOrWidowM[76][2][2]; // Prob male of age x (1st index) in risk group y
 									  // (2nd index) loses spouse of risk z (3rd index)
-double ProbDivorceOrWidowF[76][2][2]; // Prob woman of age x (1st index) in risk group y 
+double ProbDivorceOrWidowF[76][2][2]; // Prob woman of age x (1st index) in risk group y
 									  // (2nd index) loses spouse of risk z (3rd index)
 double GammaParametersMSM[81][2]; // Alpha and beta parameters for MSM partner age prefs
 double AgePrefMSM[81][81]; // Proportion of MSM partners in different age groups
@@ -633,7 +635,7 @@ double CircProbPreMMC[91]; // Prob of circumcision in next yr, before MMC campai
 double CircProbStored; // MMC prob in last year for which MMC data were
 					   // specified, for men who are high sexually active
 double CurrCircProb[81][4]; // Prob of circumcision in current year, by age,
-							// risk group and marital status 
+							// risk group and marital status
 
 //============================================================================
 // Parameters and arrays in the 'Transmission' sheet
@@ -704,7 +706,7 @@ double AveCD4byARTdur[4][6]; // Average CD4 count by baseline CD4 (1st index) an
 double InitAveCD4byARTdur[6]; // Initial assumps for CD4 <200 at ART start
 double AveCD4nonIntDur[4][6]; // Average CD4 count by baseline CD4 (1st index) and
 							 // non-integer ART duration (2nd index)
-double CoV_CD4byARTdur[4][6]; // Coefficient of variation in CD4 counts by baseline 
+double CoV_CD4byARTdur[4][6]; // Coefficient of variation in CD4 counts by baseline
 							  // CD4 (1st index) and time since ART initiation
 double CoV_CD4nonIntDur[4][6];
 double CD4dbnByARTdur[4][4][6]; // Propn of ART patients in each CD4 band (1st index)
@@ -731,8 +733,8 @@ double NonAIDSmortM[91][37]; // non-AIDS mortality rates in males, by age and by
 double NonAIDSmortF[91][37]; // non-AIDS mortality rates in females, by age and by year
 double UltNonAIDSmort[91][2]; // Ultimate non-AIDS mortality rates, by age and sex
 double RednNonAIDSmort[91][2]; // Non-AIDS mortality reduction factor, post-2007
-double WestLifeExpectP[11][2]; // West level 26 life expectancy for children, undiscounted 
-double WestLifeExpectA[81][2]; // West level 26 life expectancy for adults, undiscounted 
+double WestLifeExpectP[11][2]; // West level 26 life expectancy for children, undiscounted
+double WestLifeExpectA[81][2]; // West level 26 life expectancy for adults, undiscounted
 
 //============================================================================
 // Parameters and arrays in the 'Fertility' sheet
@@ -934,14 +936,14 @@ double AgeDbnKidsOnART[8][2]; // Propn of kids on ART in 0-4 & 5-9 age groups (2
 // by year (1st index, starting 2004)
 double ModelPrevPaed[3][2][2]; // Prevalence by age (2-4, 5-9, 10-14), sex and year (2005, 2008)
 double ModelPrevPaed2[2][2][2]; // Prevalence by age (0-4, 5-14), sex and year (2012, 2017)
-double ModelPrevU208; // Prevalence under age 2 in 2008 
+double ModelPrevU208; // Prevalence under age 2 in 2008
 double ModelProvHH[5][2];
 double ModelProvHH_P[4];
 double ModelPrevHCT[13];
 double ModelPrevHCT_P[6];
 double ModelCoverage[2][2];
 double ModelAgeDbnAdultART[7][9][2];
-double ProvANCbias = 0.0; 
+double ProvANCbias = 0.0;
 double ANCageWeights[6]; // Propn of births in 15-19, 20-24, 25-29, 30-34, 35-39, 40-49 age groups
 double ANCageW_init[6]; // Initial ANC age weights, up to 2012
 double ANCageW_change[6]; // Annual change in ANC age weights after 2012
@@ -976,14 +978,14 @@ double ModelTested12[5][2][2]; // Model estimate of % ever tested in 2012, by ag
 double ModelTested16[4][2][2]; // Model estimate of % ever tested in 2016, by age, sex & HIV status
 double ModelTested17[5][2][2]; // Model estimate of % ever tested in 2017, by age, sex & HIV status
 double SeTestingHistory[2]; // Sensitivity of self-reported HIV testing history (HIV-neg & -pos)
-double SpTestingHistory; // Specificity of self-reported HIV testing history 
+double SpTestingHistory; // Specificity of self-reported HIV testing history
 
 double ChildPIPdeaths[13][2]; // Total audited deaths 2005-2017, ages 1-4 and 5-9
 double ChildPIPdiag[13][2]; // % of deaths diagnosed HIV-positive, 2005-2017, ages 1-4 and 5-9
 double ChildPIP_ART[13][2]; // % of HIV-diagnosed deaths on ART 2005-2017, ages 1-4 and 5-9
-double ModelPIPdiag[13][2]; 
-double ModelPIP_ART[13][2]; 
-double RRdiagDeathsPIP[2]; // RR of death being recorded in facility if HIV-neg/undiagnosed compared to 
+double ModelPIPdiag[13][2];
+double ModelPIP_ART[13][2];
+double RRdiagDeathsPIP[2]; // RR of death being recorded in facility if HIV-neg/undiagnosed compared to
 						   // (a) diagnosed ART-naive, and (b) ART-experienced
 
 double AIDScasesByYr[5]; // Reported new adult AIDS cases, 1990-94
@@ -1002,7 +1004,7 @@ double ARTmodelled[ARTdataPoints][2]; // Modelled total number on ART (current a
 double ARTmodelledP[ARTdataPointsP][2]; // Modelled total children on ART (current and cumulative)
 double ARTmodelledM[ARTdataPointsM]; // Modelled % of adult ART patients who are male
 double LastDateCum = 2009.08; // Last date when reported public totals were definitely cumulative
-double AnnSwitchCumToCurr=0.2626; // Annual rate of switch from reporting cumulative totals to current 
+double AnnSwitchCumToCurr=0.2626; // Annual rate of switch from reporting cumulative totals to current
 						   // totals, after LastDateCum
 double BsplineCoef[10]; // B spline coefficients for total numbers starting ART
 double BsplineCoefP[10]; // B spline coefficients for total children starting ART
@@ -1167,25 +1169,25 @@ class Adult
 	double PosDiagnosedPreART[81][5]; // Diagnosed HIV-positive, not yet on ART
 	double OnARTpre500[81][5]; // On ART, having started at CD4 >=500 (2nd index is ART duration)
 	double OnART500[81][5]; // On ART, having started at CD4 350-499
-	double OnART350[81][5]; // On ART, having started at CD4 200-349 
-	double OnART200[81][5]; // On ART, having started at CD4 <200 
+	double OnART350[81][5]; // On ART, having started at CD4 200-349
+	double OnART200[81][5]; // On ART, having started at CD4 <200
 	double StoppedART[81][4]; // Stopped ART (2nd index is CD4 stage)
 	double Total[81];
 
 	// Arrays to represent population profile at END of month
-	double NegNoHCT_E[81]; 
-	double NegPastHCT_E[81]; 
-	double RegHCT_E[81]; 
-	double RegPrEP_E[81]; 
-	double RegVM_E[81]; 
+	double NegNoHCT_E[81];
+	double NegPastHCT_E[81];
+	double RegHCT_E[81];
+	double RegPrEP_E[81];
+	double RegVM_E[81];
 	double PosNoHCT_E[81][5];
-	double PosHCTpreHIV_E[81][5]; 
-	double PosDiagnosedPreART_E[81][5]; 
-	double OnARTpre500_E[81][5]; 
-	double OnART500_E[81][5]; 
-	double OnART350_E[81][5]; 
-	double OnART200_E[81][5]; 
-	double StoppedART_E[81][4]; 
+	double PosHCTpreHIV_E[81][5];
+	double PosDiagnosedPreART_E[81][5];
+	double OnARTpre500_E[81][5];
+	double OnART500_E[81][5];
+	double OnART350_E[81][5];
+	double OnART200_E[81][5];
+	double StoppedART_E[81][4];
 	double Total_E[81];
 
 	// Arrays to represent HIV transmission probabilities
@@ -1224,7 +1226,7 @@ class OutputArray
 	OutputArray(int n);
 
 	int columns;
-	double out[InitSample][50]; // None of the arrays require > 40 columns. 
+	double out[InitSample][50]; // None of the arrays require > 40 columns.
 
 	void Record(const char* filout, int n);
 	void RecordSample(const char* filout, int n);
@@ -1235,12 +1237,12 @@ class PostOutputArray
 {
 	// Same as OutputArray class except that we only use this to record outputs from
 	// the posterior distribution (and hence require smaller output array).
-	
+
 	public:
 	PostOutputArray(int n);
 
 	int columns;
-	double out[ResampleSize][86]; // None of the arrays require > 86 columns. 
+	double out[ResampleSize][86]; // None of the arrays require > 86 columns.
 	double Means[86][3]; // Mean, 95% LL and 95% UL
 
 	void RecordSample(const char* filout);
@@ -1257,9 +1259,9 @@ class OutputByAge
 
 	int columns;
 	int rows;
-	double out[92][86]; // None of the arrays require > 86 columns. 
+	double out[92][86]; // None of the arrays require > 86 columns.
 
-	void GetMeans(); // Calculate Means 
+	void GetMeans(); // Calculate Means
 };
 
 //============================================================================
@@ -1320,7 +1322,7 @@ void GetPrevPregnant(); // Calculations of PrevPregnant in 'Monthly' sheet
 void SetMnthlyPaedParameters(); // Calculations in "Child rates" depending on maternal
 								// HIV incidence & paediatric ART initiation rates
 void UpdatePrEPandVM();
-void UpdateTestingRates(); // Calcs in 'Testing' sheet 
+void UpdateTestingRates(); // Calcs in 'Testing' sheet
 void UpdateTestingToART(); // Calcs in B-AE of 'ART start' sheet
 void UpdateTransmProbs();
 void CalcHIVtransitions(); // Calculate movements between HIV states
@@ -1345,17 +1347,17 @@ void CalcMultPartners();
 void GetPrEPrateFSW();
 void SetCurrYearParameters();
 void SetAnnPaedParameters();
-void CalcOIsTested(); 
+void CalcOIsTested();
 void CalcPosPartnerProb();
 void CalcSelfTestingRates();
 void GetTotalTesting();
 void CalcHCT1stTime(); // Only relevant if user specifies # HIV tests as model input
-void CalcRRtestVirgin(); 
+void CalcRRtestVirgin();
 void UpdateNonAIDSmort();
 void UpdateAIDSmort();
 void UpdateARTmort(); // Calculations in cols V-BS of ART sheet
 void UpdateMigration();
-void UpdateCircProb(); 
+void UpdateCircProb();
 void UpdateMC(Adult* Uncirc, Adult* Circ);
 void CalcCurrMarriageRates();
 void GetMarriageAndDivorceRates();
@@ -1429,7 +1431,7 @@ void ReadPrevIMIS();
 void ReadPrevIMIS2(double completed);
 void SaveTempIMIS();
 void SaveTempIMIS2(double completed);
-void GetMultNorm(double RandUnif[MCMCdim], double MultNorm[MCMCdim]); 
+void GetMultNorm(double RandUnif[MCMCdim], double MultNorm[MCMCdim]);
 double GetMultNormPDF(double MultNorm[MCMCdim], int Component);
 void GetMahalanobis(double distance[TotalSimulations]);
 double GetPercentile(double values[TotalSimulations], double percentile);
@@ -1948,7 +1950,7 @@ PostOutputArray MultPartners15to24F(86);
 PostOutputArray MultPartners25to49M(86);
 PostOutputArray MultPartners25to49F(86);
 
-// HIV-negative populations 
+// HIV-negative populations
 PostOutputArray TotNegPop(86);
 PostOutputArray NegChildrenU15(86);
 PostOutputArray Neg15to49(86);
@@ -1998,17 +2000,17 @@ PostOutputArray StartingART6to13(51);
 PostOutputArray TotLateUnder15(51);
 PostOutputArray TotEarlyInfants(51);
 PostOutputArray TotEarly1to4(51);
-PostOutputArray TotSexActs(51);
-PostOutputArray TotProtSexActs(51);
-PostOutputArray TotProtSexActs18(51);
+PostOutputArray TotSexActs(86);
+PostOutputArray TotProtSexActs(86);
+PostOutputArray TotProtSexActs18(86);
 PostOutputArray BirthsDiagHIV(86);
 PostOutputArray BirthsOver500(51);
 PostOutputArray Births350to499(51);
 PostOutputArray Births200to349(51);
 PostOutputArray BirthsUnder200(51);
 PostOutputArray TotSexWorkers(51);
-PostOutputArray SWsexActs(51);
-PostOutputArray SWsexActsProt(51);
+PostOutputArray SWsexActs(86);
+PostOutputArray SWsexActsProt(86);
 PostOutputArray FSWonART(51);
 PostOutputArray DiscordantARTelig(51);
 PostOutputArray DiscordantPrEPelig(51);

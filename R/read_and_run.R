@@ -79,8 +79,8 @@ run_thembisa_scenario <- function(intervention_year, output_names, base_rate_red
   ## write unedited input parameter file
   formatted_data <- format_data(data, dictionary)
   if (!is.na(intervention_year)){
-    formatted_data <- edit_formatted_data_incremental("rate_first_test_neg_fem_under_25", 
-                                                      new_values = 0.2877 * base_rate_reduction, 
+    formatted_data <- edit_formatted_data_incremental("reduction_condom_st", 
+                                                      new_values = 1 * base_rate_reduction, 
                                                       starting_year = intervention_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)

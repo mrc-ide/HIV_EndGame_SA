@@ -74,7 +74,6 @@ read_thembisa_scenario <- function(output_names){
 }
 
 run_thembisa_scenario <- function(intervention_year, output_names, base_rate_reduction){
-<<<<<<< HEAD
   ## read in input parameter file
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   ## write unedited input parameter file
@@ -85,7 +84,6 @@ run_thembisa_scenario <- function(intervention_year, output_names, base_rate_red
                                                       starting_year = intervention_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
-=======
 ## read in input parameter file
 data <- readLines("THEMBISAv18/Rollout_Original.txt")
  ## write unedited input parameter file
@@ -97,8 +95,8 @@ formatted_data <- format_data(data, dictionary)
  }
  rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
  write(rollout, "THEMBISAv18/Rollout.txt")
-## compile and model
-run_thembisa()
+  ## compile and model
+  run_thembisa()
  read_thembisa_scenario(output_names)
 }
 
@@ -116,8 +114,7 @@ run_thembisa_scenario_future_variable <- function(intervention_year, output_name
                                                        starting_year = intervention_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data3, data, dictionary)
->>>>>>> reduce_ART_interuption
-  write(rollout, here("THEMBISAv18/Rollout.txt"))
+  write(rollout, "THEMBISAv18/Rollout.txt")
   ## compile and model
   run_thembisa()
   read_thembisa_scenario(output_names)

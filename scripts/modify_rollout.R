@@ -1,4 +1,4 @@
-source("R/support_modify_inputs.R")
+source(here("R/support_modify_inputs.R"))
 
 # Read in input in Thembisa format
 data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
@@ -106,9 +106,7 @@ formatted_data <- format_data(data, dictionary)
 ## Convert back to Thembisa format
 rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
 
-dir.create("modified_inputs", FALSE, TRUE)
-write(rollout, "modified_inputs/Rollout.txt")
-write(rollout, "THEMBISAv18/Rollout.txt")
+write(rollout, here("THEMBISAv18/Rollout.txt"))
 
 
 

@@ -16536,6 +16536,7 @@ void RunSample()
 	StartingART35to44F.RecordSample("StartingART35to44F.txt");
 	StartingART45F.RecordSample("StartingART45F.txt");*/
 	StartingARTtot.RecordSample("StartingARTtot.txt");
+	ARTcoverageAdult.RecordSample("ARTcoverageAdult.txt");
 	/*NewARTunder200.RecordSample("NewARTunder200.txt");
 	NewART200to349.RecordSample("NewART200to349.txt");
 	NewART350to499.RecordSample("NewART350to499.txt");

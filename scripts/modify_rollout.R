@@ -106,7 +106,7 @@ formatted_data <- format_data(data, dictionary)
 ## Convert back to Thembisa format
 rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
 
-write(rollout, "THEMBISAv18/Rollout.txt")
+write(rollout, here("THEMBISAv18/Rollout.txt"))
 
 
 

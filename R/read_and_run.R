@@ -79,33 +79,24 @@ run_thembisa_scenario <- function(intervention_year, output_names, base_rate_red
   ## write unedited input parameter file
   formatted_data <- format_data(data, dictionary)
   if (!is.na(intervention_year)){
-    formatted_data <- edit_formatted_data_incremental("reduction_condom_st", 
-                                                      new_values = 1 * base_rate_reduction, 
+    formatted_data <- edit_formatted_data_incremental(formatted_data, "rate_first_test_neg_fem_under_25", 
+                                                      new_values = 0.2877 * base_rate_reduction, 
                                                       starting_year = intervention_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
-## read in input parameter file
-data <- readLines("THEMBISAv18/Rollout_Original.txt")
- ## write unedited input parameter file
-formatted_data <- format_data(data, dictionary)
- if (!is.na(intervention_year)){
-  formatted_data <- edit_formatted_data_incremental("rate_first_test_neg_fem_under_25",
-                                                   new_values = 0.2877 * base_rate_reduction,
-                                                  starting_year = intervention_year)
- }
- rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
  write(rollout, "THEMBISAv18/Rollout.txt")
   ## compile and model
   run_thembisa()
  read_thembisa_scenario(output_names)
 }
 
-run_thembisa_scenario_future_variable <- function(intervention_year, output_names, base_rate_reduction){
+run_thembisa_scenario_future_variable <- function(intervention_year, output_names, base_rate_reduction, 
+                                                  future_var_parameter, future_var_value, future_var_year){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
-  formatted_data3 <- edit_formatted_data(formatted_data2, "rel_rate_art_by_year", 
-                                         new_values = art_interuption_rate, 
-                                         starting_year = art_increase_year)
+  formatted_data3 <- edit_formatted_data(formatted_data2, future_var_parameter, 
+                                         new_values = future_var_value, 
+                                         starting_year = future_var_year)
   if (!is.na(intervention_year)){
     # data2 <- readLines(here("THEMBISAv18/Rollout.txt"))
     formatted_data3 <- edit_formatted_data_incremental(formatted_data3, 

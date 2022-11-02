@@ -21,30 +21,31 @@ output_names <- c("TotalHIVtests", "NewAdultHIV",
 
 dir.create("results", FALSE, TRUE)
 
-# establish intervention years
-intervention_years <- c(2040)
-
-#### 100% reduction ####
-# proportion of base rate by which to reduce
-base_rate_reduction = 1 # I want to test this with no changes to the testing rate first
-
+# model input parameters 
+intervention_years <- seq(2025, 2030, 5) # establish years PITC changes occur
+base_rate_reduction = 0.5 # proportion of PITC base rate
+condom_usage_decrease = 0.0025 # this is amount that the condom usage decreases by each year
+condom_usage_init = 0.0025 # this is the value of the first year's decrease
+condom_incr_years = seq(2025, 2070, 1) # these are the year for which condom usage decreases
 # run baseline model
-baseline <- run_thembisa_scenario_future_variable(NA, output_names, 
-                                                  base_rate_reduction,
-                                                  future_var_parameter = "reduction_condom_fsw", 
-                                                  future_var_value = 1, 
-                                                  future_var_year = 2040)
+baseline <- run_thembisa_scenario_future_variables(intervention_year = NA,
+                                                  condom_usage_init = condom_usage_init,
+                                                  condom_usage_decrease = NA,
+                                                  output_names = output_names, 
+                                                  base_rate_reduction = base_rate_reduction,
+                                                  condom_incr_years =condom_incr_years)
 
 # save baseline outputs
 write.csv(baseline, "results/baseline.csv", row.names = FALSE)
 
 # for loop that changes testing rate at different years and saves outputs
 for (intervention_year in intervention_years){
-  one_scenario <- run_thembisa_scenario_future_variable(intervention_year, output_names, 
+  one_scenario <- run_thembisa_scenario_future_variables(intervention_year,
+                                                        condom_usage_init,
+                                                        condom_usage_decrease,
+                                                        output_names, 
                                                         base_rate_reduction,
-                                                        future_var_parameter = "reduction_condom_fsw", 
-                                                        future_var_value = 0, 
-                                                        future_var_year = 2040)
+                                                        condom_incr_years)
   write.csv(one_scenario, paste0("results/scenario_", intervention_year, ".csv"),
             row.names = FALSE)
 }
@@ -70,17 +71,29 @@ df <- df %>%
 
 
 # save results 
-write.csv(df, "results/100_pct_red_df.csv", row.names = FALSE)
-df <- read.csv("results/100_pct_red_df.csv")
+write.csv(df, "results/df.csv", row.names = FALSE)
+df <- read.csv("results/df.csv")
 
 # testing
-plot_outputs_with_uncertainty("TotalHIVtests") + ggtitle ("0% testing reduction, 100% FSW condom reduction") + 
+plot_outputs_with_uncertainty("TotalHIVtests") + ggtitle ("50% testing reduction in 2025 or 2035 \n0.25% condom reduction per year from 2025") + 
   scale_y_continuous("Number of HIV tests (millions)", breaks = c(0, 10e6, 20e6, 30e6), labels = c(0, 10, 20, 30))
 # condom usage
-plot_outputs_with_uncertainty("CondomUsage") + ggtitle ("0% testing reduction, 100% FSW condom reduction") + 
+plot_outputs_with_uncertainty("CondomUsage") + ggtitle ("50% testing reduction in 2025 or 2035 \n0.25% condom reduction per year from 2025") + 
   ylab("Percentage of total sex acts that used condoms (%)")
 
-plot_outputs_with_uncertainty("FSWCondomUsage") + ggtitle ("0% testing reduction, 100% FSW condom reduction") + 
+
+# new hiv infections
+plot_outputs_with_uncertainty("NewAdultHIV") + ggtitle ("50% testing reduction in 2025 or 2035 \n0.25% condom reduction per year from 2025") + 
+  ylab ("New HIV infections")
+
+# aids-related deaths
+plot_outputs_with_uncertainty("TotalAIDSdeathsadult") + ggtitle ("0% testing reduction, 100% condom reduction") + 
+  ylab ("AIDS-related deaths")
+
+
+# extra condom usage checks
+
+plot_outputs_with_uncertainty("FSWCondomUsage") + ggtitle ("0% testing reduction, 100% condom reduction") + 
   ylab("Percentage of FSW sex acts that used condoms (%)")
 
 plot_outputs_with_uncertainty("NonFSWCondomUsage") + ggtitle ("0% testing reduction, 100% FSW condom reduction") + 
@@ -103,14 +116,5 @@ plot_outputs_with_uncertainty("PctSexActsSW") + ggtitle ("0% testing reduction, 
 
 plot_outputs_with_uncertainty("PctProtSexActsSW") + ggtitle ("0% testing reduction, 100% FSW condom reduction") + 
   ylab("Percentage of protected sex acts that FSW-client (%)")
-
-
-# new hiv infections
-plot_outputs_with_uncertainty("NewAdultHIV") + ggtitle ("50% testing reduction, 50% FSW condom reduction") + 
-  ylab ("New HIV infections")
-# aids-related deaths
-plot_outputs_with_uncertainty("TotalAIDSdeathsadult") + ggtitle ("0% testing reduction, 50% ST condom reduction") + 
-  ylab ("AIDS-related deaths")
-
 
 

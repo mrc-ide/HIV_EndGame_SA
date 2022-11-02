@@ -95,7 +95,7 @@ run_thembisa_scenario_future_variable <- function(intervention_year, output_name
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
   formatted_data3 <- edit_formatted_data(formatted_data2, future_var_parameter, 
-                                         new_values = future_var_value, 
+                                         new_values = future_var_value/100, 
                                          starting_year = future_var_year)
   if (!is.na(intervention_year)){
     # data2 <- readLines(here("THEMBISAv18/Rollout.txt"))
@@ -105,7 +105,54 @@ run_thembisa_scenario_future_variable <- function(intervention_year, output_name
                                                        starting_year = intervention_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data3, data, dictionary)
-  write(rollout, "THEMBISAv18/Rollout.txt")
+  write(rollout, here("THEMBISAv18/Rollout.txt"))
+  ## compile and model
+  run_thembisa()
+  read_thembisa_scenario(output_names)
+}
+
+# incremental reductions in condom usage
+# to be included in run_thembisa_scenario_future_variables
+reduce_condom_usage_incremental  <- function(output_names, condom_usage_init, condom_usage_decrease, condom_incr_years){
+  data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
+  formatted_data2 <- format_data(data, dictionary)
+  for (year in condom_incr_years){
+    formatted_data2 <- edit_formatted_data(formatted_data2, "reduction_condom_fsw", 
+                                           new_values = (1-condom_usage_decrease), 
+                                           starting_year = year)
+    formatted_data2 <- edit_formatted_data(formatted_data2, "reduction_condom_st", 
+                                           new_values = (1-condom_usage_decrease), 
+                                           starting_year = year)
+    formatted_data2 <- edit_formatted_data(formatted_data2, "reduction_condom_lt", 
+                                           new_values = 1-condom_usage_decrease, 
+                                           starting_year = year)
+    condom_usage_decrease = condom_usage_init + condom_usage_decrease
+  }
+  return(formatted_data2)
+}
+
+run_thembisa_scenario_future_variables <- function(intervention_year, 
+                                                  condom_usage_init,
+                                                  condom_usage_decrease, 
+                                                  output_names, 
+                                                  base_rate_reduction, 
+                                                  condom_incr_years){
+  data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
+  formatted_data2 <- format_data(data, dictionary)
+  if (!is.na(condom_usage_decrease)){
+    formatted_data2 <- reduce_condom_usage_incremental(output_names,
+                                                      condom_usage_init,
+                                                      condom_usage_decrease,
+                                                      condom_incr_years)
+  }
+  if (!is.na(intervention_year)){
+    formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 
+                                                       "rate_first_test_neg_fem_under_25", 
+                                                       new_values = 0.2877 * base_rate_reduction, 
+                                                       starting_year = intervention_year)
+  }
+  rollout <- convert_to_thembisa_format(formatted_data2, data, dictionary)
+  write(rollout, here("THEMBISAv18/Rollout.txt"))
   ## compile and model
   run_thembisa()
   read_thembisa_scenario(output_names)

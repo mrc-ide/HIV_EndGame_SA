@@ -16673,6 +16673,8 @@ void RunSample()
 	TotNewNeed500F.RecordSample("TotNewNeed500F.txt");*/
 	TotSexActs.RecordSample("TotSexActs.txt");
 	TotProtSexActs.RecordSample("TotProtSexActs.txt");
+	CondomUse15to24F.RecordSample("CondomUse15to24F.txt");
+	CondomUse25to49F.RecordSample("CondomUse25to49F.txt");
 	//TotProtSexActs18.RecordSample("TotProtSexActs18.txt");
 	/*MMC10to14.RecordSample("MMC10to14.txt");
 	MMC15to19.RecordSample("MMC15to19.txt");

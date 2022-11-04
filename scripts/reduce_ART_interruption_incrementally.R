@@ -28,7 +28,7 @@ condom_usage_init = 0.0025 # this is the value of the first year's decrease
 condom_incr_years = seq(2025, 2070, 1) # these are the year for which condom usage decreases
 art_interrupt_incr = 0.01 # this is amount that the art interruption rate decreases by each year
 art_interrupt_init = 0.01 # this is the value of the first year's art interruption rate decrease
-art_incr_years = seq(2025, 2070, 1) # these are the year for which art interruption rate decreases
+art_incr_years = seq(2025, 2100, 1) # these are the year for which art interruption rate decreases
 
 # run baseline model
 baseline <- run_thembisa_scenario_future_variables(intervention_year = NA,
@@ -86,7 +86,7 @@ plot_outputs_with_uncertainty("NewAdultHIV") + ggtitle ("50% testing reduction i
   ylab ("New HIV infections")
 
 # aids-related deaths
-plot_outputs_with_uncertainty("TotalAIDSdeathsadult") + ggtitle ("0% testing reduction, 100% condom reduction") + 
+plot_outputs_with_uncertainty("TotalAIDSdeathsadult") + ggtitle ("50% testing reduction in 2025 or 2035 \n1% ART interruption rate reduction per year from 2025") + 
   ylab ("AIDS-related deaths")
 
 

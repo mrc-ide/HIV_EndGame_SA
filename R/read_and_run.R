@@ -193,6 +193,35 @@ read_thembisa_results <- function(intervention_years){
     tidyr::pivot_longer(c(intervention, baseline), names_to = "scenario")
 }
 
+read_thembisa_results_sliding_scale <- function(intervention_years, sliding_scale_reduction){
+  for (i in 1: length(sliding_scale_reduction)){
+    if (i == 1){
+      filepaths <- paste0("results/scenario_", intervention_years, "_", sliding_scale_reduction[i], ".csv")
+    }
+    if (i > 1){
+      filepaths <- append(filepaths, paste0("results/scenario_", intervention_years, "_", sliding_scale_reduction[i], ".csv"))
+    }
+  }
+  temp <- lapply(filepaths, read.csv)
+  
+  for (i in 1: length(sliding_scale_reduction)){
+    if (i == 1){
+      temp_names <- paste0(intervention_years, "_", sliding_scale_reduction[i])
+    }
+    if (i > 1){
+      temp_names <- append(temp_names, paste0(intervention_years, "_", sliding_scale_reduction[i]))
+    }
+  }
+  names(temp) <- temp_names
+  baseline <- read.csv("results/baseline.csv")
+  bind_rows(temp, .id = "intervention_year") %>% 
+    dplyr::rename(intervention = value) %>% 
+    dplyr::left_join(baseline) %>% 
+    dplyr::rename(baseline = value) %>% 
+    separate(intervention_year, c("intervention_year", "test_reduction")) %>% 
+    tidyr::pivot_longer(c(intervention, baseline), names_to = "scenario")
+}
+
 plot_outputs_with_uncertainty <- function(output_name){
   df %>% filter(
     scenario != "percent_change",

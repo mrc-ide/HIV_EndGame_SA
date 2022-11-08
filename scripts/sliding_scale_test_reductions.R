@@ -81,9 +81,8 @@ df <- df %>%
 write.csv(df, "results/df.csv", row.names = FALSE)
 df <- read.csv("results/df.csv")
 
-# testing
-
-
+# Trend plots 
+# Number of HIV tests
 df %>% filter(
   scenario == "intervention",
   indicator == "TotalHIVtests",
@@ -101,6 +100,7 @@ df %>% filter(
   scale_fill_continuous(type = "viridis") +
   scale_y_continuous("Number of HIV tests (millions)", labels = (function(l) {round(l/1e6,1)})) 
 
+# New HIV infections
 df %>% filter(
   scenario == "intervention",
   indicator == "NewAdultHIV",
@@ -117,7 +117,7 @@ df %>% filter(
   scale_fill_continuous(type = "viridis") + 
   scale_y_continuous("New HIV infections") 
   
-
+# AIDS-related deaths
 df %>% filter(
   scenario == "intervention",
   indicator == "TotalAIDSdeathsadult",
@@ -135,27 +135,171 @@ df %>% filter(
   scale_fill_continuous(type = "viridis") + 
   scale_y_continuous("AIDS-related deaths") 
 
+# Cumulative values over 20 years ####
+
+cumulative_values <- calc_all_cumulatives(intervention_years, 20)
+
+# calculate cumulative percent change from baseline 
+
+cumulative_values <- cumulative_values %>%
+  pivot_wider(names_from = scenario, values_from = cumulative) %>% 
+  mutate(percent_change = ((intervention - baseline)/baseline)*100) %>%
+  mutate(absolute_dif = intervention - baseline) %>% 
+  pivot_longer(-(indicator:test_reduction), names_to = "scenario") 
 
 
+# Plotting 3 HIV indicators 
+# Wrapped by indicator
+cumulative_values %>% filter(
+  scenario == "intervention", indicator == "NewAdultHIV" |
+    indicator == "TotalHIVtests"| 
+    indicator == "TotalAIDSdeathsadult") %>% 
+  group_by(indicator, intervention_year, test_reduction, scenario) %>% 
+  summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(test_reduction, mean, fill = intervention_year)) +
+  geom_line(aes(color = intervention_year), show.legend = T) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = T) +
+  xlab("% testing reduction") + scale_y_continuous("Mean & 95% CI (millions)", labels = (function(l) {round(l/1e6,1)}))  +
+  facet_wrap(nrow = 1, vars(indicator), scales = "free_y", 
+             labeller = labeller(indicator = c(
+               "TotalAIDSdeathsadult" = "AIDS-related mortality",
+               "TotalHIVtests" = "Total HIV tests",
+               "NewAdultHIV" = "New HIV infections",
+               "SWsexActs" = "FSW sex acts",
+               "SWsexActsProt" = "Protected FSW sex acts",
+               "TotProtSexActs" = "Total protected sex acts",
+               "TotSexActs" = "Total sex acts"
+             ))) +  
+  expand_limits(y=0) + theme_bw() + scale_color_discrete("Intervention year") +
+  scale_fill_discrete("Intervention year") + ggtitle("Cumulative values over 20 years")
 
+# Plotting 3 HIV indicators - percent change
+# Wrapped by indicator
+cumulative_values %>% filter(
+  scenario == "percent_change", indicator == "NewAdultHIV" |
+    indicator == "TotalHIVtests"| 
+    indicator == "TotalAIDSdeathsadult") %>% 
+  group_by(indicator, intervention_year, test_reduction, scenario) %>% 
+  summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(test_reduction, mean, fill = intervention_year)) +
+  geom_line(aes(color = intervention_year), show.legend = T) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = T) +
+  xlab("% testing reduction") + scale_y_continuous("Change from baseline (%)")  +
+  facet_wrap(nrow = 1, vars(indicator), scales = "free_y", 
+             labeller = labeller(indicator = c(
+               "TotalAIDSdeathsadult" = "AIDS-related mortality",
+               "TotalHIVtests" = "Total HIV tests",
+               "NewAdultHIV" = "New HIV infections",
+               "SWsexActs" = "FSW sex acts",
+               "SWsexActsProt" = "Protected FSW sex acts",
+               "TotProtSexActs" = "Total protected sex acts",
+               "TotSexActs" = "Total sex acts"
+             ))) +  
+  expand_limits(y=0) + theme_bw() + scale_color_discrete("Intervention year") +
+  scale_fill_discrete("Intervention year") + ggtitle("Change from baseline over 20 years")
 
+# Plotting 3 HIV indicators - absolute difference
+# Wrapped by indicator
+cumulative_values %>% filter(
+  scenario == "absolute_dif", indicator == "NewAdultHIV" |
+    indicator == "TotalHIVtests"| 
+    indicator == "TotalAIDSdeathsadult") %>% 
+  group_by(indicator, intervention_year, test_reduction, scenario) %>% 
+  summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(test_reduction, mean, fill = intervention_year)) +
+  geom_line(aes(color = intervention_year), show.legend = T) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = T) +
+  xlab("% testing reduction") + scale_y_continuous("Difference from baseline")  +
+  facet_wrap(nrow = 1, vars(indicator), scales = "free_y", 
+             labeller = labeller(indicator = c(
+               "TotalAIDSdeathsadult" = "AIDS-related mortality",
+               "TotalHIVtests" = "Total HIV tests",
+               "NewAdultHIV" = "New HIV infections",
+               "SWsexActs" = "FSW sex acts",
+               "SWsexActsProt" = "Protected FSW sex acts",
+               "TotProtSexActs" = "Total protected sex acts",
+               "TotSexActs" = "Total sex acts"
+             ))) +  
+  expand_limits(y=0) + theme_bw() + scale_color_discrete("Intervention year") +
+  scale_fill_discrete("Intervention year") + ggtitle("Absolute difference from baseline over 20 years")
 
-plot_outputs_with_uncertainty("TotalHIVtests") + ggtitle ("50% testing reduction in 2025 or 2035 \n1% ART interruption rate reduction per year from 2025") + 
-  scale_y_continuous("Number of HIV tests (millions)", breaks = c(0, 10e6, 20e6, 30e6), labels = c(0, 10, 20, 30))
+# Plotting 2 HIV indicators 
+# Wrapped by indicator
+cumulative_values %>% filter(
+  scenario == "intervention", indicator == "NewAdultHIV" |
+    indicator == "TotalAIDSdeathsadult") %>% 
+  group_by(indicator, intervention_year, test_reduction, scenario) %>% 
+  summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(test_reduction, mean, fill = intervention_year)) +
+  geom_line(aes(color = intervention_year), show.legend = T) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = T) +
+  xlab("% testing reduction") + scale_y_continuous("Mean & 95% CI (millions)", labels = (function(l) {round(l/1e6,1)}))  +
+  facet_wrap(nrow = 1, vars(indicator), scales = "free_y", 
+             labeller = labeller(indicator = c(
+               "TotalAIDSdeathsadult" = "AIDS-related mortality",
+               "TotalHIVtests" = "Total HIV tests",
+               "NewAdultHIV" = "New HIV infections",
+               "SWsexActs" = "FSW sex acts",
+               "SWsexActsProt" = "Protected FSW sex acts",
+               "TotProtSexActs" = "Total protected sex acts",
+               "TotSexActs" = "Total sex acts"
+             ))) +  
+  expand_limits(y=0) + theme_bw() + scale_color_discrete("Intervention year") +
+  scale_fill_discrete("Intervention year") + ggtitle("Cumulative values over 20 years")
 
+# Plotting 2 HIV indicators - percent change
+# Wrapped by indicator
+cumulative_values %>% filter(
+  scenario == "percent_change", indicator == "NewAdultHIV" |
+    indicator == "TotalAIDSdeathsadult") %>% 
+  group_by(indicator, intervention_year, test_reduction, scenario) %>% 
+  summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(test_reduction, mean, fill = intervention_year)) +
+  geom_line(aes(color = intervention_year), show.legend = T) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = T) +
+  xlab("% testing reduction") + scale_y_continuous("Change from baseline (%)")  +
+  facet_wrap(nrow = 1, vars(indicator), scales = "free_y", 
+             labeller = labeller(indicator = c(
+               "TotalAIDSdeathsadult" = "AIDS-related mortality",
+               "TotalHIVtests" = "Total HIV tests",
+               "NewAdultHIV" = "New HIV infections",
+               "SWsexActs" = "FSW sex acts",
+               "SWsexActsProt" = "Protected FSW sex acts",
+               "TotProtSexActs" = "Total protected sex acts",
+               "TotSexActs" = "Total sex acts"
+             ))) +  
+  expand_limits(y=0) + theme_bw() + scale_color_discrete("Intervention year") +
+  scale_fill_discrete("Intervention year") + ggtitle("Change from baseline over 20 years")
 
-# ART coverage
-plot_outputs_with_uncertainty("ARTcoverageAdult") + ggtitle ("50% testing reduction in 2025 or 2035 \n1% ART interruption rate reduction per year from 2025") + 
-  ylab("Popportion of adults with HIV on ART")
-
-
-# new hiv infections
-plot_outputs_with_uncertainty("NewAdultHIV") + ggtitle ("50% testing reduction in 2025 or 2035 \n1% ART interruption rate reduction per year from 2025") + 
-  ylab ("New HIV infections")
-
-# aids-related deaths
-plot_outputs_with_uncertainty("TotalAIDSdeathsadult") + ggtitle ("0% testing reduction, 100% condom reduction") + 
-  ylab ("AIDS-related deaths")
+# Plotting 3 HIV indicators - absolute difference
+# Wrapped by indicator
+cumulative_values %>% filter(
+  scenario == "absolute_dif", indicator == "NewAdultHIV" |
+    indicator == "TotalAIDSdeathsadult") %>% 
+  group_by(indicator, intervention_year, test_reduction, scenario) %>% 
+  summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
+            lower_CI = quantile(value, probs = 0.025)) %>% 
+  ggplot(aes(test_reduction, mean, fill = intervention_year)) +
+  geom_line(aes(color = intervention_year), show.legend = T) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = T) +
+  xlab("% testing reduction") + scale_y_continuous("Difference from baseline")  +
+  facet_wrap(nrow = 1, vars(indicator), scales = "free_y", 
+             labeller = labeller(indicator = c(
+               "TotalAIDSdeathsadult" = "AIDS-related mortality",
+               "TotalHIVtests" = "Total HIV tests",
+               "NewAdultHIV" = "New HIV infections",
+               "SWsexActs" = "FSW sex acts",
+               "SWsexActsProt" = "Protected FSW sex acts",
+               "TotProtSexActs" = "Total protected sex acts",
+               "TotSexActs" = "Total sex acts"
+             ))) +  
+  expand_limits(y=0) + theme_bw() + scale_color_discrete("Intervention year") +
+  scale_fill_discrete("Intervention year") + ggtitle("Absolute difference from baseline over 20 years")
 
 
 

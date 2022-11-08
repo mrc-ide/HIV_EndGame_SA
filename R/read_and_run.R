@@ -256,20 +256,12 @@ plot_pct_chg_uncertainty <- function(output_name){
 
 calc_cumulative <- function(start_year, follow_up_years){
   end_year <- start_year + follow_up_years
-  df %>%
-    filter(
-      indicator != "Prop1stHIVtestsPos", indicator != "DiagnosedHIV_M",
-      indicator !="DiagnosedHIV_F", indicator != "TotalHIV", 
-      indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
-      indicator != "TotalART15M", indicator != "TotalART15F",
-      indicator != "TotalARTAdult", scenario != "percent_change", 
-      indicator != "TotalDiagnosedHIV", indicator!= "ARTinititationRatio", 
-      indicator != "ARTInitPerNewInfection",
-      year >= start_year,
-      year <= end_year,
-      intervention_year == start_year
-    )  %>% 
-    group_by(indicator, intervention_year, scenario, parameter_set) %>% 
+  df %>% filter(indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
+                scenario != "percent_change", indicator != "ARTcoverageAdult",
+                year >= start_year,
+                year <= end_year,
+                intervention_year == 2025)  %>% 
+    group_by(indicator, intervention_year, scenario, parameter_set, test_reduction) %>% 
     summarise(cumulative = sum(value))
 }
 

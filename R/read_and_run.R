@@ -113,20 +113,39 @@ run_thembisa_scenario_future_variable <- function(intervention_year, output_name
 
 # incremental reductions in condom usage
 # to be included in run_thembisa_scenario_future_variables
-reduce_condom_usage_incremental  <- function(output_names, condom_usage_init, condom_usage_decrease, condom_incr_years){
+reduce_condom_usage_incremental  <- function(output_names, 
+                                             fsw_condom_usage_init,
+                                             st_condom_usage_init,
+                                             lt_condom_usage_init,
+                                             fsw_condom_usage_decrease, 
+                                             st_condom_usage_decrease,
+                                             lt_condom_usage_decrease,
+                                             condom_incr_years){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
-  formatted_data2 <- format_data(data, dictionary)
-  for (year in condom_incr_years){
+  formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
+  for (year in condom_incr_years){ #loops over each condom usage increase year and changes the proportion reduction of probability
     formatted_data2 <- edit_formatted_data(formatted_data2, "reduction_condom_fsw", 
-                                           new_values = (1-condom_usage_decrease), 
+                                           new_values = (1-fsw_condom_usage_decrease), 
                                            starting_year = year)
     formatted_data2 <- edit_formatted_data(formatted_data2, "reduction_condom_st", 
-                                           new_values = (1-condom_usage_decrease), 
+                                           new_values = (1-st_condom_usage_decrease), 
                                            starting_year = year)
     formatted_data2 <- edit_formatted_data(formatted_data2, "reduction_condom_lt", 
-                                           new_values = 1-condom_usage_decrease, 
+                                           new_values = (1-lt_condom_usage_decrease), 
                                            starting_year = year)
-    condom_usage_decrease = condom_usage_init + condom_usage_decrease
+    fsw_condom_usage_decrease = fsw_condom_usage_init + fsw_condom_usage_decrease
+    # if condition prevents negative values for probabilities
+    if (fsw_condom_usage_decrease >= 1){
+      fsw_condom_usage_decrease <- 1 
+    }
+    st_condom_usage_decrease = st_condom_usage_init + st_condom_usage_decrease
+    if (st_condom_usage_decrease > 1){
+      st_condom_usage_decrease <- 1
+    }
+    lt_condom_usage_decrease = lt_condom_usage_init + lt_condom_usage_decrease
+    if (lt_condom_usage_decrease >= 1){
+      lt_condom_usage_decrease <- 1
+    }
   }
   return(formatted_data2)
 }
@@ -146,8 +165,12 @@ reduce_art_interruption_incremental  <- function(output_names, art_interrupt_ini
 }
 
 run_thembisa_scenario_future_variables <- function(intervention_year, 
-                                                  condom_usage_init,
-                                                  condom_usage_decrease,
+                                                   fsw_condom_usage_init,
+                                                   st_condom_usage_init,
+                                                   lt_condom_usage_init,
+                                                   fsw_condom_usage_decrease, 
+                                                   st_condom_usage_decrease,
+                                                   lt_condom_usage_decrease,
                                                   condom_incr_years,
                                                   art_interrupt_incr,
                                                   art_interrupt_init,
@@ -162,11 +185,16 @@ run_thembisa_scenario_future_variables <- function(intervention_year,
                                                            art_interrupt_incr, 
                                                            art_incr_years)
   }
-  if (!is.na(condom_usage_decrease)){
+  if (!is.na(condom_incr_years)){
     formatted_data2 <- reduce_condom_usage_incremental(output_names,
-                                                      condom_usage_init,
-                                                      condom_usage_decrease,
+                                                       fsw_condom_usage_init,
+                                                       st_condom_usage_init,
+                                                       lt_condom_usage_init,
+                                                       fsw_condom_usage_decrease, 
+                                                       st_condom_usage_decrease,
+                                                       lt_condom_usage_decrease,
                                                       condom_incr_years)
+    
   }
   if (!is.na(intervention_year)){
     formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 

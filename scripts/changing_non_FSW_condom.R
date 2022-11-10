@@ -22,7 +22,7 @@ output_names <- c("TotalHIVtests", "NewAdultHIV",
 dir.create("results", FALSE, TRUE)
 
 # model input parameters 
-intervention_years <- 2025 # establish years PITC changes occur
+intervention_years <- seq(2025, 2050, 5) # establish years PITC changes occur
 base_rate_reduction = 1 # proportion of PITC base rate
 sliding_scale_reduction = seq(0,30,5) # 10x percentage of sliding scale reduction
 fsw_condom_usage_decrease = 0 # this is amount that fsw condom usage decreases by each year
@@ -31,7 +31,7 @@ lt_condom_usage_decrease = 0 # this is amount that the condom usage decreases by
 fsw_condom_usage_init = 0 # this is the value of the first year's fsw decrease
 st_condom_usage_init = 0 # this is the value of the first year's st decrease
 lt_condom_usage_init = 0 # this is the value of the first year's lt decrease
-condom_incr_years = seq(2025, 2070, 1) # these are the year for which condom usage decreases
+condom_incr_years = seq(intervention_year, 2070, 1) # these are the year for which condom usage decreases
 art_interrupt_incr = NA # this is amount that the art interruption rate decreases by each year
 art_interrupt_init = 0.01 # this is the value of the first year's art interruption rate decrease
 art_incr_years = seq(2025, 2070, 1) # these are the year for which art interruption rate decreases
@@ -61,7 +61,8 @@ for (percentage_value in sliding_scale_reduction){
   st_condom_usage_decrease <- percentage_value/1000
   lt_condom_usage_decrease <- percentage_value/1000
   for (intervention_year in intervention_years){
-  one_scenario <- run_thembisa_scenario_future_variables(intervention_year,
+    condom_incr_years <- seq(intervention_year, 2070, 1)
+    one_scenario <- run_thembisa_scenario_future_variables(intervention_year,
                                                          fsw_condom_usage_init = fsw_condom_usage_init,
                                                          st_condom_usage_init = st_condom_usage_init,
                                                          lt_condom_usage_init = lt_condom_usage_init,
@@ -137,7 +138,7 @@ df %>% filter(
   geom_line(aes(colour = test_reduction)) +
   xlab("Years") +
   ylab("Number of HIV tests") +
-  facet_wrap(vars(intervention_year)) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12)) +
+  facet_wrap(ncol = 2, vars(intervention_year)) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12)) +
   scale_color_discrete("Annual \nST and LT \ncondom usage \nprobability \nreduction (%)") +
   scale_y_continuous("Percentage of total sex acts that used condom (%)") 
 
@@ -187,27 +188,12 @@ df %>% filter(
   geom_line(aes(colour = test_reduction)) +
   xlab("Years") +
   ylab("Number of HIV tests") +
-  facet_wrap(vars(intervention_year)) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12)) +
+  facet_wrap(ncol = 2, vars(intervention_year)) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12)) +
   scale_color_discrete("Annual \nST and LT \ncondom usage \nprobability \nreduction (%)") +
   scale_y_continuous("Number of new HIV infections") 
 
-df %>% filter(
-  scenario == "intervention",
-  indicator == "NewAdultHIV",
-  year >= 2025) %>% 
-  group_by(year, intervention_year, test_reduction) %>% 
-  summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
-            lower_CI = quantile(value, probs = 0.025)) %>% 
-  ggplot(aes(test_reduction, mean, group = intervention_year, fill = intervention_year)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = intervention_year)) +
-  xlab("Years") +
-  ylab("Number of HIV tests") +
-  facet_wrap(vars(intervention_year)) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12)) +
-  scale_color_discrete("Annual \nST and LT \ncondom usage \nprobability \nreduction (%)") +
-  scale_y_continuous("Number of new HIV infections") 
-
-df$test_reduction <- as.integer(df$test_reduction)
+df <- read.csv("results/df.csv") # this is read again so that test_reduction can be used as an integer
+df$test_reduction <- as.integer(df$test_reduction)/10
 
 # cumualtive values
 
@@ -228,9 +214,9 @@ cumulative_values %>% filter(
   summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
             lower_CI = quantile(value, probs = 0.025)) %>% 
   ggplot(aes(test_reduction, mean, fill = intervention_year)) +
-  geom_line(aes(color = intervention_year), show.legend = F) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = F) +
-  xlab("% testing reduction") + scale_y_continuous("Cumulative HIV infections (millions)", labels = (function(l) {round(l/1e6,1)}))  +
+  geom_line(aes(color = intervention_year), show.legend = T) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = intervention_year), alpha = 0.10, show.legend = T) +
+  xlab("% annual ST & LT condom usage reduction") + scale_y_continuous("Cumulative HIV infections (millions)", labels = (function(l) {round(l/1e6,1)}))  +
   facet_wrap(nrow = 1, vars(indicator), scales = "free_y", 
              labeller = labeller(indicator = c(
                "TotalAIDSdeathsadult" = "AIDS-related mortality",
@@ -241,7 +227,8 @@ cumulative_values %>% filter(
                "TotProtSexActs" = "Total protected sex acts",
                "TotSexActs" = "Total sex acts"
              ))) +  
-  expand_limits(y=0) + theme_bw() + ggtitle("Cumulative values over 20 years")
+  expand_limits(y=0) + theme_bw() + ggtitle("Cumulative values over 20 years") + 
+  scale_fill_discrete("Condom \nreduction \nstart year") + scale_color_discrete("Condom \nreduction \nstart year")
 
 # Plotting 3 HIV indicators - percent change
 # Wrapped by indicator

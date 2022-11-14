@@ -160,6 +160,9 @@ reduce_art_interruption_incremental  <- function(output_names, art_interrupt_ini
                                            new_values = (1-art_interrupt_incr), 
                                            starting_year = year)
     art_interrupt_incr = art_interrupt_init + art_interrupt_incr
+    if (art_interrupt_incr >= 1){
+      art_interrupt_incr <- 1 
+    }
   }
   return(formatted_data2)
 }

@@ -2642,7 +2642,7 @@ void PostOutputArray::GetMeans()
 
 	// Store results
 	for (ic = 0; ic < 3; ic++){
-		for (iy = 0; iy < 86; iy++){
+		for (iy = 0; iy < 116; iy++){
 			SummaryOutputs[ic + SummOutRow][iy] = Means[iy][ic];
 		}
 	}
@@ -3430,291 +3430,291 @@ void ReadRollout()
     }
 
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>HCT1stTimeF25[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> NumbersTested[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> NumbersTested5to14[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>OIsDiagnosed[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RegHCT_FSW[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RegHCT_15[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RegHCT_20[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RegHCT_25[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RegHCT_50[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RegHCTpregnant[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>PCR6week[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> PCRbirth[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> TestingAt18mo[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> HBCTuptake[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
 	for (ig = 0; ig < 6; ig++){
-		for (iy = 0; iy < 86; iy++){ file >> SelfTestTotals[iy][ig]; }
+		for (iy = 0; iy < 116; iy++){ file >> SelfTestTotals[iy][ig]; }
 	}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>PregnantWomenTested[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>AZTrollout[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RescreenPropnLate[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>RescreenPropnImm[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>ExtNVProllout[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligibleOptionB[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>NoBFpropn[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> IncreaseARTdurPreg[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>NumStartingART_M[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>NumStartingART_F[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>NumStartingART_P[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RateARTstartF[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RateARTstartC[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_ARTinterruption[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligiblePTB350[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligiblePTBpre350[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligibleWHO3[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligiblePreg350[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligiblePregPre350[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligibleAsym350[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligibleAsym500[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>EligibleAsymPre500[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> EligibleInfants[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> EarlyART1to4[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> EarlyART5to14[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>MatARTuptake[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>OI_ARTuptake[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>HCT_ARTuptake[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>PaedARTuptake[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file>>VLsuppression200[iy];}
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> VLsuppressionPaed[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>TotStartingPrEP[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_PrEPstartMSM[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_PrEPstartF20[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> PrEPeligMSM[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> PrEPeligAGYW[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> PrEPeligOther[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>PrEPpregnant[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>VM_FSW[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>VM_15[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>VM_20[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>VM_25[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>VM_50[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>VMpregnant[iy];}
 	file.ignore(255,'\n');
 	file.ignore(255,'\n');
-	for(iy=0; iy<86; iy++){
+	for(iy=0; iy<116; iy++){
 		file>>MMCoperations[iy];}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_MMCpromo10[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_MMCpromo15[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_MMCpromo20[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_MMCpromo25[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> RR_MMCpromo50[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> NeonatalMMC[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> CondomFSWreduction[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> CondomSTreduction[iy];
 	}
 	file.ignore(255, '\n');
 	file.ignore(255, '\n');
-	for (iy = 0; iy<86; iy++){
+	for (iy = 0; iy<116; iy++){
 		file >> CondomLTreduction[iy];
 	}
 	file.close();
 
-	for (iy = 0; iy < 86; iy++){
+	for (iy = 0; iy < 116; iy++){
 		HCT1stTimeF25init[iy] = HCT1stTimeF25[iy];
 		OIsTested[iy] = OIsDiagnosed[iy];
 		if (CalibARTtotals == 1 || CalibARTtotalsP == 1){
@@ -3726,7 +3726,7 @@ void ReadRollout()
 		}
 	}
 	if (InputARTinitiationRates == 1 && PropnalImmART == 1){
-		for (iy = 0; iy < 86; iy++){
+		for (iy = 0; iy < 116; iy++){
 			HCT_ARTuptake[iy] = RateARTstartF[iy] * RR_ARTstart1stMo;
 			PaedARTuptake[iy] = RateARTstartC[iy] * RR_ARTstart1stMo;
 		}
@@ -5356,33 +5356,33 @@ void SetFutureRollout()
 	int iy, ig, StartRollout, FirstRollout;
 
 	// HCT assumptions
-	for (iy = 31; iy < 86; iy++){
+	for (iy = 31; iy < 116; iy++){
 		HCT1stTimeF25[iy] = FutureInterventions.out[CurrSim - 1][0];}
 	StartRollout = FutureInterventions.out[CurrSim - 1][2] + 30;
-	for (iy = 0; iy < 86; iy++){ HBCTuptake[iy] = 0.0; }
-	if (StartRollout < 86){
-		for (iy = StartRollout; iy < 86; iy++){
+	for (iy = 0; iy < 116; iy++){ HBCTuptake[iy] = 0.0; }
+	if (StartRollout < 116){
+		for (iy = StartRollout; iy < 116; iy++){
 			HBCTuptake[iy] = FutureInterventions.out[CurrSim - 1][3];}
 	}
 
 	// ART assumptions
 	StartRollout = FutureInterventions.out[CurrSim - 1][7] + 30;
-	for (iy = 30; iy < 86; iy++){ EligibleAsymPre500[iy] = 0.0; }
-	if (StartRollout < 86){
-		for (iy = StartRollout; iy < 86; iy++){
+	for (iy = 30; iy < 116; iy++){ EligibleAsymPre500[iy] = 0.0; }
+	if (StartRollout < 116){
+		for (iy = StartRollout; iy < 116; iy++){
 			EligibleAsymPre500[iy] = 1.0;}
 	}
 	FirstRollout = StartRollout;
 	StartRollout = FutureInterventions.out[CurrSim - 1][8] + 30;
-	for (iy = 0; iy < 86; iy++){POC_CD4[iy] = 0.0;}
-	if (StartRollout < 86){
-		for (iy = StartRollout; iy < 86; iy++){
+	for (iy = 0; iy < 116; iy++){POC_CD4[iy] = 0.0;}
+	if (StartRollout < 116){
+		for (iy = StartRollout; iy < 116; iy++){
 			POC_CD4[iy] = 1.0;}
 	}
 	if (StartRollout < FirstRollout){ FirstRollout = StartRollout; }
-	for (iy = 30; iy < 86; iy++){ HCT_ARTuptake[iy] = HCT_ARTuptake[29]; }
-	if (FirstRollout < 86){
-		for (iy = FirstRollout; iy < 86; iy++){
+	for (iy = 30; iy < 116; iy++){ HCT_ARTuptake[iy] = HCT_ARTuptake[29]; }
+	if (FirstRollout < 116){
+		for (iy = FirstRollout; iy < 116; iy++){
 			HCT_ARTuptake[iy] = FutureInterventions.out[CurrSim - 1][9];
 		}
 	}
@@ -5395,29 +5395,29 @@ void SetFutureRollout()
 	for (iy = 27; iy < 31; iy++){
 		RescreenPropnLate[iy] = RescreenPropnLate[26] + (0.2 * (iy - 26)) *
 			(FutureInterventions.out[CurrSim - 1][17] - RescreenPropnLate[26]);}
-	for (iy = 31; iy < 86; iy++){
+	for (iy = 31; iy < 116; iy++){
 		RescreenPropnLate[iy] = FutureInterventions.out[CurrSim - 1][17];}
 	for (iy = 27; iy < 31; iy++){
 		MatARTuptake[iy] = MatARTuptake[26] + (0.2 * (iy - 26)) *
 			(FutureInterventions.out[CurrSim - 1][18] - MatARTuptake[26]);}
-	for (iy = 31; iy < 86; iy++){
+	for (iy = 31; iy < 116; iy++){
 		MatARTuptake[iy] = FutureInterventions.out[CurrSim - 1][18];}
 	for (iy = 27; iy < 31; iy++){
 		IncreaseARTdurPreg[iy] = IncreaseARTdurPreg[26] + (0.2 * (iy - 26)) *
 			(FutureInterventions.out[CurrSim - 1][19] - IncreaseARTdurPreg[26]);}
-	for (iy = 31; iy < 86; iy++){
+	for (iy = 31; iy < 116; iy++){
 		IncreaseARTdurPreg[iy] = FutureInterventions.out[CurrSim - 1][19];}
 
 	// EID and paediatric ART assumptions
 	for (iy = 27; iy < 31; iy++){
 		PCR6week[iy] = PCR6week[26] + (0.2 * (iy - 26)) *
 			(FutureInterventions.out[CurrSim - 1][24] - PCR6week[26]);}
-	for (iy = 31; iy < 86; iy++){
+	for (iy = 31; iy < 116; iy++){
 		PCR6week[iy] = FutureInterventions.out[CurrSim - 1][24];}
 	//StartRollout = FutureInterventions.out[CurrSim - 1][25] + 30;
-	for (iy = 30; iy < 86; iy++){ PCRbirth[iy] = 0.0; }
-	/*if (StartRollout < 86){
-		for (iy = StartRollout; iy < 86; iy++){
+	for (iy = 30; iy < 116; iy++){ PCRbirth[iy] = 0.0; }
+	/*if (StartRollout < 116){
+		for (iy = StartRollout; iy < 116; iy++){
 			PCRbirth[iy] = 1.0;}
 	}*/
 	UltARTdelayC = FutureInterventions.out[CurrSim - 1][26];
@@ -5431,19 +5431,19 @@ void SetFutureRollout()
 	CondomRednPrEP[0] = FutureInterventions.out[CurrSim - 1][29];
 	CondomRednPrEP[1] = FutureInterventions.out[CurrSim - 1][29];
 	StartRollout = FutureInterventions.out[CurrSim - 1][30] + 30;
-	/*for (iy = 30; iy < 86; iy++){PrEP_FSW[iy] = 0.0;}
-	if (StartRollout < 86){
-		for (iy = StartRollout; iy < 86; iy++){
+	/*for (iy = 30; iy < 116; iy++){PrEP_FSW[iy] = 0.0;}
+	if (StartRollout < 116){
+		for (iy = StartRollout; iy < 116; iy++){
 			PrEP_FSW[iy] = FutureInterventions.out[CurrSim - 1][32];}
 	}
 	StartRollout = FutureInterventions.out[CurrSim - 1][31] + 30;
 	for (ig = 0; ig < 2; ig++){
-		for (iy = 30; iy < 86; iy++){
+		for (iy = 30; iy < 116; iy++){
 			PrEP_15[iy][ig] = 0.0;
 			PrEP_20[iy][ig] = 0.0;
 		}
-		if (StartRollout < 86){
-			for (iy = StartRollout; iy < 86; iy++){
+		if (StartRollout < 116){
+			for (iy = StartRollout; iy < 116; iy++){
 				PrEP_15[iy][ig] = FutureInterventions.out[CurrSim - 1][33];
 				PrEP_20[iy][ig] = FutureInterventions.out[CurrSim - 1][33];
 			}
@@ -15758,10 +15758,10 @@ void SimulateParameters()
 		for (iy = 27; iy <= 30; iy++){
 			RateARTstartF[iy] = RateARTstartF[26]; }
 		//RateARTstartF[30] = RateARTstartF[29];
-		for (iy = 32; iy < 86; iy++){
+		for (iy = 32; iy < 116; iy++){
 			RateARTstartF[iy] = RateARTstartF[31]; }
 		if (PropnalImmART == 1){
-			for (iy = 15; iy < 86; iy++){
+			for (iy = 15; iy < 116; iy++){
 				HCT_ARTuptake[iy] = RateARTstartF[iy] * RR_ARTstart1stMo;
 				if (HCT_ARTuptake[iy] > 0.9999){ HCT_ARTuptake[iy] = 0.9999; }
 			}
@@ -15805,9 +15805,9 @@ void SimulateParameters()
 		for (iy = 20; iy < 24; iy++){
 			RateARTstartC[iy] = RateARTstartC[19] * (24 - iy) / 5.0 + RateARTstartC[24] * (iy - 19) / 5.0;}
 		for (iy = 26; iy < 31; iy++){ RateARTstartC[iy] = RateARTstartC[25]; }
-		for (iy = 32; iy < 86; iy++){ RateARTstartC[iy] = RateARTstartC[31]; }
+		for (iy = 32; iy < 116; iy++){ RateARTstartC[iy] = RateARTstartC[31]; }
 		if (PropnalImmART == 1){
-			for (iy = 15; iy < 86; iy++){
+			for (iy = 15; iy < 116; iy++){
 				PaedARTuptake[iy] = RateARTstartC[iy] * RR_ARTstart1stMo;
 				if (PaedARTuptake[iy] > 0.9999){ PaedARTuptake[iy] = 0.9999; }
 			}
@@ -16009,7 +16009,7 @@ void SimulateParameters_FSW()
 	bound = 0.0;
 	ind = 2;
 	cdfgam(&ind,&p,&q,&x,&a,&b,0,&bound);
-	//for(i=30; i<86; i++){
+	//for(i=30; i<116; i++){
 	//	PrEP_FSW[i] = x;}
 
 	// PrEP efficacy
@@ -16042,7 +16042,7 @@ void SimulateParameters_FSW()
 	bound = 0.0;
 	ind = 2;
 	cdfgam(&ind,&p,&q,&x,&a,&b,0,&bound);
-	//for(i=30; i<86; i++){
+	//for(i=30; i<116; i++){
 	//	VM_FSW[i] = x;}
 
 	// Microbicide efficacy
@@ -16554,11 +16554,11 @@ void RunSample()
 	AdultRootM.RecordSample("AdultRootM.txt");
 	AdultRootF.RecordSample("AdultRootF.txt");
 	AgeDbnOnART_M.RecordSample("AgeDbnOnART_M.txt");
-	AgeDbnOnART_F.RecordSample("AgeDbnOnART_F.txt");
+	AgeDbnOnART_F.RecordSample("AgeDbnOnART_F.txt");*/
 
 	// Write other outputs to text files
 	TotPop.RecordSample("TotPop.txt");
-	TotBirthsHIV.RecordSample("TotBirthsHIV.txt");
+	/*TotBirthsHIV.RecordSample("TotBirthsHIV.txt");
 	TotBirthsART.RecordSample("TotBirthsART.txt");
 	NegChildrenU15.RecordSample("NegChildrenU15.txt");
 	Neg15to49.RecordSample("Neg15to49.txt");
@@ -16630,10 +16630,10 @@ void RunSample()
     // NonAIDSdeaths.RecordSample("NonAIDSdeaths.txt");
     // AIDSdeathsART.RecordSample("AIDSdeathsART.txt");
 	LYlostAIDS.RecordSample("LYlostAIDS.txt");
-	/*TotBirths.RecordSample("TotBirths.txt");
+	TotBirths.RecordSample("TotBirths.txt");
 	MalesOver15.RecordSample("MalesOver15.txt");
 	FemalesOver15.RecordSample("FemalesOver15.txt");
-	MarriedM17to49.RecordSample("MarriedM17to49.txt");
+	/*MarriedM17to49.RecordSample("MarriedM17to49.txt");
 	MarriedF17to49.RecordSample("MarriedF17to49.txt");
 	MarriedM50.RecordSample("MarriedM50.txt");
 	MarriedF50.RecordSample("MarriedF50.txt");
@@ -17742,10 +17742,10 @@ void SimulateParameters_IMIS()
 		for (iy = 27; iy <= 30; iy++){
 			RateARTstartF[iy] = RateARTstartF[26]; }
 		//RateARTstartF[30] = RateARTstartF[29];
-		for (iy = 32; iy < 86; iy++){
+		for (iy = 32; iy < 116; iy++){
 			RateARTstartF[iy] = RateARTstartF[31]; }
 		if (PropnalImmART == 1){
-			for (iy = 15; iy < 86; iy++){
+			for (iy = 15; iy < 116; iy++){
 				HCT_ARTuptake[iy] = RateARTstartF[iy] * RR_ARTstart1stMo;
 				if (HCT_ARTuptake[iy] > 0.9999){ HCT_ARTuptake[iy] = 0.9999; }
 			}
@@ -17790,9 +17790,9 @@ void SimulateParameters_IMIS()
 			RateARTstartC[iy] = RateARTstartC[19] * (24 - iy) / 5.0 + RateARTstartC[24] * (iy - 19) / 5.0;
 		}
 		for (iy = 26; iy < 31; iy++){ RateARTstartC[iy] = RateARTstartC[25]; }
-		for (iy = 32; iy < 86; iy++){ RateARTstartC[iy] = RateARTstartC[31]; }
+		for (iy = 32; iy < 116; iy++){ RateARTstartC[iy] = RateARTstartC[31]; }
 		if (PropnalImmART == 1){
-			for (iy = 15; iy < 86; iy++){
+			for (iy = 15; iy < 116; iy++){
 				PaedARTuptake[iy] = RateARTstartC[iy] * RR_ARTstart1stMo;
 				if (PaedARTuptake[iy] > 0.9999){ PaedARTuptake[iy] = 0.9999; }
 			}

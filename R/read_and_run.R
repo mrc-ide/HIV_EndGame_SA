@@ -16,7 +16,7 @@ read_output <- function(output_name){
   output_txt <- paste(output_name, "txt", sep = ".")
   output_txt <- paste("THEMBISAv18", output_txt, sep = "/")
   output <- read.delim(output_txt, header=FALSE, row.names = 1)
-  names(output)[2:87] <- seq(1985, 2070)
+  names(output)[2:87] <- seq(1985, 2100)
   # names(output)[1] <- "Simulation"
   output <- output %>% select(-V2) 
   t_output <- as.data.frame(t(output))
@@ -26,7 +26,7 @@ read_output <- function(output_name){
   return(output$Simulation_1)
 }
 
-edit_formatted_data <- function(formatted_data, parameter_name, new_values, starting_year=1985, final_year=2070){
+edit_formatted_data <- function(formatted_data, parameter_name, new_values, starting_year=1985, final_year=2100){
   # select parameter using dictionary
   parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
   # Edit value
@@ -38,7 +38,7 @@ edit_formatted_data <- function(formatted_data, parameter_name, new_values, star
   return(formatted_data)
 }
 
-edit_formatted_data_incremental <- function(formatted_data, parameter_name, new_values, starting_year=1985, final_year=2070){
+edit_formatted_data_incremental <- function(formatted_data, parameter_name, new_values, starting_year=1985, final_year=2100){
   # select parameter using dictionary
   parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
   # Edit value
@@ -62,7 +62,7 @@ read_thembisa_output <- function(output_name){
   t_output <- t(output)
   output_new <- as.data.frame(as_tibble(t_output))
   names(output_new) <- seq_along(output_new)
-  output_new$year <- seq(1985, 2070)
+  output_new$year <- seq(1985, 2100)
   pivot_longer(output_new, -year, names_to = "parameter_set")
 }
 

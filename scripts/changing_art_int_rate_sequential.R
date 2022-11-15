@@ -15,16 +15,16 @@ source(here("R/read_and_run.R"))
 
 output_names <- c("TotalHIVtests", "NewAdultHIV",
                   "AIDSdeathsAdultM", "AIDSdeathsAdultF", "TotSexActs",
-                  "SWsexActs", "TotProtSexActs", "SWsexActsProt", "ARTcoverageAdult")
+                  "SWsexActs", "TotProtSexActs", "SWsexActsProt", "ARTcoverageAdult", "TotPop")
 
 # create empty folder for results
 
 dir.create("results", FALSE, TRUE)
 
 # model input parameters 
-intervention_years <- seq(2025, 2050, 5) # establish years PITC changes occur
+intervention_years <- 2025 # establish years PITC changes occur
 base_rate_reduction = 1 # proportion of PITC base rate
-sliding_scale_reduction = seq(0,30,5) # 10x percentage of sliding scale reduction
+sliding_scale_reduction = 0 # 10x percentage of sliding scale reduction
 fsw_condom_usage_decrease = 0 # this is amount that fsw condom usage decreases by each year
 st_condom_usage_decrease = 0 # this is amount that st condom usage decreases by each year
 lt_condom_usage_decrease = 0 # this is amount that the condom usage decreases by each year
@@ -50,6 +50,7 @@ baseline <- run_thembisa_scenario_future_variables(intervention_year = NA,
                                                   art_incr_years = art_incr_years,
                                                   output_names = output_names, 
                                                   base_rate_reduction = base_rate_reduction)
+
 
 # save baseline outputs
 write.csv(baseline, "results/baseline.csv", row.names = FALSE)
@@ -108,7 +109,7 @@ df$test_reduction <- as.factor(df$test_reduction)
 
 # testing
 df %>% filter(
-  scenario == "intervention",
+  scenario == "baseline",
   indicator == "TotalHIVtests",
   year >= 2025) %>% 
   group_by(year, intervention_year, test_reduction) %>% 

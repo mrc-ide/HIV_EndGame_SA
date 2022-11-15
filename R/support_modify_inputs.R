@@ -34,7 +34,7 @@ save_dictionary <- function(dictionary, file) {
 }
 
 ## Convert Thembisa inputs into easily modifiable format
-format_data <- function(data, dictionary, start_year = 1985, end_year = 2070) {
+format_data <- function(data, dictionary, start_year = 1985, end_year = 2100) {
   ## Split each line into a vector, using tabs as separators
   data <- strsplit(data, "\t")
   ## Convert data from characters to numbers

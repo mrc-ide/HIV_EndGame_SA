@@ -285,6 +285,8 @@ cumulative_values_40 %>% filter(
   expand_limits(y=0) + theme_bw() + ggtitle("Cumulative values over 40 years") + 
   scale_fill_discrete("ART \ninterruption rate \nstart year") + scale_color_discrete("ART \ninterruption rate \nstart year")
 
+
+# calculating cumulative values for different time scales
 cumulative_years <- seq(20,50, 10)
 for (cumulative_year in cumulative_years){
   cumulative_values <- calc_all_cumulatives(intervention_years, cumulative_year)
@@ -292,7 +294,7 @@ for (cumulative_year in cumulative_years){
             row.names = FALSE)
 }
 
-# calculating cumulative values for different time scales
+# joining different cumulative value dfs together
 
 filepaths <- paste0("results/cumulative_values_", cumulative_years, ".csv")
 temp <- lapply(filepaths, read.csv)

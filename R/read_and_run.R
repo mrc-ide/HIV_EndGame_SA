@@ -139,7 +139,7 @@ reduce_condom_usage_incremental  <- function(output_names,
       fsw_condom_usage_decrease <- 1 
     }
     st_condom_usage_decrease = st_condom_usage_init + st_condom_usage_decrease
-    if (st_condom_usage_decrease > 1){
+    if (st_condom_usage_decrease >= 1){
       st_condom_usage_decrease <- 1
     }
     lt_condom_usage_decrease = lt_condom_usage_init + lt_condom_usage_decrease

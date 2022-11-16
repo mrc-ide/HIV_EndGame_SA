@@ -16567,9 +16567,9 @@ void RunSample()
 	Neg25to49F.RecordSample("Neg25to49F.txt");
 	Neg25to49M.RecordSample("Neg25to49M.txt");
 	Neg50F.RecordSample("Neg50F.txt");
-	Neg50M.RecordSample("Neg50M.txt");
+	Neg50M.RecordSample("Neg50M.txt");*/
 	FSWcondomUse.RecordSample("FSWcondomUse.txt");
-	PrevTested05.RecordSample("PrevTested05.txt");
+	/*PrevTested05.RecordSample("PrevTested05.txt");
 	PrevTested08.RecordSample("PrevTested08.txt");
 	PrevTested09.RecordSample("PrevTested09.txt");
 	PrevTested12.RecordSample("PrevTested12.txt");
@@ -16633,11 +16633,11 @@ void RunSample()
 	TotBirths.RecordSample("TotBirths.txt");
 	MalesOver15.RecordSample("MalesOver15.txt");
 	FemalesOver15.RecordSample("FemalesOver15.txt");
-	/*MarriedM17to49.RecordSample("MarriedM17to49.txt");
+	MarriedM17to49.RecordSample("MarriedM17to49.txt");
 	MarriedF17to49.RecordSample("MarriedF17to49.txt");
 	MarriedM50.RecordSample("MarriedM50.txt");
 	MarriedF50.RecordSample("MarriedF50.txt");
-	TotInfants.RecordSample("TotInfants.txt");
+	/*TotInfants.RecordSample("TotInfants.txt");
 	Children1to2.RecordSample("Children1to2.txt");
 	Children3to5.RecordSample("Children3to5.txt");
 	Children6to13.RecordSample("Children6to13.txt");
@@ -16689,7 +16689,7 @@ void RunSample()
 	Births350to499.RecordSample("Births350to499.txt");
 	Births200to349.RecordSample("Births200to349.txt");
 	BirthsUnder200.RecordSample("BirthsUnder200.txt");*/
-	//TotSexWorkers.RecordSample("TotSexWorkers.txt");
+	TotSexWorkers.RecordSample("TotSexWorkers.txt");
 	SWsexActs.RecordSample("SWsexActs.txt");
 	SWsexActsProt.RecordSample("SWsexActsProt.txt");
 	/*MenOnPrEP.RecordSample("MenOnPrEP.txt");

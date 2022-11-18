@@ -150,6 +150,81 @@ reduce_condom_usage_incremental  <- function(output_names,
   return(formatted_data2)
 }
 
+# funbction to do reduciton of previous years probability
+
+edit_formatted_data_prev_year <- function(formatted_data, parameter_name, new_values, starting_year=1985, final_year=2100){
+  # select parameter using dictionary
+  parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
+  # Edit value
+  for (i in ((starting_year+1)-1985):((final_year+1)-1985)){
+    parameter[i] <- parameter[i-1] * new_values
+  }
+  # reassign to formatted data
+  parameter -> formatted_data$data[,which(dictionary$name == parameter_name)]
+  return(formatted_data)
+}
+
+reduce_condom_usage_prev_year  <- function(output_names, 
+                                           fsw_condom_usage_decrease, 
+                                           st_condom_usage_decrease,
+                                           lt_condom_usage_decrease,
+                                           condom_incr_years){
+  data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
+  formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
+  for (year in condom_incr_years){ #loops over each condom usage increase year and changes the proportion reduction of probability
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_fsw", 
+                                                     new_values = (1-fsw_condom_usage_decrease), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_st", 
+                                                     new_values = (1-st_condom_usage_decrease), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_lt", 
+                                                     new_values = (1-lt_condom_usage_decrease), 
+                                                     starting_year = year)
+  }
+  return(formatted_data2)
+}
+
+run_thembisa_scenario_prev_year <- function(intervention_year,
+                                            fsw_condom_usage_decrease, 
+                                            st_condom_usage_decrease,
+                                            lt_condom_usage_decrease,
+                                            condom_incr_years,
+                                            art_interrupt_incr,
+                                            art_interrupt_init,
+                                            art_incr_years,
+                                            output_names, 
+                                            base_rate_reduction){
+  data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
+  formatted_data2 <- format_data(data, dictionary)
+  if (!is.na(art_interrupt_incr)){
+    formatted_data2 <- reduce_art_interruption_incremental(output_names,
+                                                           art_interrupt_init, 
+                                                           art_interrupt_incr, 
+                                                           art_incr_years)
+  }
+  if (!is.na(condom_incr_years)){
+    formatted_data2 <- reduce_condom_usage_prev_year(output_names,
+                                                     fsw_condom_usage_decrease, 
+                                                     st_condom_usage_decrease,
+                                                     lt_condom_usage_decrease,
+                                                     condom_incr_years)
+    
+  }
+  if (!is.na(intervention_year)){
+    formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 
+                                                       "rate_first_test_neg_fem_under_25", 
+                                                       new_values = 0.2877 * base_rate_reduction, 
+                                                       starting_year = intervention_year)
+  }
+  rollout <- convert_to_thembisa_format(formatted_data2, data, dictionary)
+  write(rollout, here("THEMBISAv18/Rollout.txt"))
+  ## compile and model
+  run_thembisa()
+  read_thembisa_scenario(output_names)
+}
+
+
 # incremental reductions in art interruption rate
 # to be included in run_thembisa_scenario_future_variables
 reduce_art_interruption_incremental  <- function(output_names, art_interrupt_init, art_interrupt_incr, art_incr_years){

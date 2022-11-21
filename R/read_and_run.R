@@ -150,7 +150,7 @@ reduce_condom_usage_incremental  <- function(output_names,
   return(formatted_data2)
 }
 
-# funbction to do reduciton of previous years probability
+# function to do reduction of previous years probability / rate
 
 edit_formatted_data_prev_year <- function(formatted_data, parameter_name, new_values, starting_year=1985, final_year=2100){
   # select parameter using dictionary
@@ -164,7 +164,9 @@ edit_formatted_data_prev_year <- function(formatted_data, parameter_name, new_va
   return(formatted_data)
 }
 
-reduce_condom_usage_prev_year  <- function(output_names, 
+# to be included in run_thembisa_scenario_prev_year
+reduce_condom_usage_prev_year  <- function(formatted_data, 
+                                           output_names, 
                                            fsw_condom_usage_decrease, 
                                            st_condom_usage_decrease,
                                            lt_condom_usage_decrease,
@@ -185,26 +187,42 @@ reduce_condom_usage_prev_year  <- function(output_names,
   return(formatted_data2)
 }
 
+# reduces ART interruption rate by a percentage of the previous year's rate
+reduce_art_interruption_prev_year  <- function(formatted_data2, output_names, art_interrupt_incr, art_incr_years){
+  data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
+  formatted_data2 <- format_data(data, dictionary)
+  for (year in art_incr_years){
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_art_by_year", 
+                                                     new_values = (1-art_interrupt_incr), 
+                                                     starting_year = year)
+    if (art_interrupt_incr >= 1){
+      art_interrupt_incr <- 1 
+    }
+  }
+  return(formatted_data2)
+}
+
+
+
 run_thembisa_scenario_prev_year <- function(intervention_year,
                                             fsw_condom_usage_decrease, 
                                             st_condom_usage_decrease,
                                             lt_condom_usage_decrease,
                                             condom_incr_years,
                                             art_interrupt_incr,
-                                            art_interrupt_init,
                                             art_incr_years,
                                             output_names, 
                                             base_rate_reduction){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
   if (!is.na(art_interrupt_incr)){
-    formatted_data2 <- reduce_art_interruption_incremental(output_names,
-                                                           art_interrupt_init, 
+    formatted_data2 <- reduce_art_interruption_prev_year(formatted_data2,
+                                                         output_names, 
                                                            art_interrupt_incr, 
                                                            art_incr_years)
   }
   if (!is.na(condom_incr_years)){
-    formatted_data2 <- reduce_condom_usage_prev_year(output_names,
+    formatted_data2 <- reduce_condom_usage_prev_year(formatted_data2, output_names,
                                                      fsw_condom_usage_decrease, 
                                                      st_condom_usage_decrease,
                                                      lt_condom_usage_decrease,

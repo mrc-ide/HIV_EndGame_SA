@@ -16436,10 +16436,11 @@ void RunSample()
 	MSMprev18plus.RecordSample("MSMprev18plus.txt");*/
 
 	// Write HIV incidence outputs to text files
-    // NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
-    // NewHIVclients.RecordSample("NewHIVclients.txt");
-    NewAdultHIV.RecordSample("NewAdultHIV.txt");
-	/*HIVinc15to49.RecordSample("HIVinc15to49.txt");
+  NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
+  NewHIVclients.RecordSample("NewHIVclients.txt");
+  NewAdultHIV.RecordSample("NewAdultHIV.txt");
+	HIVinc0to14.RecordSample("HIVinc0to14.txt");
+	HIVinc15to49.RecordSample("HIVinc15to49.txt");
 	HIVinc15to49M.RecordSample("HIVinc15to49M.txt");
 	HIVinc15to49F.RecordSample("HIVinc15to49F.txt");
 	HIVinc15to24M.RecordSample("HIVinc15to24M.txt");
@@ -16450,21 +16451,21 @@ void RunSample()
 	HIVinc50M.RecordSample("HIVinc50M.txt");
 	HIVinc15plusM.RecordSample("HIVinc15plusM.txt");
 	HIVinc15plusF.RecordSample("HIVinc15plusF.txt");
-	HIVinc2000.RecordSample("HIVinc2000.txt");
+	/*HIVinc2000.RecordSample("HIVinc2000.txt");
 	HIVinc2010.RecordSample("HIVinc2010.txt");
 	PAFforCSW.RecordSample("PAFforCSW.txt");
 	NewHIVatBirth.RecordSample("NewHIVatBirth.txt");
 	NewHIVafterBirth.RecordSample("NewHIVafterBirth.txt");
-    MTCTrateBirthDiag.RecordSample("MTCTrateBirthDiag.txt");
-    MTCTrateAtBirth.RecordSample("MTCTrateAtBirth.txt");
+  MTCTrateBirthDiag.RecordSample("MTCTrateBirthDiag.txt");
+  MTCTrateAtBirth.RecordSample("MTCTrateAtBirth.txt");
 
 	NewHIVto18mo.RecordSample("NewHIVto18mo.txt");
 	NewHIVmothersBF.RecordSample("NewHIVmothersBF.txt");
 	VertTransmKnownPos.RecordSample("VertTransmKnownPos.txt");*/
 	TotalNewHIV.RecordSample("TotalNewHIV.txt");
-    NewDiagnosesPregnancy.RecordSample("NewDiagnosesPregnancy.txt");
-    RediagnosesPregnancy.RecordSample("RediagnosesPregnancy.txt");
-    TotANCtests.RecordSample("TotANCtests.txt");
+  NewDiagnosesPregnancy.RecordSample("NewDiagnosesPregnancy.txt");
+  RediagnosesPregnancy.RecordSample("RediagnosesPregnancy.txt");
+  TotANCtests.RecordSample("TotANCtests.txt");
 
 	// Write mortality outputs to text files
 	/*Deaths0M.RecordSample("Deaths0M.txt");

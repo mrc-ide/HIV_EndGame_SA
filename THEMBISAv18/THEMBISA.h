@@ -1567,7 +1567,7 @@ PostOutputArray Prev10to14F(31);*/
 
 // HIV incidence outputs
 PostOutputArray NewHIVinFSW(116);
-PostOutputArray NewHIVclients(41);
+PostOutputArray NewHIVclients(116);
 PostOutputArray HIVinc0to14(116);
 PostOutputArray HIVinc15to49(116);
 PostOutputArray HIVinc15to49adj(116);

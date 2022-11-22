@@ -384,7 +384,7 @@ calc_cumulative <- function(start_year, follow_up_years){
                 scenario != "percent_change", indicator != "ARTcoverageAdult",
                 year >= start_year,
                 year <= end_year,
-                intervention_year == 2025)  %>% 
+                intervention_year == start_year)  %>% 
     group_by(indicator, intervention_year, scenario, parameter_set, test_reduction) %>% 
     summarise(cumulative = sum(value))
 }

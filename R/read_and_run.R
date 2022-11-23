@@ -202,13 +202,40 @@ reduce_art_interruption_prev_year  <- function(formatted_data2, output_names, ar
   return(formatted_data2)
 }
 
+edit_formatted_data_maintain <- function(formatted_data, parameter_name, starting_year, final_year=2100){
+  # select parameter using dictionary
+  parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
+  # Edit value
+  for (i in ((starting_year)-1985):((final_year)-1985)){
+    parameter[i+1] <- parameter[i]
+  }
+  # reassign to formatted data
+  parameter -> formatted_data$data[,which(dictionary$name == parameter_name)]
+  return(formatted_data)
+}
 
+# to be included in run_thembisa_scenario_prev_year
+# maintains condom usage after reducing it temporariliy
+maintain_condom_usage <- function(formatted_data2, 
+                                  output_names, 
+                                  condom_maintenance_years){
+  for (year in condom_maintenance_years){ #loops over each condom usage maintenance year and makes all years the same value as last reduction
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "reduction_condom_fsw", 
+                                                    starting_year = year)
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "reduction_condom_st", 
+                                                    starting_year = year)
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "reduction_condom_lt",
+                                                    starting_year = year)
+  }
+  return(formatted_data2)
+}
 
 run_thembisa_scenario_prev_year <- function(intervention_year,
                                             fsw_condom_usage_decrease, 
                                             st_condom_usage_decrease,
                                             lt_condom_usage_decrease,
                                             condom_incr_years,
+                                            condom_maintenance_years,
                                             art_interrupt_incr,
                                             art_incr_years,
                                             output_names, 
@@ -227,7 +254,8 @@ run_thembisa_scenario_prev_year <- function(intervention_year,
                                                      st_condom_usage_decrease,
                                                      lt_condom_usage_decrease,
                                                      condom_incr_years)
-    
+    formatted_data2 <- maintain_condom_usage(formatted_data2, output_names,
+                                                     condom_maintenance_years)
   }
   if (!is.na(intervention_year)){
     formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 

@@ -22,15 +22,16 @@ output_names <- c("TotalHIVtests", "NewAdultHIV",
 dir.create("results", FALSE, TRUE)
 
 # model input parameters 
-intervention_years <- seq(2025, 2050, 5) # establish years PITC changes occur
+intervention_years <- 2025 # establish years PITC changes occur
 base_rate_reduction = 1 # proportion of PITC base rate
-sliding_scale_reduction = seq(0,30,5) # 10x percentage of sliding scale reduction
+sliding_scale_reduction = seq(0,100,20) # 10x percentage of sliding scale reduction
 fsw_condom_usage_decrease = NA # this is amount that fsw condom usage decreases by each year
 st_condom_usage_decrease = NA # this is amount that st condom usage decreases by each year
 lt_condom_usage_decrease = NA # this is amount that the condom usage decreases by each year
 condom_incr_years = NA # these are the year for which condom usage decreases
+condom_maintenance_years = NA # maintains condom usage at these values after reduction
 art_interrupt_incr = NA # this is amount that the art interruption rate decreases by each year
-art_incr_years = seq(2025, 2070, 1) # these are the year for which art interruption rate decreases
+art_incr_years = seq(2021, 2070, 1) # these are the year for which art interruption rate decreases
 
 # run baseline model
 baseline <- run_thembisa_scenario_future_variables(intervention_year = NA,
@@ -54,18 +55,18 @@ write.csv(baseline, "results/baseline.csv", row.names = FALSE)
 for (percentage_value in sliding_scale_reduction){
   art_interrupt_incr <- percentage_value/1000
   for (intervention_year in intervention_years){
-    art_incr_years <- seq(intervention_year, 2100, 1)
-    one_scenario <- run_thembisa_scenario_prev_year(intervention_year,
-                                                        fsw_condom_usage_decrease = fsw_condom_usage_decrease,
-                                                        st_condom_usage_decrease = st_condom_usage_decrease,
-                                                        lt_condom_usage_decrease = lt_condom_usage_decrease,
-                                                        condom_incr_years = condom_incr_years,
-                                                        art_interrupt_incr = art_interrupt_incr,
-                                                        art_incr_years = art_incr_years,
-                                                        output_names,
-                                                        base_rate_reduction)
-  write.csv(one_scenario, paste0("results/scenario_", intervention_year, "_", percentage_value,".csv"),
-            row.names = FALSE)
+    one_scenario <- run_thembisa_scenario_prev_year(intervention_year = intervention_year,
+                                                    fsw_condom_usage_decrease = fsw_condom_usage_decrease,
+                                                    st_condom_usage_decrease = st_condom_usage_decrease,
+                                                    lt_condom_usage_decrease = lt_condom_usage_decrease,
+                                                    condom_incr_years = condom_incr_years,
+                                                    condom_maintenance_years = condom_maintenance_years,
+                                                    art_interrupt_incr = art_interrupt_incr,
+                                                    art_incr_years = art_incr_years,
+                                                    output_names = output_names,
+                                                    base_rate_reduction = base_rate_reduction)
+    write.csv(one_scenario, paste0("results/scenario_", intervention_year, "_", percentage_value,".csv"),
+              row.names = FALSE)
   }
 }
 
@@ -119,18 +120,21 @@ df %>% filter(
 df %>% filter(
   scenario == "intervention",
   indicator == "ARTcoverageAdult",
-  year >= 2025) %>% 
+  year >= 2020) %>% 
   group_by(year, intervention_year, test_reduction) %>% 
   summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
             lower_CI = quantile(value, probs = 0.025)) %>% 
   ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
   geom_line(aes(colour = test_reduction)) +
+  geom_hline(yintercept = 0.95, lty = 3) +
+  geom_hline(yintercept = 0.78, lty = 3) +
   xlab("Years") +
   ylab("Number of HIV tests") +
   facet_wrap(vars(intervention_year)) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12)) +
   scale_color_discrete("Reduction of \nprevious year's \nART interruption \nrate (%)") +
-  scale_y_continuous("Proportion of Adult ART coverage") 
+  scale_y_continuous(name = "Proportion of Adult ART coverage", breaks = c(seq(0, 1, 0.25), 0.78, 0.95)) + 
+  scale_x_continuous("Years", breaks = seq(2020, 2100, 5))
 
 # new hiv infections
 df %>% filter(

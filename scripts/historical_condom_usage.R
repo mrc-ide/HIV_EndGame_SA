@@ -2,8 +2,8 @@
 df %>% filter(
   scenario == "baseline",
   indicator == "FSWCondomUsage",
-  year >= 1990, 
-  year <= 2010) %>% 
+  year >= 1994, 
+  year <= 2004) %>% 
   group_by(year, intervention_year, test_reduction) %>% 
   summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975), 
             lower_CI = quantile(value, probs = 0.025)) %>% 
@@ -17,9 +17,9 @@ df %>% filter(
   
 condom_use_94_to_2004 <- df %>% filter(
   scenario == "baseline",
-  indicator == "CondomUsage",
-  year >= 1992, 
-  year <= 2010) %>% 
+  indicator == "FSWCondomUsage",
+  year >= 1994, 
+  year <= 2004) %>% 
   group_by(year, scenario) %>% 
   summarise(mean = mean(value)) 
 

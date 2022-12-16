@@ -1,0 +1,50 @@
+  ,:\      /:.
+ //  \_()_/  \\
+||   |    |   ||  CONAN THE LIBRARIAN
+||   |    |   ||  Library:   Q:\Git\HIV_EndGame_SA\contexts\lib\windows\4.1
+||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.1
+ \\  / || \  //   Cache:     Q:\Git\HIV_EndGame_SA\contexts\conan\cache/pkg
+  `:/  ||  \;'    Policy:    lazy
+       ||         Repos:
+       ||           * https://mrc-ide.github.io/didehpc-pkgs
+       XX           * https://cloud.r-project.org
+       XX         Packages:
+       XX           * context
+       XX
+       OO
+       `'
+
+
+v Updated metadata database: 4.79 MB in 14 files.
+
+i Updating metadata database
+v Updating metadata database ... done
+
+i Getting 9 pkgs (5.42 MB) and 1 pkg with unknown size
+v Got context 0.3.0 (source) (37.72 kB)
+v Got ids 1.0.1 (i386+x86_64-w64-mingw32) (124.01 kB)
+v Got R6 2.5.1 (i386+x86_64-w64-mingw32) (84.21 kB)
+v Got askpass 1.1 (i386+x86_64-w64-mingw32) (243.68 kB)
+v Got crayon 1.5.2 (i386+x86_64-w64-mingw32) (163.13 kB)
+v Got uuid 1.1-0 (i386+x86_64-w64-mingw32) (69.20 kB)
+v Got digest 0.6.31 (i386+x86_64-w64-mingw32) (267.10 kB)
+v Got sys 3.4.1 (i386+x86_64-w64-mingw32) (59.55 kB)
+v Got storr 1.2.5 (i386+x86_64-w64-mingw32) (401.56 kB)
+v Got openssl 2.0.5 (i386+x86_64-w64-mingw32) (4.00 MB)
+v Installed R6 2.5.1  (1.2s)
+v Installed crayon 1.5.2  (1.3s)
+v Installed askpass 1.1  (1.6s)
+v Installed ids 1.0.1  (1.6s)
+v Installed digest 0.6.31  (1.8s)
+v Installed sys 3.4.1  (1.7s)
+v Installed storr 1.2.5  (2s)
+v Installed openssl 2.0.5  (2.3s)
+v Installed uuid 1.1-0  (1.6s)
+i Building context 0.3.0
+v Built context 0.3.0 (4.6s)
+v Installed context 0.3.0  (782ms)
+v Summary:   10 new  in 20.5s
+Warning message:
+In structure(.x, class = c(.class, "data.frame"), row.names = .set_row_names(.size),  :
+  Calling 'structure(NULL, *)' is deprecated, as NULL cannot have attributes.
+  Consider 'structure(list(), *)' instead.

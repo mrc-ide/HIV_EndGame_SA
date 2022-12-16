@@ -1,0 +1,32 @@
+Package: context
+Title: Contexts for evaluating R expressions
+Version: 0.3.0
+Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
+                    email = "rich.fitzjohn@gmail.com"),
+             person("Imperial College of Science, Technology and Medicine",
+                    role = "cph"))
+Description: Contexts for evaluating R expressions.
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/mrc-ide/context
+BugReports: https://github.com/mrc-ide/context/issues
+Depends: R (>= 3.2.0)
+Imports: crayon, ids, storr (>= 1.1.1)
+Suggests: callr, knitr, mockery, parallel, redux, rmarkdown, testthat,
+        withr
+RoxygenNote: 7.1.1
+Encoding: UTF-8
+VignetteBuilder: knitr
+Language: en-GB
+NeedsCompilation: no
+Packaged: 2021-04-14 15:11:04 UTC; rfitzjoh
+Author: Rich FitzJohn [aut, cre],
+  Imperial College of Science, Technology and Medicine [cph]
+Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
+Built: R 4.1.0; ; 2022-12-16 14:06:51 UTC; windows
+RemoteType: standard
+RemotePkgRef: context
+RemoteRef: context
+RemoteRepos: https://mrc-ide.github.io/didehpc-pkgs
+RemotePkgPlatform: source
+RemoteSha: 0.3.0

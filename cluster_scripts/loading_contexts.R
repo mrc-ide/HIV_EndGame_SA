@@ -6,10 +6,12 @@ library("dplyr")
 library("rstan")
 
 
-ctx <- context::context_save("contexts")
+ctx <- context::context_save("contexts", packages = packages)
 obj <- didehpc::queue_didehpc(context = ctx)
 
 obj$install_packages("ggplot2")
 
 
-packageVersion("didehpc")
+t <- obj$enqueue(packageVersion("ggplot2"))
+t$wait(10)
+

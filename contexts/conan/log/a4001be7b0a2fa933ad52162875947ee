@@ -1,0 +1,21 @@
+  ,:\      /:.
+ //  \_()_/  \\
+||   |    |   ||  CONAN THE LIBRARIAN
+||   |    |   ||  Library:   Q:\Git\HIV_EndGame_SA\contexts\lib\windows\4.1
+||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.1
+ \\  / || \  //   Cache:     Q:\Git\HIV_EndGame_SA\contexts\conan\cache/pkg
+  `:/  ||  \;'    Policy:    lazy
+       ||         Repos:
+       ||           * https://cloud.r-project.org
+       XX         Packages:
+       XX           * ggplot2
+       XX
+       XX
+       OO
+       `'
+
+i Loading metadata database
+v Loading metadata database ... done
+
+i No downloads are needed
+v Summary:   28 kept  in 0ms

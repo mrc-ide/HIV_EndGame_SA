@@ -1,0 +1,12 @@
+driver_redis_api        Defunct functions
+driver_remote           Remote storr
+encode64                Base64 encoding and decoding
+fetch_hook_read         Hook to fetch a resource from a file.
+join_key_namespace      Recycle key and namespace
+storr                   Object cache
+storr_dbi               DBI storr driver
+storr_environment       Environment object cache driver
+storr_external          Storr that looks for external resources
+storr_multistorr        Storr with multiple storage drivers
+storr_rds               rds object cache driver
+test_driver             Test a storr driver

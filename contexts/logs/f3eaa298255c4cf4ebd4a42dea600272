@@ -1,0 +1,21 @@
+[ hello     ]  2022-12-16 14:11:29
+[ wd        ]  Q:/Git/HIV_EndGame_SA
+[ init      ]  2022-12-16 14:11:29.365
+[ hostname  ]  FI--DIDECLUST29
+[ process   ]  4600
+[ version   ]  0.3.0
+[ open:db   ]  rds
+[ context   ]  59dbb071edd7faeb3335cc562b3aa27a
+[ library   ]  ggplot2
+[ namespace ]
+[ source    ]
+[ parallel  ]  running as single core job
+[ root      ]  Q:\Git\HIV_EndGame_SA\contexts
+[ context   ]  59dbb071edd7faeb3335cc562b3aa27a
+[ task      ]  f3eaa298255c4cf4ebd4a42dea600272
+[ expr      ]  packageVersion("ggplot2")
+[ start     ]  2022-12-16 14:11:31.584
+[ ok        ]
+[ end       ]  2022-12-16 14:11:31.709
+Warning message:
+package 'ggplot2' was built under R version 4.1.3 

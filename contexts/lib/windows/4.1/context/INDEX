@@ -1,0 +1,26 @@
+bulk_prepare_expression
+                        Prepare many expressions
+bulk_task_save          Save bulk tasks
+context_list            List save contexts
+context_load            Load a context
+context_log             Send entry to context log
+context_read            Read a context
+context_root_get        Find context root
+context_save            Save a context
+last_loaded_context     Return last loaded context
+parallel_cluster_start
+                        Start a sub-cluster
+prepare_expression      Prepare expression
+restore_locals          Restore locals
+task_context_id         Find context for a task
+task_delete             Delete a task
+task_exists             List tasks
+task_expr               Fetch task expression
+task_function_name      Fetch task function name
+task_log                Return task log
+task_result             Fetch task result
+task_run                Run a task
+task_run_external       Run a task in separate process
+task_save               Save and reload tasks
+task_status             Task status
+task_times              Fetch task times

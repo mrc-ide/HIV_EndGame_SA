@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Prepare expression</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for prepare_expression {context}"><tr><td>prepare_expression {context}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Prepare expression</h2>
+
+<h3>Description</h3>
+
+<p>Prepare expression for evaluation in context
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+prepare_expression(expr, envir, db, function_value = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>expr</code></td>
+<td>
+<p>A quoted expression consisting of a single function
+call.</p>
+</td></tr>
+<tr valign="top"><td><code>envir</code></td>
+<td>
+<p>An environment to find variables local to the expression</p>
+</td></tr>
+<tr valign="top"><td><code>db</code></td>
+<td>
+<p>A database to store locals</p>
+</td></tr>
+<tr valign="top"><td><code>function_value</code></td>
+<td>
+<p>Optionally, the <em>value</em> of a function
+where the expression should involve an anonymous function.  In
+this case the function in <code>expr</code> will be replaced.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The <code>function_value</code> argument here is used where <code>expr</code> is
+going to take a function that is not addressable by <em>name</em>; in
+that case we take a function itself (as &quot;function_value&quot;),
+serialise it and replace the function call with the hash.  The
+function will be serialised into the calling environment on
+deserialisation.
+</p>
+<p>This includes the remote possibility of a collision, but with the
+size of the keyspace used for hashes hopefully it's negligible.
+</p>
+<p>Because of the approach used here, <code>expr</code> can contain
+anything; I'd suggest not saving the contents of the function
+itself, but something like <code>NULL</code> will work just fine:
+</p>
+<pre>
+  as.call(list(NULL, quote(a)))
+  # NULL(a)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>context</em> version 0.3.0 <a href="00Index.html">Index</a>]</div>
+</body></html>

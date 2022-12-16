@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Prepare many expressions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for bulk_prepare_expression {context}"><tr><td>bulk_prepare_expression {context}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Prepare many expressions</h2>
+
+<h3>Description</h3>
+
+<p>Prepare many expressions
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+bulk_prepare_expression(X, FUN, DOTS, do_call, use_names, envir, db)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>X</code></td>
+<td>
+<p>Something to iterate over; a vector, list or data.frame
+(in the case of a data.frame, iteration will be row-by-row)</p>
+</td></tr>
+<tr valign="top"><td><code>FUN</code></td>
+<td>
+<p>A function to apply to each element (or row) of
+<code>X</code></p>
+</td></tr>
+<tr valign="top"><td><code>DOTS</code></td>
+<td>
+<p>Additional arguments to apply with each elements of
+<code>X</code></p>
+</td></tr>
+<tr valign="top"><td><code>do_call</code></td>
+<td>
+<p>Treat each element of <code>X</code> as a <code>do.call</code> call</p>
+</td></tr>
+<tr valign="top"><td><code>use_names</code></td>
+<td>
+<p>When preparing a data.frame, retain column names
+as argument names when using <code>do_call</code>.  If <code>FALSE</code>
+then positional matching will be used.</p>
+</td></tr>
+<tr valign="top"><td><code>envir</code></td>
+<td>
+<p>An environment to find variables local to the expression</p>
+</td></tr>
+<tr valign="top"><td><code>db</code></td>
+<td>
+<p>A database to store locals</p>
+</td></tr>
+</table>
+
+<hr /><div style="text-align: center;">[Package <em>context</em> version 0.3.0 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Key-value store</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: #990073
+   }
+
+   pre .number {
+     color: #099;
+   }
+
+   pre .comment {
+     color: #998;
+     font-style: italic
+   }
+
+   pre .keyword {
+     color: #900;
+     font-weight: bold
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: #d14;
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<pre><code class="r">library(storr)
+</code></pre>
+
+<p><code>storr</code> provides very simple key/value stores for R.  They attempt
+to provide the most basic set of key/value lookup functionality
+that is completely consistent across a range of different
+underlying storage drivers (in memory storage, filesystem and
+proper databases).  All the storage is <em>content addressable</em>, so
+keys map onto hashes and hashes map onto data.</p>
+
+<p>The <code>rds</code> driver stores contents at some path by saving out to rds
+files.  Here I&#39;m using a temporary directory for the path; the
+driver will create a number of subdirectories here.</p>
+
+<pre><code class="r">path &lt;- tempfile(&quot;storr_&quot;)
+st &lt;- storr::storr_rds(path)
+</code></pre>
+
+<p>Alternatively you can create the driver explicitly:</p>
+
+<pre><code class="r">dr &lt;- storr::driver_rds(path)
+</code></pre>
+
+<p>With this driver object we can create the <code>storr</code> object which is
+what we actually interact with:</p>
+
+<pre><code class="r">st &lt;- storr::storr(dr)
+</code></pre>
+
+<h2>Key-value store</h2>
+
+<p>The main way of interacting with a <code>storr</code> object is
+<code>get</code>/<code>set</code>/<code>del</code> for getting, setting and deleting data stored at
+some key.  To store data:</p>
+
+<pre><code class="r">st$set(&quot;mykey&quot;, mtcars)
+</code></pre>
+
+<p>To get the data back</p>
+
+<pre><code class="r">head(st$get(&quot;mykey&quot;))
+</code></pre>
+
+<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+</code></pre>
+
+<p>What is in the <code>storr</code>?</p>
+
+<pre><code class="r">st$list()
+</code></pre>
+
+<pre><code>## [1] &quot;mykey&quot;
+</code></pre>
+
+<p>Or, much faster, test for existance of a particular key:</p>
+
+<pre><code class="r">st$exists(&quot;mykey&quot;)
+</code></pre>
+
+<pre><code>## [1] TRUE
+</code></pre>
+
+<pre><code class="r">st$exists(&quot;another_key&quot;)
+</code></pre>
+
+<pre><code>## [1] FALSE
+</code></pre>
+
+<p>To delete a key:</p>
+
+<pre><code class="r">st$del(&quot;mykey&quot;)
+</code></pre>
+
+<p>It&#39;s gone!</p>
+
+<pre><code class="r">st$list()
+</code></pre>
+
+<pre><code>## character(0)
+</code></pre>
+
+<p>though the actual data is still stored in the database:</p>
+
+<pre><code class="r">h &lt;- st$list_hashes()
+h
+</code></pre>
+
+<pre><code>## [1] &quot;a63c70e73b58d0823ab3bcbd3b543d6f&quot;
+</code></pre>
+
+<p>The hash of an object is computed using the <code>digest</code> package, and
+can be done using the <code>hash_object</code> method of the storr.</p>
+
+<pre><code class="r">st$hash_object(mtcars)
+</code></pre>
+
+<pre><code>## [1] &quot;a63c70e73b58d0823ab3bcbd3b543d6f&quot;
+</code></pre>
+
+<p>An object can be retrieved directly given its hash:</p>
+
+<pre><code class="r">head(st$get_value(h))
+</code></pre>
+
+<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+</code></pre>
+
+<p>similarly, we can test to see if an object is present in the
+database using its hash:</p>
+
+<pre><code class="r">st$exists_object(h)
+</code></pre>
+
+<pre><code>## [1] TRUE
+</code></pre>
+
+<p>though now that there are no keys pointing at the data it is
+subject to garbage collection:</p>
+
+<pre><code class="r">del &lt;- st$gc()
+del
+</code></pre>
+
+<pre><code>## [1] &quot;a63c70e73b58d0823ab3bcbd3b543d6f&quot;
+</code></pre>
+
+<pre><code class="r">st$list_hashes()
+</code></pre>
+
+<pre><code>## character(0)
+</code></pre>
+
+<h2>Namespaces</h2>
+
+<p>At some point having everything stored in a great big bucket may
+become too unstructured.  To help with this storr implements a very
+simple &ldquo;namespace&rdquo; system that may help provide some structure.  It
+is a single layer of hierarchy above keys; so every key belongs to
+a namespace.  The default namespace is &ldquo;objects&rdquo; but this can be
+configured when the storr is created.</p>
+
+<pre><code class="r">st$default_namespace
+</code></pre>
+
+<pre><code>## [1] &quot;objects&quot;
+</code></pre>
+
+<p>The <code>list_namespaces()</code> method lists all known namespaces</p>
+
+<pre><code class="r">st$list_namespaces()
+</code></pre>
+
+<pre><code>## [1] &quot;objects&quot;
+</code></pre>
+
+<p>To create a new namespace, simply assign an object into it:</p>
+
+<pre><code class="r">st$set(&quot;a&quot;, runif(5), namespace = &quot;other_things&quot;)
+st$list_namespaces()
+</code></pre>
+
+<pre><code>## [1] &quot;objects&quot;      &quot;other_things&quot;
+</code></pre>
+
+<p>The <code>list()</code> method lists the contents of a single namespace</p>
+
+<pre><code class="r">st$list()
+</code></pre>
+
+<pre><code>## character(0)
+</code></pre>
+
+<pre><code class="r">st$list(&quot;other_things&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot;
+</code></pre>
+
+<p>To get an object, you must use the correct namespace:</p>
+
+<pre><code class="r">st$get(&quot;a&quot;)
+</code></pre>
+
+<pre><code>## Error: key &#39;a&#39; (&#39;objects&#39;) not found
+</code></pre>
+
+<pre><code class="r">st$get(&quot;a&quot;, &quot;other_things&quot;)
+</code></pre>
+
+<pre><code>## [1] 0.4750498 0.4172505 0.6321249 0.1018184 0.5971132
+</code></pre>
+
+<h2>Bulk get/set</h2>
+
+<p>If you have many values to get or set, for some databases it will
+be much more efficient to get and set them in bulk; this is
+particularly the case with high-latency databases (e.g., anything
+over a network connection, especially an internet connection).  To
+help with this, storr implements <code>mget</code> and <code>mset</code> methods that
+allow multiple values to retrieved or set.</p>
+
+<p>The <code>mset</code> function allows multiple keys (and/or multiple
+namespaces) and multiple data elements.  The data must have the
+same <code>length()</code> as the number of keys being set.</p>
+
+<pre><code class="r">st$mset(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), list(1, 2, 3))
+st$get(&quot;a&quot;)
+</code></pre>
+
+<pre><code>## [1] 1
+</code></pre>
+
+<p>The <code>mget</code> function fetches zero or more elements.</p>
+
+<pre><code class="r">st$mget(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;))
+</code></pre>
+
+<pre><code>## [[1]]
+## [1] 1
+## 
+## [[2]]
+## [1] 2
+## 
+## [[3]]
+## [1] 3
+</code></pre>
+
+<p><code>mget</code> <em>always</em> returns a list with the same number of elements as
+the number of keys</p>
+
+<pre><code class="r">st$mget(&quot;a&quot;)
+</code></pre>
+
+<pre><code>## [[1]]
+## [1] 1
+</code></pre>
+
+<pre><code class="r">st$mget(character(0))
+</code></pre>
+
+<pre><code>## list()
+</code></pre>
+
+<p>With both <code>mset</code> and <code>mget</code>, both key and namespace can be vectors;
+if either non-scalar, they must have the same length so the logic
+is fairly predictable</p>
+
+<pre><code class="r">st$mset(&quot;x&quot;, list(&quot;a&quot;, &quot;b&quot;), namespace = c(&quot;ns1&quot;, &quot;ns2&quot;))
+st$mget(&quot;x&quot;, c(&quot;ns1&quot;, &quot;ns2&quot;))
+</code></pre>
+
+<pre><code>## [[1]]
+## [1] &quot;a&quot;
+## 
+## [[2]]
+## [1] &quot;b&quot;
+</code></pre>
+
+<pre><code class="r">st$mget(c(&quot;a&quot;, &quot;b&quot;, &quot;x&quot;), c(&quot;objects&quot;, &quot;objects&quot;, &quot;ns1&quot;))
+</code></pre>
+
+<pre><code>## [[1]]
+## [1] 1
+## 
+## [[2]]
+## [1] 2
+## 
+## [[3]]
+## [1] &quot;a&quot;
+</code></pre>
+
+<h2>Import / export</h2>
+
+<p>Objects can be imported in and exported out of a <code>storr</code>:</p>
+
+<p>Import from a list, environment or another <code>storr</code></p>
+
+<pre><code class="r">st$import(list(a = 1, b = 2))
+st$list()
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+</code></pre>
+
+<pre><code class="r">st$get(&quot;a&quot;)
+</code></pre>
+
+<pre><code>## [1] 1
+</code></pre>
+
+<p>Export to an environment (or another <code>storr</code>)</p>
+
+<pre><code class="r">e &lt;- st$export(new.env(parent = emptyenv()))
+ls(e)
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+</code></pre>
+
+<pre><code class="r">e$a
+</code></pre>
+
+<pre><code>## [1] 1
+</code></pre>
+
+<pre><code class="r">st_copy &lt;- st$export(storr_environment())
+st_copy$list()
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+</code></pre>
+
+<pre><code class="r">st$get(&quot;a&quot;)
+</code></pre>
+
+<pre><code>## [1] 1
+</code></pre>
+
+<pre><code class="r">st2 &lt;- storr::storr(driver = storr::driver_rds(tempfile(&quot;storr_&quot;)))
+st2$list()
+</code></pre>
+
+<pre><code>## character(0)
+</code></pre>
+
+<pre><code class="r">st2$import(st)
+st2$list()
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+</code></pre>
+
+<h2>Supported backends</h2>
+
+<ul>
+<li>environments (<code>driver_environment</code>) - mostly for debugging and
+transient storage, but by far the fastest.</li>
+<li>on disk with rds (<code>driver_rds</code>) - zero dependencies, quite fast,
+will suffer under high concurrency because there is no file
+locking.</li>
+<li>DBI (<code>driver_dbi</code>) - uses (abuses?) a relational database to
+store the data.  This is not the fastest interface but allows for
+interprocess key/value stores where a relational database is
+supported.  All databases supported by DBI are supported (so at
+least SQLite, MySQL and Postgres).</li>
+<li>Redis (<code>driver_redis</code>) - uses
+<a href="https://github.com/richfitz/redux"><code>redux</code></a> to store the data in a
+Redis (<code>http://redis.io</code>) database.  About the same speed as rds
+(faster write, slower read at present), but can allow multiple R
+processes to share the same set of objects.</li>
+<li>rlite (<code>driver_rlite</code>) - stores data in an
+<a href="https://github.com/seppo0010/rlite">rlite</a> database using
+<a href="https://github.com/ropensci/rrlite"><code>rrlite</code></a>.  This is quite
+quick, but is stalled for general release because <code>rrlite</code> does not
+support windows.</li>
+<li>The in-development package
+<a href="https://github.com/richfitz/thor">thor</a> provides an alternative
+on-disk storr that can handle multiple processes on a single
+machine.</li>
+</ul>
+
+<h2>Implementation details</h2>
+
+<p><code>storr</code> includes a few useful features that are common to all
+drivers.</p>
+
+<h3>Content addressable lookup</h3>
+
+<p>The only thing that is stored against a key is the hash of some
+object.  Each driver does this a different way, but for the rds
+driver it stores small text files that list the hash in them.  So:</p>
+
+<pre><code class="r">dir(file.path(path, &quot;keys&quot;, &quot;objects&quot;))
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+</code></pre>
+
+<pre><code class="r">readLines(file.path(path, &quot;keys&quot;, &quot;objects&quot;, &quot;a&quot;))
+</code></pre>
+
+<pre><code>## [1] &quot;6717f2823d3202449301145073ab8719&quot;
+</code></pre>
+
+<pre><code class="r">st$get_hash(&quot;a&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;6717f2823d3202449301145073ab8719&quot;
+</code></pre>
+
+<p>Then there is one big pool of hash / value pairs:</p>
+
+<pre><code class="r">st$list_hashes()
+</code></pre>
+
+<pre><code>## [1] &quot;127a2ec00989b9f7faf671ed470be7f8&quot; &quot;6717f2823d3202449301145073ab8719&quot;
+## [3] &quot;c6948f6fdc8586ad5bf7dfe9f4be309c&quot; &quot;db8e490a925a60e62212cefc7674ca02&quot;
+## [5] &quot;ddf100612805359cd81fdc5ce3b9fbba&quot; &quot;e5b57f323c7b3719bbaaf9f96b260d39&quot;
+</code></pre>
+
+<p>in the rds driver these are stored like so:</p>
+
+<pre><code class="r">dir(file.path(path, &quot;data&quot;))
+</code></pre>
+
+<pre><code>## [1] &quot;127a2ec00989b9f7faf671ed470be7f8.rds&quot;
+## [2] &quot;6717f2823d3202449301145073ab8719.rds&quot;
+## [3] &quot;c6948f6fdc8586ad5bf7dfe9f4be309c.rds&quot;
+## [4] &quot;db8e490a925a60e62212cefc7674ca02.rds&quot;
+## [5] &quot;ddf100612805359cd81fdc5ce3b9fbba.rds&quot;
+## [6] &quot;e5b57f323c7b3719bbaaf9f96b260d39.rds&quot;
+</code></pre>
+
+<h3>Environment-based caching</h3>
+
+<p>Every time data passes across a <code>get</code> or <code>set</code> method, <code>storr</code>
+stores the data in an environment within the <code>storr</code> object.
+Because we store the content against its hash, it&#39;s always in sync
+with what is saved to disk.  That means that the look-up process
+goes like this:</p>
+
+<ol>
+<li>Ask for a key, get returned the hash of the content</li>
+<li>Check in the caching environment for that hash and return that
+if present</li>
+<li>If not present, read content from disk/db/wherever the driver
+stores it and save it into the caching environment</li>
+</ol>
+
+<p>Because looking up data in the environment is likely to be orders
+of magnitide faster than reading from disks or databases, this
+means that commonly accessed data will be accessed at a similar
+speed to native R objects, while still immediately reflecting
+changes to the content (because that would mean the hash changes)</p>
+
+<p>To demonstrate:</p>
+
+<pre><code class="r">st &lt;- storr::storr(driver = storr::driver_rds(tempfile(&quot;storr_&quot;)))
+</code></pre>
+
+<p>This is the caching environent; currently empty</p>
+
+<pre><code class="r">ls(st$envir)
+</code></pre>
+
+<pre><code>## character(0)
+</code></pre>
+
+<p>Set some key to some data:</p>
+
+<pre><code class="r">set.seed(2)
+st$set(&quot;mykey&quot;, runif(100))
+</code></pre>
+
+<p>The environment now includes an object with a <em>name</em> that is the
+same as the <em>hash</em> of its contents:</p>
+
+<pre><code class="r">ls(st$envir)
+</code></pre>
+
+<pre><code>## [1] &quot;3386dd0f1a8a3fe4ed209420ea23c8eb&quot;
+</code></pre>
+
+<p>Extract the object from the environment and hash it</p>
+
+<pre><code class="r">st$hash_object(st$envir[[ls(st$envir)]])
+</code></pre>
+
+<pre><code>## [1] &quot;3386dd0f1a8a3fe4ed209420ea23c8eb&quot;
+</code></pre>
+
+<p>When we look up the value stored against key <code>mykey</code>, the first
+step is to check the key/hash map; this returns the key above (this
+step <em>does</em> involve reading from disk)</p>
+
+<pre><code class="r">st$get_hash(&quot;mykey&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;3386dd0f1a8a3fe4ed209420ea23c8eb&quot;
+</code></pre>
+
+<p>It then calls <code>$get_value</code> to extract the value associated with
+that hash - the first thing that function does is try to locate the
+hash in the environment, otherwise it reads the data from wherever
+the driver stores it.</p>
+
+<pre><code class="r">st$get_value
+</code></pre>
+
+<pre><code>## function (hash, use_cache = TRUE) 
+## {
+##     envir &lt;- self$envir
+##     if (use_cache &amp;&amp; exists0(hash, envir)) {
+##         value &lt;- envir[[hash]]
+##     }
+##     else {
+##         if (self$traits$throw_missing) {
+##             value &lt;- tryCatch(self$driver$get_object(hash), error = function(e) stop(HashError(hash)))
+##         }
+##         else {
+##             if (!self$driver$exists_object(hash)) {
+##                 stop(HashError(hash))
+##             }
+##             value &lt;- self$driver$get_object(hash)
+##         }
+##         if (use_cache) {
+##             envir[[hash]] &lt;- value
+##         }
+##     }
+##     value
+## }
+## &lt;environment: 0x55a0607f72a8&gt;
+</code></pre>
+
+<p>The speed up is going to be fairly context dependent, but 5-10x
+seems pretty good in this case (some of the overhead is simply a
+longer code path as we call out to the driver).  For big bits of
+data and slow network connections the difference will be much more
+pronounced.</p>
+
+<pre><code class="r">hash &lt;- st$get_hash(&quot;mykey&quot;)
+if (requireNamespace(&quot;rbenchmark&quot;)) {
+  rbenchmark::benchmark(st$get_value(hash, use_cache = TRUE),
+                        st$get_value(hash, use_cache = FALSE),
+                        replications = 1000, order = NULL)[1:4]
+}
+</code></pre>
+
+<pre><code>## Loading required namespace: rbenchmark
+</code></pre>
+
+<h3>Classed exceptions</h3>
+
+<p>storr uses R&#39;s exception handling system and errors inspired from
+Python to make it easy to program with <code>tryCatch</code>.</p>
+
+<p>If a key is not in the database, storr will return a <code>KeyError</code>
+(not <code>NULL</code> because storing a <code>NULL</code> value is a perfectly
+reasonable thing to do).</p>
+
+<p>If you <em>did</em> want to return <code>NULL</code> when a key is requested but not
+present, use tryCatch in this way:</p>
+
+<pre><code class="r">tryCatch(st$get(&quot;no_such_key&quot;),
+         KeyError = function(e) NULL)
+</code></pre>
+
+<pre><code>## NULL
+</code></pre>
+
+<p>See <code>?tryCatch</code> for details.  The idea is that key lookup errors
+will have the class <code>KeyError</code> so will be caught here and run the
+given function (the argument <code>e</code> is the actual error object).
+Other errors will not be caught and will still throw.</p>
+
+<p><code>HashErrors</code> will be rarer, but could happen (they might occur if
+your driver supports expiry of objects).  We can simulate that by
+setting a hash and deleting it:</p>
+
+<pre><code class="r">st$set(&quot;foo&quot;, letters)
+ok &lt;- st$driver$del_object(st$get_hash(&quot;foo&quot;))
+st$flush_cache()
+tryCatch(st$get(&quot;foo&quot;),
+         KeyError = function(e) NULL,
+         HashError = function(e) message(&quot;Data is deleted&quot;))
+</code></pre>
+
+<pre><code>## Data is deleted
+</code></pre>
+
+<p>Here the <code>HashError</code> is triggered.</p>
+
+<p><code>KeyError</code> objects include <code>key</code> and <code>namespace</code> elements,
+<code>HashError</code> objects include a <code>hash</code> element.  They both inherit
+from <code>c(&quot;error&quot;, &quot;condition&quot;)</code>.</p>
+
+<p>Finally, when using an external storr (see ?driver_external) storr
+will throw a <code>KeyErrorExternal</code> if the <code>fetch_hook</code> function errors
+while trying to retrieve an external resource.</p>
+
+</body>
+
+</html>

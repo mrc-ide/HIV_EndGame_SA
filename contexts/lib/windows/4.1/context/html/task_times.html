@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Fetch task times</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for task_times {context}"><tr><td>task_times {context}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Fetch task times</h2>
+
+<h3>Description</h3>
+
+<p>Fetch times taken to queue, run, and since running a task.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+task_times(ids, db, unit_elapsed = "secs", sorted = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>ids</code></td>
+<td>
+<p>Vector of task ids</p>
+</td></tr>
+<tr valign="top"><td><code>db</code></td>
+<td>
+<p>Something that can be converted to a context db object
+(a database, root or context).</p>
+</td></tr>
+<tr valign="top"><td><code>unit_elapsed</code></td>
+<td>
+<p>Elapsed time unit.  The default is &quot;secs&quot;.
+This is passed to the <code>as.numeric</code> method of a
+<code>difftime</code> object.</p>
+</td></tr>
+<tr valign="top"><td><code>sorted</code></td>
+<td>
+<p>Sort the output in terms of submitted time?  If
+<code>FALSE</code> then the output is sorted based on task ids.</p>
+</td></tr>
+</table>
+
+
+<h3>Author(s)</h3>
+
+<p>Rich FitzJohn
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>context</em> version 0.3.0 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -7,7 +7,7 @@ library("rstan")
 
 
 ctx <- context::context_save("contexts", packages = packages)
-obj <- didehpc::queue_didehpc(context = ctx)
+obj <- didehpc::queue_didehpc(context = ctx, config = config)
 
 obj$install_packages("ggplot2")
 

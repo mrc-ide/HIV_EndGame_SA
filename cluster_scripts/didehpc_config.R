@@ -7,7 +7,7 @@ library(didehpc) # load the didehpc support package
 library(usethis)
 # run this function 
 
-usethis::edit_r_profile()
+# usethis::edit_r_profile()
 # add the following text to the .Rprofile, save and restart Rstudio
 # options(
 #   didehpc.username = "spr21",
@@ -18,4 +18,4 @@ usethis::edit_r_profile()
 # To see the configuration that will be run if you don't do anything (else), run:
 
 config <- didehpc::didehpc_config(credentials = list(username = "spr21", password = "Wednesday123!"))
-config
+# config

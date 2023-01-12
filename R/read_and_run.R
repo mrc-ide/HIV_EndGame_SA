@@ -250,7 +250,7 @@ run_thembisa_scenario_prev_year <- function(intervention_year,
                                                            art_interrupt_incr, 
                                                            art_incr_years)
   }
-  if (!is.na(condom_incr_years)){
+  if (!is.na(condom_incr_years[1])){
     formatted_data2 <- reduce_condom_usage_prev_year(formatted_data2, output_names,
                                                      fsw_condom_usage_decrease, 
                                                      st_condom_usage_decrease,

@@ -2,7 +2,7 @@ library(here)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(gridExtra)
+
 
 # Compiles and runs the Thembisa model
 run_thembisa <- function(){
@@ -75,15 +75,15 @@ read_thembisa_scenario <- function(output_names){
   bind_rows(temp, .id = "indicator")
 }
 
-run_thembisa_scenario <- function(intervention_year, output_names, base_rate_reduction){
+run_thembisa_scenario <- function(pitc_reduction_year, output_names, base_rate_reduction){
   ## read in input parameter file
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   ## write unedited input parameter file
   formatted_data <- format_data(data, dictionary)
-  if (!is.na(intervention_year)){
+  if (!is.na(pitc_reduction_year)){
     formatted_data <- edit_formatted_data_incremental(formatted_data, "rate_first_test_neg_fem_under_25", 
                                                       new_values = 0.2877 * base_rate_reduction, 
-                                                      starting_year = intervention_year)
+                                                      starting_year = pitc_reduction_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data, data, dictionary)
  write(rollout, "THEMBISAv18/Rollout.txt")
@@ -92,19 +92,19 @@ run_thembisa_scenario <- function(intervention_year, output_names, base_rate_red
  read_thembisa_scenario(output_names)
 }
 
-run_thembisa_scenario_future_variable <- function(intervention_year, output_names, base_rate_reduction, 
+run_thembisa_scenario_future_variable <- function(pitc_reduction_year, output_names, base_rate_reduction, 
                                                   future_var_parameter, future_var_value, future_var_year){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
   formatted_data3 <- edit_formatted_data(formatted_data2, future_var_parameter, 
                                          new_values = future_var_value/100, 
                                          starting_year = future_var_year)
-  if (!is.na(intervention_year)){
+  if (!is.na(pitc_reduction_year)){
     # data2 <- readLines(here("THEMBISAv18/Rollout.txt"))
     formatted_data3 <- edit_formatted_data_incremental(formatted_data3, 
                                                        "rate_first_test_neg_fem_under_25", 
                                                        new_values = 0.2877 * base_rate_reduction, 
-                                                       starting_year = intervention_year)
+                                                       starting_year = pitc_reduction_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data3, data, dictionary)
   write(rollout, here("THEMBISAv18/Rollout.txt"))
@@ -190,15 +190,15 @@ reduce_condom_usage_prev_year  <- function(formatted_data,
 }
 
 # reduces ART interruption rate by a percentage of the previous year's rate
-reduce_art_interruption_prev_year  <- function(formatted_data2, output_names, art_interrupt_incr, art_incr_years){
+reduce_art_interruption_prev_year  <- function(formatted_data2, output_names, art_interrupt_rate_decrease, art_incr_years){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
   for (year in art_incr_years){
     formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_art_by_year", 
-                                                     new_values = (1-art_interrupt_incr), 
+                                                     new_values = (1-art_interrupt_rate_decrease), 
                                                      starting_year = year)
-    if (art_interrupt_incr >= 1){
-      art_interrupt_incr <- 1 
+    if (art_interrupt_rate_decrease >= 1){
+      art_interrupt_rate_decrease <- 1 
     }
   }
   return(formatted_data2)
@@ -232,25 +232,27 @@ maintain_condom_usage <- function(formatted_data2,
   return(formatted_data2)
 }
 
-run_thembisa_scenario_prev_year <- function(intervention_year,
+run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
+                                            condom_usage_reduction,
                                             fsw_condom_usage_decrease, 
                                             st_condom_usage_decrease,
                                             lt_condom_usage_decrease,
                                             condom_incr_years,
                                             condom_maintenance_years,
-                                            art_interrupt_incr,
+                                            art_coverage_increase,
+                                            art_interrupt_rate_decrease,
                                             art_incr_years,
                                             output_names, 
                                             base_rate_reduction){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
-  if (!is.na(art_interrupt_incr)){
+  if (art_coverage_increase == TRUE){
     formatted_data2 <- reduce_art_interruption_prev_year(formatted_data2,
                                                          output_names, 
-                                                           art_interrupt_incr, 
+                                                           art_interrupt_rate_decrease, 
                                                            art_incr_years)
   }
-  if (!is.na(condom_incr_years[1])){
+  if (condom_usage_reduction == TRUE){
     formatted_data2 <- reduce_condom_usage_prev_year(formatted_data2, output_names,
                                                      fsw_condom_usage_decrease, 
                                                      st_condom_usage_decrease,
@@ -259,11 +261,11 @@ run_thembisa_scenario_prev_year <- function(intervention_year,
     formatted_data2 <- maintain_condom_usage(formatted_data2, output_names,
                                                      condom_maintenance_years)
   }
-  if (!is.na(intervention_year)){
+  if (!is.na(pitc_reduction_year)){
     formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 
                                                        "rate_first_test_neg_fem_under_25", 
                                                        new_values = 0.2877 * base_rate_reduction, 
-                                                       starting_year = intervention_year)
+                                                       starting_year = pitc_reduction_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data2, data, dictionary)
   write(rollout, here("THEMBISAv18/Rollout.txt"))
@@ -272,25 +274,35 @@ run_thembisa_scenario_prev_year <- function(intervention_year,
   read_thembisa_scenario(output_names)
 }
 
+read_thembisa_results_cluster <- function(pitc_reduction_years, pitc_reduction_percentage){
+  names(scenarios) <- scenario_names
+  bind_rows(scenarios, .id = "pitc_reduction_year") %>% 
+    dplyr::rename(intervention = value) %>% 
+    dplyr::left_join(baseline) %>% 
+    dplyr::rename(baseline = value) %>% 
+    separate(pitc_reduction_year, c("pitc_reduction_year", "test_reduction")) %>% 
+    tidyr::pivot_longer(c(intervention, baseline), names_to = "scenario")
+}
+
 
 # incremental reductions in art interruption rate
 # to be included in run_thembisa_scenario_future_variables
-reduce_art_interruption_incremental  <- function(output_names, art_interrupt_init, art_interrupt_incr, art_incr_years){
+reduce_art_interruption_incremental  <- function(output_names, art_interrupt_init, art_interrupt_rate_decrease, art_incr_years){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
   for (year in art_incr_years){
     formatted_data2 <- edit_formatted_data(formatted_data2, "rel_rate_art_by_year", 
-                                           new_values = (1-art_interrupt_incr), 
+                                           new_values = (1-art_interrupt_rate_decrease), 
                                            starting_year = year)
-    art_interrupt_incr = art_interrupt_init + art_interrupt_incr
-    if (art_interrupt_incr >= 1){
-      art_interrupt_incr <- 1 
+    art_interrupt_rate_decrease = art_interrupt_init + art_interrupt_rate_decrease
+    if (art_interrupt_rate_decrease >= 1){
+      art_interrupt_rate_decrease <- 1 
     }
   }
   return(formatted_data2)
 }
 
-run_thembisa_scenario_future_variables <- function(intervention_year, 
+run_thembisa_scenario_future_variables <- function(pitc_reduction_year, 
                                                    fsw_condom_usage_init,
                                                    st_condom_usage_init,
                                                    lt_condom_usage_init,
@@ -298,17 +310,17 @@ run_thembisa_scenario_future_variables <- function(intervention_year,
                                                    st_condom_usage_decrease,
                                                    lt_condom_usage_decrease,
                                                   condom_incr_years,
-                                                  art_interrupt_incr,
+                                                  art_interrupt_rate_decrease,
                                                   art_interrupt_init,
                                                   art_incr_years,
                                                   output_names, 
                                                   base_rate_reduction){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
   formatted_data2 <- format_data(data, dictionary)
-  if (!is.na(art_interrupt_incr)){
+  if (!is.na(art_interrupt_rate_decrease)){
     formatted_data2 <- reduce_art_interruption_incremental(output_names,
                                                            art_interrupt_init, 
-                                                           art_interrupt_incr, 
+                                                           art_interrupt_rate_decrease, 
                                                            art_incr_years)
   }
   if (!is.na(condom_incr_years)){
@@ -322,11 +334,11 @@ run_thembisa_scenario_future_variables <- function(intervention_year,
                                                       condom_incr_years)
     
   }
-  if (!is.na(intervention_year)){
+  if (!is.na(pitc_reduction_year)){
     formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 
                                                        "rate_first_test_neg_fem_under_25", 
                                                        new_values = 0.2877 * base_rate_reduction, 
-                                                       starting_year = intervention_year)
+                                                       starting_year = pitc_reduction_year)
   }
   rollout <- convert_to_thembisa_format(formatted_data2, data, dictionary)
   write(rollout, here("THEMBISAv18/Rollout.txt"))
@@ -335,44 +347,44 @@ run_thembisa_scenario_future_variables <- function(intervention_year,
   read_thembisa_scenario(output_names)
 }
 
-read_thembisa_results <- function(intervention_years){
-  filepaths <- paste0("results/scenario_", intervention_years, ".csv")
+read_thembisa_results <- function(pitc_reduction_years){
+  filepaths <- paste0("results/scenario_", pitc_reduction_years, ".csv")
   temp <- lapply(filepaths, read.csv)
-  names(temp) <- intervention_years
+  names(temp) <- pitc_reduction_years
   baseline <- read.csv("results/baseline.csv")
-  bind_rows(temp, .id = "intervention_year") %>% 
+  bind_rows(temp, .id = "pitc_reduction_year") %>% 
     dplyr::rename(intervention = value) %>% 
     dplyr::left_join(baseline) %>% 
     dplyr::rename(baseline = value) %>% 
     tidyr::pivot_longer(c(intervention, baseline), names_to = "scenario")
 }
 
-read_thembisa_results_sliding_scale <- function(intervention_years, sliding_scale_reduction){
-  for (i in 1: length(sliding_scale_reduction)){
+read_thembisa_results_sliding_scale <- function(pitc_reduction_years, pitc_reduction_percentage){
+  for (i in 1: length(pitc_reduction_percentage)){
     if (i == 1){
-      filepaths <- paste0("results/scenario_", intervention_years, "_", sliding_scale_reduction[i], ".csv")
+      filepaths <- paste0("results/scenario_", pitc_reduction_years, "_", pitc_reduction_percentage[i], ".csv")
     }
     if (i > 1){
-      filepaths <- append(filepaths, paste0("results/scenario_", intervention_years, "_", sliding_scale_reduction[i], ".csv"))
+      filepaths <- append(filepaths, paste0("results/scenario_", pitc_reduction_years, "_", pitc_reduction_percentage[i], ".csv"))
     }
   }
   temp <- lapply(filepaths, read.csv)
   
-  for (i in 1: length(sliding_scale_reduction)){
+  for (i in 1: length(pitc_reduction_percentage)){
     if (i == 1){
-      temp_names <- paste0(intervention_years, "_", sliding_scale_reduction[i])
+      temp_names <- paste0(pitc_reduction_years, "_", pitc_reduction_percentage[i])
     }
     if (i > 1){
-      temp_names <- append(temp_names, paste0(intervention_years, "_", sliding_scale_reduction[i]))
+      temp_names <- append(temp_names, paste0(pitc_reduction_years, "_", pitc_reduction_percentage[i]))
     }
   }
   names(temp) <- temp_names
   baseline <- read.csv("results/baseline.csv")
-  bind_rows(temp, .id = "intervention_year") %>% 
+  bind_rows(temp, .id = "pitc_reduction_year") %>% 
     dplyr::rename(intervention = value) %>% 
     dplyr::left_join(baseline) %>% 
     dplyr::rename(baseline = value) %>% 
-    separate(intervention_year, c("intervention_year", "test_reduction")) %>% 
+    separate(pitc_reduction_year, c("pitc_reduction_year", "test_reduction")) %>% 
     tidyr::pivot_longer(c(intervention, baseline), names_to = "scenario")
 }
 
@@ -381,7 +393,7 @@ plot_outputs_with_uncertainty <- function(output_name){
     scenario != "percent_change",
     indicator == output_name,
     year >= 2020) %>% 
-    group_by(year, scenario, intervention_year) %>% 
+    group_by(year, scenario, pitc_reduction_year) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
     ggplot(aes(year, median, fill = scenario)) +
@@ -389,7 +401,7 @@ plot_outputs_with_uncertainty <- function(output_name){
     geom_line(aes(color = scenario)) +
     ggtitle(output_name) +
     xlab("Years") +
-    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
+    facet_wrap(~pitc_reduction_year) + expand_limits(y=0) + theme_bw() + theme(text = element_text(size = 12))
 }
 
 plot_pct_chg_uncertainty <- function(output_name){
@@ -397,7 +409,7 @@ plot_pct_chg_uncertainty <- function(output_name){
     filter(scenario == "percent_change",
            indicator == output_name, 
            year >= 2020) %>% 
-    group_by(year, intervention_year, scenario) %>% 
+    group_by(year, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
     ggplot(aes(year, median)) +
@@ -405,24 +417,27 @@ plot_pct_chg_uncertainty <- function(output_name){
     geom_line(aes(), colour = "#00BFC4") +
     ggtitle(output_name) +
     xlab("Years") + ylab("Change from baseline (%)") +
-    facet_wrap(~intervention_year) + expand_limits(y=0) + theme_bw()
+    facet_wrap(~pitc_reduction_year) + expand_limits(y=0) + theme_bw()
 }
 
 calc_cumulative <- function(start_year, follow_up_years){
   end_year <- start_year + follow_up_years
   df %>% filter(indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
                 scenario != "percent_change", indicator != "ARTcoverageAdult",
+                indicator != "CondomUsage", indicator !="FSWCondomUsage", 
+                indicator !="NonFSWCondomUsage", indicator !="PctProtSexActsSW", 
+                indicator !="PctSexActsSW", indicator!= "HIVinc15to49",
                 year >= start_year,
                 year <= end_year,
-                intervention_year == start_year)  %>% 
-    group_by(indicator, intervention_year, scenario, parameter_set, test_reduction) %>% 
+                pitc_reduction_year == start_year)  %>% 
+    group_by(indicator, pitc_reduction_year, scenario, parameter_set, test_reduction) %>% 
     summarise(cumulative = sum(value))
 }
 
-calc_all_cumulatives <- function(intervention_years, follow_up_years){
-  cumulatives <- lapply(intervention_years, calc_cumulative, follow_up_years)
-  names(cumulatives) <- intervention_years
-  all_cumulatives <- bind_rows(cumulatives, .id = "intervention_year")
+calc_all_cumulatives <- function(pitc_reduction_years, follow_up_years){
+  cumulatives <- lapply(pitc_reduction_years, calc_cumulative, follow_up_years)
+  names(cumulatives) <- pitc_reduction_years
+  all_cumulatives <- bind_rows(cumulatives, .id = "pitc_reduction_year")
 }
 
 
@@ -433,10 +448,10 @@ plot_cumulative_uncertainty <- function(){
     indicator != "TestEfficiency", 
     indicator != "Pct1stHIVTestPos",
     indicator != "PctANCTestPos") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median, fill = scenario)) +
+    ggplot(aes(pitc_reduction_year, median, fill = scenario)) +
     geom_point(aes(color = scenario), shape = 15) +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI, color = scenario), width = 0.1) +
     xlab("Years") + ylab("Median (IQR)") +
@@ -468,10 +483,10 @@ plot_cumulative_pct_chg <- function(){
     indicator != "TestEfficiency", 
     indicator != "Pct1stHIVTestPos",
     indicator != "PctANCTestPos") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median, fill = scenario)) +
+    ggplot(aes(pitc_reduction_year, median, fill = scenario)) +
     geom_point(aes(), shape = 15 , color = "#00BFC4") +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
     xlab("Years") + ylab("Change from baseline (%)") +
@@ -502,10 +517,10 @@ plot_cumulative_epi_uncertainty <- function(df){
     indicator == "NewAdultHIV" | 
     indicator == "LYlostAIDS" | 
     indicator =="TotalAIDSdeathsadult") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median, fill = scenario)) +
+    ggplot(aes(pitc_reduction_year, median, fill = scenario)) +
     geom_point(aes(color = scenario), shape = 15) +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI, color = scenario), width = 0.1) +
     xlab("Years") + ylab("Cumulative value") +
@@ -537,10 +552,10 @@ plot_cumulative_epi_pct_chg <- function(df){
     indicator == "NewAdultHIV" | 
       indicator == "LYlostAIDS" | 
       indicator =="TotalAIDSdeathsadult") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median, fill = scenario)) +
+    ggplot(aes(pitc_reduction_year, median, fill = scenario)) +
     geom_point(shape = 15, color = "#00BFC4") +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
     xlab("Years") + ylab("Change from baseline (%)") +
@@ -573,10 +588,10 @@ plot_cumulative_surv_uncertainty <- function(indicators){
       indicator == "NewDiagnosesPregnancy" | 
       indicator =="StartingARTtot" | 
       indicator == "TotANCtests") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median, fill = scenario)) +
+    ggplot(aes(pitc_reduction_year, median, fill = scenario)) +
     geom_point(aes(color = scenario), shape = 15) +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI, color = scenario), width = 0.1) +
     xlab("Years") + ylab("Median (IQR)") +
@@ -609,10 +624,10 @@ plot_cumulative_surv_pct_chg <- function(){
       indicator == "NewDiagnosesPregnancy" | 
       indicator =="StartingARTtot" | 
       indicator == "TotANCtests") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median)) +
+    ggplot(aes(pitc_reduction_year, median)) +
     geom_point(shape = 15, color = "#00BFC4") +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
     xlab("Years") + ylab("Change from baseline (%)") +
@@ -642,10 +657,10 @@ plot_cumulative_diag_uncertainty <- function(df){
     scenario != "percent_change", 
     indicator == "Number1stHIVtestsPos" | 
     indicator == "NewDiagnosesPregnancy") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median, fill = scenario)) +
+    ggplot(aes(pitc_reduction_year, median, fill = scenario)) +
     geom_point(aes(color = scenario), shape = 15) +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI, color = scenario), width = 0.1) +
     xlab("Years") + ylab("New HIV diagnoses") +
@@ -676,10 +691,10 @@ plot_cumulative_diag_pct_chg <- function(df){
     scenario == "percent_change", 
     indicator == "Number1stHIVtestsPos" | 
       indicator == "NewDiagnosesPregnancy") %>% 
-    group_by(indicator, intervention_year, scenario) %>% 
+    group_by(indicator, pitc_reduction_year, scenario) %>% 
     summarise(median = median(value), upper_CI = quantile(value, probs = 0.975), 
               lower_CI = quantile(value, probs = 0.025)) %>% 
-    ggplot(aes(intervention_year, median, color = scenario)) +
+    ggplot(aes(pitc_reduction_year, median, color = scenario)) +
     geom_point(shape = 15, color = "#00BFC4") +
     geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), width = 0.1, color = "#00BFC4") +
     xlab("Years") + ylab("Change from baseline (%)") +

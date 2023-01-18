@@ -466,3 +466,5 @@ THEMBISAv18/Debug/.DS_Store
 .Rhistory
 .DS_Store
 .DS_Store
+*.bat
+contexts\*

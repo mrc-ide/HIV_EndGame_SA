@@ -1022,7 +1022,7 @@ int InclPriors[MaxPriors][2]; // Indicator of which priors are included (1st ind
 double RandPrior[MCMCdim]; // Random numbers used to sample from prior in current simulation
 double Cholesky1[MCMCdim][MCMCdim];
 double Covariance[MCMCdim][MCMCdim]; // The covariance matrix for the MCMC parameters
-const int InitSample = 10000;
+const int InitSample = 2;
 const int ResampleSize = 2;
 int SampleID[ResampleSize];
 int CurrSim;

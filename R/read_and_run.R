@@ -274,7 +274,8 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
   read_thembisa_scenario(output_names)
 }
 
-read_thembisa_results_cluster <- function(pitc_reduction_years, pitc_reduction_percentage){
+read_thembisa_results_cluster <- function(pitc_reduction_years, pitc_reduction_percentage, scenarios, 
+                                          scenario_names, baseline){
   names(scenarios) <- scenario_names
   bind_rows(scenarios, .id = "pitc_reduction_year") %>% 
     dplyr::rename(intervention = value) %>% 
@@ -420,7 +421,7 @@ plot_pct_chg_uncertainty <- function(output_name){
     facet_wrap(~pitc_reduction_year) + expand_limits(y=0) + theme_bw()
 }
 
-calc_cumulative <- function(start_year, follow_up_years){
+calc_cumulative <- function(start_year, follow_up_years, df){
   end_year <- start_year + follow_up_years
   df %>% filter(indicator != "AIDSdeathsAdultF", indicator != "AIDSdeathsAdultM", 
                 scenario != "percent_change", indicator != "ARTcoverageAdult",
@@ -434,8 +435,8 @@ calc_cumulative <- function(start_year, follow_up_years){
     summarise(cumulative = sum(value))
 }
 
-calc_all_cumulatives <- function(pitc_reduction_years, follow_up_years){
-  cumulatives <- lapply(pitc_reduction_years, calc_cumulative, follow_up_years)
+calc_all_cumulatives <- function(pitc_reduction_years, follow_up_years, df){
+  cumulatives <- lapply(pitc_reduction_years, calc_cumulative, follow_up_years, df)
   names(cumulatives) <- pitc_reduction_years
   all_cumulatives <- bind_rows(cumulatives, .id = "pitc_reduction_year")
 }

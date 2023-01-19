@@ -1,3 +1,16 @@
+#### Load packages/functions ####
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(here)
+library(purrr)
+
+source(here("scripts/modify_rollout.R"))
+source(here("R/read_and_run.R"))
+
+
 run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage, 
                condom_usage_reduction = FALSE, 
                fsw_condom_usage_decrease, st_condom_usage_decrease, lt_condom_usage_decrease,
@@ -6,18 +19,7 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
                art_interrupt_rate_decrease, art_incr_years,
                cumulative_years){
 
-  #### Load packages/functions ####
-  
-  library(readr)
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-  library(here)
-  library(purrr)
-  
-  source(here("scripts/modify_rollout.R"))
-  source(here("R/read_and_run.R"))
-  
+ 
   #### Make empty dataframe for outputs ####
   
   # names of all the outputs of interest
@@ -60,13 +62,13 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
                                                     base_rate_reduction = base_rate_reduction)
   
   # save baseline outputs
-  assign(paste0("baseline","_baseline"), baseline)
+  assign("baseline", baseline)
   
   n_scenarios <- length(pitc_reduction_percentage) * length(pitc_reduction_years)
-  scenarios <- replicate(n_scenarios, data_frame())
+  scenarios <- replicate(n_scenarios, tibble())
   
-  x <- expand_grid(pitc_reduction_years, pitc_reduction_percentage)
-  scenario_names <- purrr::pmap_chr(x, paste, sep = "_")
+  name_matrix <- expand_grid(pitc_reduction_years, pitc_reduction_percentage)
+  scenario_names <- purrr::pmap_chr(name_matrix, paste, sep = "_")
   
   
   # for loop that changes testing rate at different years and saves outputs
@@ -97,7 +99,9 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
   }
   
   # make a new data frame joining all results
-  df <- read_thembisa_results_cluster(pitc_reduction_years, pitc_reduction_percentage)
+  df <- read_thembisa_results_cluster(pitc_reduction_years, pitc_reduction_percentage, 
+                                      scenarios = scenarios, scenario_names = scenario_names, 
+                                      baseline = baseline)
 
   # calculate total aids-related deaths
 
@@ -119,18 +123,16 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
   df$test_reduction <- as.factor(df$test_reduction)
 
   # saving a summary csv of all outputs
-  summary <- df %>% filter(
-    scenario == "intervention",
-    year >= 2020) %>%
-    group_by(year, indicator, pitc_reduction_year, test_reduction) %>%
-    summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
+  summary <- as.data.frame(df) %>% filter(year >= 2020) %>% 
+    dplyr::group_by(year, scenario, indicator, pitc_reduction_year, test_reduction) %>%
+    dplyr::summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
               lower_CI = quantile(value, probs = 0.025))
 
   write_csv(summary, "results/summary.csv")
 
   # cumulative values
   cumulative_years <- cumulative_years
-  cumulative_values <- calc_all_cumulatives(pitc_reduction_years, cumulative_years)
+  cumulative_values <- calc_all_cumulatives(pitc_reduction_years, cumulative_years, df = df)
 
   # calculate cumulative percent change from baseline
 

@@ -14,10 +14,10 @@ source(here("R/read_and_run.R"))
 run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage, 
                condom_usage_reduction = FALSE, 
                fsw_condom_usage_decrease, st_condom_usage_decrease, lt_condom_usage_decrease,
-               condom_incr_years, condom_maintenance_years,
+               condom_incr_start,
                art_coverage_increase = FALSE,
-               art_interrupt_rate_decrease, art_incr_years,
-               cumulative_years){
+               art_interrupt_rate_decrease, art_incr_start,
+               cumulative_years, summary_name = "summary"){
 
  
   #### Make empty dataframe for outputs ####
@@ -36,15 +36,15 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
   # model input parameters 
   pitc_reduction_years <- pitc_reduction_years # establish years PITC changes occur
   pitc_reduction_percentage <- pitc_reduction_percentage # percentages of pitc that is reduced
-  condom_usage_reduction <- condom_usage_reduction
+  condom_usage_reduction <- condom_usage_reduction # switch for reducing condom usage
   fsw_condom_usage_decrease <- fsw_condom_usage_decrease # proportion of previous year's probability that fsw condom usage probability decreases by each year
   st_condom_usage_decrease <- st_condom_usage_decrease # proportion of previous year's probability that st condom usage probability decreases by each year
   lt_condom_usage_decrease <- lt_condom_usage_decrease # proportion of previous year's probability that lt condom usage probability decreases by each year
-  condom_incr_years <- condom_incr_years # years for which condom usage probabilities are decreased
-  condom_maintenance_years <- condom_maintenance_years # years reduced condom usage probabilities are maintained after reduction
-  art_coverage_increase <- art_coverage_increase 
+  condom_incr_years <- seq(condom_incr_start, condom_incr_start+10, 1) # years for which condom usage probabilities are decreased
+  condom_maintenance_years <- seq(condom_incr_start+11, 2100, 1) # years reduced condom usage probabilities are maintained after reduction
+  art_coverage_increase <- art_coverage_increase # switch for changing art interruption rate
   art_interrupt_rate_decrease <- art_interrupt_rate_decrease # proportion of previous year's rate that art interruption rate decreases by each year
-  art_incr_years <- art_incr_years # years for which art interruption rate decreases
+  art_incr_years <- seq(art_incr_start, 2100, 1) # years for which art interruption rate decreases
   cumulative_years <- cumulative_years # number of years over which cumulative values are calculated
   
   # run baseline model
@@ -64,25 +64,24 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
   # save baseline outputs
   assign("baseline", baseline)
   
-  n_scenarios <- length(pitc_reduction_percentage) * length(pitc_reduction_years)
-  scenarios <- replicate(n_scenarios, tibble())
-  
+  # create matrix for all pitc reduction years and reduction percentages
   name_matrix <- expand_grid(pitc_reduction_years, pitc_reduction_percentage)
+  # combine each year with each percentage to create unique scenario names
   scenario_names <- purrr::pmap_chr(name_matrix, paste, sep = "_")
+  # count scenario names
+  n_scenarios <- length(scenario_names)
+  # make a list with empty tibbles for each scenario
+  scenarios <- replicate(n_scenarios, tibble())
   
   
   # for loop that changes testing rate at different years and saves outputs
+  # predefined condom reduction and art interruption rate changes are used
   for (percentage_value in pitc_reduction_percentage){
-    fsw_condom_usage_decrease <- fsw_condom_usage_decrease
-    st_condom_usage_decrease <- st_condom_usage_decrease
-    lt_condom_usage_decrease <- lt_condom_usage_decrease
     base_rate_reduction <- percentage_value/100
     for (year in pitc_reduction_years){
       pitc_reduction_year <- year
-      condom_incr_years <- condom_incr_years
-      condom_maintenance_years <- condom_maintenance_years
       one_scenario <- run_thembisa_scenario_prev_year(pitc_reduction_year = pitc_reduction_year,
-                                                      condom_usage_reduction = TRUE,
+                                                      condom_usage_reduction = condom_usage_reduction,
                                                       fsw_condom_usage_decrease = fsw_condom_usage_decrease,
                                                       st_condom_usage_decrease = st_condom_usage_decrease,
                                                       lt_condom_usage_decrease = lt_condom_usage_decrease,
@@ -90,7 +89,7 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
                                                       condom_maintenance_years = condom_maintenance_years,
                                                       art_interrupt_rate_decrease = art_interrupt_rate_decrease,
                                                       art_incr_years = art_incr_years,
-                                                      art_coverage_increase = FALSE,
+                                                      art_coverage_increase = art_coverage_increase,
                                                       output_names = output_names,
                                                       base_rate_reduction = base_rate_reduction)
       name <- paste(year, percentage_value, sep = "_")
@@ -128,7 +127,7 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
     dplyr::summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
               lower_CI = quantile(value, probs = 0.025))
 
-  write_csv(summary, "results/summary.csv")
+  write_csv(summary, paste0("results/", summary_name, ".csv"))
 
   # cumulative values
   cumulative_years <- cumulative_years
@@ -148,7 +147,7 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
     summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
               lower_CI = quantile(value, probs = 0.025))
 
-  write_csv(cumulative_summary, "results/cumulative_summary.csv")
+  write_csv(cumulative_summary, paste0("results/cumulative_", summary_name, ".csv"))
 }
 
 

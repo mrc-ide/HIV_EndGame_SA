@@ -11,12 +11,19 @@ source(here("scripts/modify_rollout.R"))
 source(here("R/read_and_run.R"))
 
 
-run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage, 
+run_on_cluster <- function(pitc_reduction_years, 
+                           pitc_reduction_percentage, 
                condom_usage_reduction = FALSE, 
-               fsw_condom_usage_decrease, st_condom_usage_decrease, lt_condom_usage_decrease,
+               fsw_condom_usage_decrease, 
+               st_condom_usage_decrease, 
+               lt_condom_usage_decrease,
                condom_incr_start,
                art_coverage_increase = FALSE,
-               art_interrupt_rate_decrease, art_incr_start,
+               art_interrupt_rate_decrease, 
+               art_incr_start,
+               art_coverage_decrease = FALSE,
+               art_interrupt_rate_increase,
+               art_decr_start,
                cumulative_years, summary_name = "summary"){
 
  
@@ -27,7 +34,8 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
   output_names <- c("TotalHIVtests", "NewAdultHIV",
                     "AIDSdeathsAdultM", "AIDSdeathsAdultF", "TotSexActs",
                     "SWsexActs", "TotProtSexActs", "SWsexActsProt", "HIVinc15to49", 
-                    "ARTcoverageAdult")
+                    "ARTcoverageAdult", "AdultARTinterrupters", "AdultInterruptPropn", 
+                    "TotalART15F", "TotalART15M")
   
   # create empty folder for results
   
@@ -42,11 +50,19 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
   lt_condom_usage_decrease <- lt_condom_usage_decrease # proportion of previous year's probability that lt condom usage probability decreases by each year
   condom_incr_years <- seq(condom_incr_start, condom_incr_start+10, 1) # years for which condom usage probabilities are decreased
   condom_maintenance_years <- seq(condom_incr_start+11, 2100, 1) # years reduced condom usage probabilities are maintained after reduction
-  art_coverage_increase <- art_coverage_increase # switch for changing art interruption rate
+  art_coverage_increase <- art_coverage_increase # switch for reducing art interruption rate, thereby increasing ART retention
   art_interrupt_rate_decrease <- art_interrupt_rate_decrease # proportion of previous year's rate that art interruption rate decreases by each year
-  art_incr_years <- seq(art_incr_start, 2100, 1) # years for which art interruption rate decreases
+  art_incr_years <- seq(art_incr_start, art_incr_start+10, 1) # years for which art interruption rate increases
+  art_coverage_decrease <- art_coverage_decrease # switch for increasing art interruption rates, thereby reducing ART retention
+  art_interrupt_rate_increase <- art_interrupt_rate_increase # proportion of previous year's rate that art interruption rate increases
+  art_decr_years <- seq(art_decr_start, art_decr_start+10, 1) # years for which art interruption rate decreases
   cumulative_years <- cumulative_years # number of years over which cumulative values are calculated
-  
+  if (art_coverage_increase) {
+    art_maintenance_years <- seq(art_incr_start+11, 2100, 1)
+  }
+  if (art_coverage_decrease) {
+    art_maintenance_years <- seq(art_decr_start+11, 2100, 1)
+  }
   # run baseline model
   baseline <- run_thembisa_scenario_prev_year(pitc_reduction_year = NA,
                                                     condom_usage_reduction <- FALSE,
@@ -56,8 +72,12 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
                                                      condom_incr_years <- NA,
                                                      condom_maintenance_years <- condom_maintenance_years,
                                                     art_coverage_increase = FALSE,
+                                                    art_coverage_decrease = FALSE,
                                                     art_interrupt_rate_decrease = NA,
                                                     art_incr_years = art_incr_years,
+                                                    art_interrupt_rate_increase = art_interrupt_rate_increase,
+                                                    art_decr_years = art_decr_years,
+                                                    art_maintenance_years = art_maintenance_years,
                                                     output_names = output_names, 
                                                     base_rate_reduction = base_rate_reduction)
   
@@ -90,6 +110,10 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
                                                       art_interrupt_rate_decrease = art_interrupt_rate_decrease,
                                                       art_incr_years = art_incr_years,
                                                       art_coverage_increase = art_coverage_increase,
+                                                      art_coverage_decrease = art_coverage_decrease,
+                                                      art_interrupt_rate_increase = art_interrupt_rate_increase,
+                                                      art_decr_years = art_decr_years,
+                                                      art_maintenance_years = art_maintenance_years,
                                                       output_names = output_names,
                                                       base_rate_reduction = base_rate_reduction)
       name <- paste(year, percentage_value, sep = "_")
@@ -107,6 +131,8 @@ run_on_cluster <- function(pitc_reduction_years, pitc_reduction_percentage,
   df <- df %>%
     pivot_wider(names_from = indicator) %>%
     mutate(TotalAIDSdeathsadult = AIDSdeathsAdultF + AIDSdeathsAdultM) %>%
+    mutate(TotalART15 = TotalART15F + TotalART15M) %>% 
+    mutate(art_interrupt_rate = AdultARTinterrupters / TotalART15) %>% 
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
 
   # calculate condom usage for total adults and fsw-client only

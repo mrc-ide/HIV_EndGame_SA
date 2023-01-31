@@ -16556,6 +16556,8 @@ void RunSample()
 	AdultRootF.RecordSample("AdultRootF.txt");
 	AgeDbnOnART_M.RecordSample("AgeDbnOnART_M.txt");
 	AgeDbnOnART_F.RecordSample("AgeDbnOnART_F.txt");*/
+	AdultARTinterrupters.RecordSample("AdultARTinterrupters.txt");
+	AdultInterruptPropn.RecordSample("AdultInterruptPropn.txt");
 
 	// Write other outputs to text files
 	TotPop.RecordSample("TotPop.txt");

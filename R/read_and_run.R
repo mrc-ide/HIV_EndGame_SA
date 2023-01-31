@@ -204,6 +204,18 @@ reduce_art_interruption_prev_year  <- function(formatted_data2, output_names, ar
   return(formatted_data2)
 }
 
+# increases ART interruption rate by a percentage of the previous year's rate
+increase_art_interruption_prev_year  <- function(formatted_data2, output_names, art_interrupt_rate_increase, art_decr_years){
+  data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
+  formatted_data2 <- format_data(data, dictionary)
+  for (year in art_decr_years){
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_art_by_year", 
+                                                     new_values = (1+art_interrupt_rate_increase ), 
+                                                     starting_year = year)
+  }
+  return(formatted_data2)
+}
+
 edit_formatted_data_maintain <- function(formatted_data, parameter_name, starting_year, final_year=2100){
   # select parameter using dictionary
   parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
@@ -217,6 +229,18 @@ edit_formatted_data_maintain <- function(formatted_data, parameter_name, startin
 }
 
 # to be included in run_thembisa_scenario_prev_year
+# maintains art interruption rates after reducing it temporariliy
+maintain_art_retention <- function(formatted_data2, 
+                                  output_names, 
+                                  art_maintenance_years){
+  for (year in art_maintenance_years){ #loops over each condom usage maintenance year and makes all years the same value as last reduction
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_art_by_year", 
+                                                    starting_year = year)
+    
+  }
+  return(formatted_data2)
+}
+
 # maintains condom usage after reducing it temporariliy
 maintain_condom_usage <- function(formatted_data2, 
                                   output_names, 
@@ -242,6 +266,10 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
                                             art_coverage_increase,
                                             art_interrupt_rate_decrease,
                                             art_incr_years,
+                                            art_coverage_decrease,
+                                            art_interrupt_rate_increase,
+                                            art_decr_years,
+                                            art_maintenance_years,
                                             output_names, 
                                             base_rate_reduction){
   data <- readLines(here("THEMBISAv18/Rollout_Original.txt"))
@@ -251,6 +279,16 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
                                                          output_names, 
                                                            art_interrupt_rate_decrease, 
                                                            art_incr_years)
+    formatted_data2 <- maintain_art_retention(formatted_data2, output_names, 
+                                              art_maintenance_years)
+  }
+  if (art_coverage_decrease == TRUE){
+    formatted_data2 <- increase_art_interruption_prev_year(formatted_data2,
+                                                           output_names,
+                                                           art_interrupt_rate_increase,
+                                                           art_decr_years)
+    formatted_data2 <- maintain_art_retention(formatted_data2, output_names, 
+                                              art_maintenance_years)
   }
   if (condom_usage_reduction == TRUE){
     formatted_data2 <- reduce_condom_usage_prev_year(formatted_data2, output_names,

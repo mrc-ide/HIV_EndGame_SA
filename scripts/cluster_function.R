@@ -13,15 +13,15 @@ source(here("R/read_and_run.R"))
 
 run_on_cluster <- function(pitc_reduction_years, 
                            pitc_reduction_percentage, 
-               condom_usage_reduction = FALSE, 
+               condom_usage_reduction, 
                fsw_condom_usage_decrease, 
                st_condom_usage_decrease, 
                lt_condom_usage_decrease,
                condom_incr_start,
-               art_coverage_increase = FALSE,
+               art_coverage_increase,
                art_interrupt_rate_decrease, 
                art_incr_start,
-               art_coverage_decrease = FALSE,
+               art_coverage_decrease,
                art_interrupt_rate_increase,
                art_decr_start,
                cumulative_years, summary_name = "summary"){
@@ -34,8 +34,7 @@ run_on_cluster <- function(pitc_reduction_years,
   output_names <- c("TotalHIVtests", "NewAdultHIV",
                     "AIDSdeathsAdultM", "AIDSdeathsAdultF", "TotSexActs",
                     "SWsexActs", "TotProtSexActs", "SWsexActsProt", "HIVinc15to49", 
-                    "ARTcoverageAdult", "AdultARTinterrupters", "AdultInterruptPropn", 
-                    "TotalART15F", "TotalART15M")
+                    "ARTcoverageAdult")
   
   # create empty folder for results
   
@@ -65,12 +64,12 @@ run_on_cluster <- function(pitc_reduction_years,
   }
   # run baseline model
   baseline <- run_thembisa_scenario_prev_year(pitc_reduction_year = NA,
-                                                    condom_usage_reduction <- FALSE,
-                                                     fsw_condom_usage_decrease <- 0,
-                                                     st_condom_usage_decrease <- 0,
-                                                     lt_condom_usage_decrease <- 0,
-                                                     condom_incr_years <- NA,
-                                                     condom_maintenance_years <- condom_maintenance_years,
+                                                    condom_usage_reduction = FALSE,
+                                                     fsw_condom_usage_decrease = 0,
+                                                     st_condom_usage_decrease = 0,
+                                                     lt_condom_usage_decrease = 0,
+                                                     condom_incr_years = NA,
+                                                     condom_maintenance_years = condom_maintenance_years,
                                                     art_coverage_increase = FALSE,
                                                     art_coverage_decrease = FALSE,
                                                     art_interrupt_rate_decrease = NA,
@@ -131,8 +130,6 @@ run_on_cluster <- function(pitc_reduction_years,
   df <- df %>%
     pivot_wider(names_from = indicator) %>%
     mutate(TotalAIDSdeathsadult = AIDSdeathsAdultF + AIDSdeathsAdultM) %>%
-    mutate(TotalART15 = TotalART15F + TotalART15M) %>% 
-    mutate(art_interrupt_rate = AdultARTinterrupters / TotalART15) %>% 
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
 
   # calculate condom usage for total adults and fsw-client only
@@ -148,7 +145,7 @@ run_on_cluster <- function(pitc_reduction_years,
   df$test_reduction <- as.factor(df$test_reduction)
 
   # saving a summary csv of all outputs
-  summary <- as.data.frame(df) %>% filter(year >= 2020) %>% 
+  summary <- as.data.frame(df) %>% 
     dplyr::group_by(year, scenario, indicator, pitc_reduction_year, test_reduction) %>%
     dplyr::summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
               lower_CI = quantile(value, probs = 0.025))

@@ -6,8 +6,7 @@ library(ggplot2)
 
 # Compiles and runs the Thembisa model
 run_thembisa <- function(){
-  system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa")
-  system("./thembisa")
+  system("./thembisa.exe")
 }
 
 # Read output from Thembisa and assign column headers

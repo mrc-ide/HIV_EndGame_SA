@@ -2,7 +2,8 @@ workdir <- "Q:/Git/HIV_EndGame_SA/THEMBISAv18"
 setwd(workdir)
 library(didehpc)
 getwd()
-
+system("compile.bat")
+system("./thembisa.exe")
 mrc_config <- didehpc::didehpc_config(credentials = "spr21", workdir=workdir)
 packages = c("tidyr", "dplyr","ggplot2", "readr", "purrr")
 sources <- c("modify_rollout_cluster.R", "read_and_run_cluster.R", "support_modify_inputs_cluster.R", "cluster_function_thembisav18.R")
@@ -14,13 +15,15 @@ h$wait(10)
 # j$status()
 # j$log()
 # 
-k <- mrcq$enqueue(system("./thembisa"))
+k <- mrcq$enqueue(system("./thembisa.exe"))
 k$status()
 k$log()
+
+
 # 
-# x<- mrcq$enqueue(run_thembisa())
-# x$status()
-# x$log()
+x<- mrcq$enqueue(run_thembisa())
+x$status()
+x$log()
 
 pitc_reduction_years<- c(2025)
 pitc_reduction_percentage <- c(0)

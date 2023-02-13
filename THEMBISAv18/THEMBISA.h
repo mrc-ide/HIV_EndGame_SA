@@ -64,6 +64,8 @@ const int CalibARTbyAgeP2 = 1; // 1 = calibrate to age distribution of kids on A
 const int CalibChildPIP = 0; // 1 = calibrate to child deaths in facilities
 const int CalibARTcoverage = 1; // 1 = calibrate to ARV metabolite data
 const int CalibMarriageData = 0; // 1 = calibrate to marriage data
+const int UTTretention = 0; // 1 = toggle HIV Investment Case 95% ART coverage by 2025 scenario
+double UTTretval = 0.002; // adjusment to ART retention in HIV Investment Case 95% ART coverage by 2025 scenario
 
 //=============================================================================
 // Parameters in the 'Adult assumptions' sheet
@@ -1023,7 +1025,7 @@ double RandPrior[MCMCdim]; // Random numbers used to sample from prior in curren
 double Cholesky1[MCMCdim][MCMCdim];
 double Covariance[MCMCdim][MCMCdim]; // The covariance matrix for the MCMC parameters
 const int InitSample = 2;
-const int ResampleSize = 100;
+const int ResampleSize = 2;
 int SampleID[ResampleSize];
 int CurrSim;
 double temp[ResampleSize][41]; // Previously local to the SampleInput function in OutputArray class

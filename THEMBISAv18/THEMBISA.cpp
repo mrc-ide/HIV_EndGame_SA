@@ -13179,8 +13179,16 @@ void ResultsAtEndOfYr2()
 void OneYear()
 {
 	int im;
-
 	CurrYear +=1;
+	if (UTTretention == 1 && CurrYear >= 2020) {
+						for (int id = 0; id < 6; id++) {
+									 for (int is = 0; is < 2; is++) {
+													OnARTbyIntDur[id][is] = 1.0 - UTTretval * (1.0 - OnARTbyIntDur[id][is]);
+													OnARThalfIntDur[id][is] = 1.0 - UTTretval * (1.0 - OnARThalfIntDur[id][is]);
+									 }
+						}
+			}
+
 	if(CurrYear==1985){
 		GetCurrBehavDbnF();
 		GetCurrBehavDbnM();
@@ -16538,6 +16546,7 @@ void RunSample()
 	StartingART45F.RecordSample("StartingART45F.txt");*/
 	StartingARTtot.RecordSample("StartingARTtot.txt");
 	ARTcoverageAdult.RecordSample("ARTcoverageAdult.txt");
+	ARTcoverageDiag.RecordSample("ARTcoverageDiag.txt");
 	/*NewARTunder200.RecordSample("NewARTunder200.txt");
 	NewART200to349.RecordSample("NewART200to349.txt");
 	NewART350to499.RecordSample("NewART350to499.txt");

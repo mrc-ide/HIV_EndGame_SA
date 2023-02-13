@@ -443,4 +443,75 @@ calc_all_cumulatives <- function(pitc_reduction_years, follow_up_years, df){
   all_cumulatives <- bind_rows(cumulatives, .id = "pitc_reduction_year")
 }
 
+#### find elimination year ####
+# these functions find the elimination year or record not attained and mean+95% CI of incidence at 2100
+
+find_elimination_year <- function(simulation_df, reduction_year, pitc_reduction){
+  inc <- simulation_df %>% 
+    filter(scenario == "intervention", indicator == "HIVinc15to49",
+           pitc_reduction_year == reduction_year, test_reduction == pitc_reduction, year > 2020) %>% 
+    pivot_wider(names_from = indicator, values_from = "mean")
+  # identify earliest year incidence <0.001 or record not attained
+  if (!is.na(filter(inc, HIVinc15to49 < 0.001)$HIVinc15to49[1])) {
+    HIV_elimination_year <- filter(inc, HIVinc15to49 < 0.001)$year[1]
+  } else {
+    HIV_elimination_year <- NA}
+  HIV_elimination_year
+}
+find_elimination_years <- function(simulation_df){
+  df_name <- deparse(substitute(simulation_df))
+  pitc_reduction_years <- unique(simulation_df$pitc_reduction_year)
+  pitc_reduction_percentages <- unique(simulation_df$test_reduction)
+  elimination_years <- data.frame(expand_grid(simulation_df = df_name, pitc_reduction_year = pitc_reduction_years, 
+                                              pitc_reduction_percentage = pitc_reduction_percentages, 
+                                              elimination_year = NA))
+  input_values <- expand_grid(pitc_reduction_year = pitc_reduction_years, 
+                                          pitc_reduction_percentage = pitc_reduction_percentages)
+  for (i in 1:length(input_values$pitc_reduction_year)){
+    elimination_years$elimination_year[i] <- find_elimination_year(simulation_df,
+                                                                   input_values$pitc_reduction_year[i],
+                                                                   input_values$pitc_reduction_percentage[i])
+  }
+  elimination_years
+}
+
+
+find_incidences_at_2100 <- function(simulation_df){
+  df_name <- deparse(substitute(simulation_df))
+  pitc_reduction_years <- unique(simulation_df$pitc_reduction_year)
+  pitc_reduction_percentages <- unique(simulation_df$test_reduction)
+  incidences_at_2100 <- data.frame(expand_grid(simulation_df = df_name, pitc_reduction_year = pitc_reduction_years, 
+                                   pitc_reduction_percentage = pitc_reduction_percentages, 
+                                   mean_incidence_2100 = NA,
+                                   lower_ci = NA,
+                                   upper_ci = NA))
+  input_values <- expand_grid(pitc_reduction_year = pitc_reduction_years, 
+                              pitc_reduction_percentage = pitc_reduction_percentages)
+  
+  
+  for (i in 1:length(input_values$pitc_reduction_year)){
+    inc <- simulation_df %>% 
+      filter(scenario == "intervention", indicator == "HIVinc15to49",
+             pitc_reduction_year == input_values$pitc_reduction_year[i], 
+             test_reduction == input_values$pitc_reduction_percentage[i], year > 2020) %>% 
+      pivot_wider(names_from = indicator, values_from = "mean")
+    incidences_at_2100$mean_incidence_2100[i] <- tail(inc$HIVinc15to49, 1)
+    incidences_at_2100$lower_ci[i] <- tail(inc$lower_CI, 1)
+    incidences_at_2100$upper_ci[i] <- tail(inc$upper_CI, 1)
+  }
+  incidences_at_2100
+}
+
+find_inc_and_elimination <- function(simulation_df){
+  incidences <- find_incidences_at_2100(simulation_df)
+  years <- find_elimination_years(simulation_df) 
+  inner_join(years, incidences, by = c("simulation_df", "pitc_reduction_year", "pitc_reduction_percentage"))
+}
+
+
+
+
+
+
+
 

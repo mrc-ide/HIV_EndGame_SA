@@ -162,9 +162,9 @@ reduced_condom_usage_with_test_reduction %>% mutate(intervention_year = as.facto
   scale_fill_discrete(labels = c("Baseline", "Reduced \ncondom \nusage")) + 
   scale_color_discrete(labels = c("Baseline", "Reduced \ncondom \nusage")) + theme(legend.title = element_blank())
 
-run_on_cluster(pitc_reduction_years = c(2025,2035,2050), 
-               pitc_reduction_percentage = c(0, 20, 40, 60, 80, 100),
-               condom_usage_reduction = TRUE, 
+run_on_cluster(pitc_reduction_years = c(2025,2030, 2035, 2040, 2045, 2050), 
+               pitc_reduction_percentage = seq(0, 100, 10),
+               condom_usage_reduction = FALSE, 
                fsw_condom_usage_decrease = (0.07/3),
                st_condom_usage_decrease = 0.07, 
                lt_condom_usage_decrease = 0.07,
@@ -182,7 +182,7 @@ run_on_cluster(pitc_reduction_years = c(2025,2035,2050),
 test_reduction_only <- read_csv("results/test_reduction_only.csv")
 
 test_reduction_only %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
-  filter(pitc_reduction_year == 2025, indicator == "HIVinc15to49", year > 1990) %>% 
+  filter(pitc_reduction_year == 2030, indicator == "HIVinc15to49", year > 1990) %>% 
   ggplot(aes(year, mean, group = scenario, fill = scenario)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.25, show.legend = F) +
   geom_line(aes(colour = scenario), show.legend = T) +

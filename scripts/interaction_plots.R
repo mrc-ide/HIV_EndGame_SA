@@ -305,4 +305,124 @@ art_improvement_inc_elim %>% mutate(pitc_reduction_year = as.factor(pitc_reducti
                                                                 `2040` = "PITC reduced in 2040", 
                                                                 `2045` = "PITC reduced in 2045", 
                                                                 `2050` = "PITC reduced in 2050")))
-                                                   
+
+
+#### condom reduction values ####
+
+condom_reduction_values <- seq(0, 14, 2)
+
+for (i in condom_reduction_values){
+  run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5), 
+                 pitc_reduction_percentage = seq(0,100,10),
+                 condom_usage_reduction = TRUE, 
+                 fsw_condom_usage_decrease = i/300,
+                 st_condom_usage_decrease = i/100, 
+                 lt_condom_usage_decrease = i/100,
+                 condom_incr_start = 2025,
+                 art_coverage_increase = FALSE,
+                 art_interrupt_rate_decrease = i/100,
+                 art_incr_start = 2025,
+                 summary_name = paste0("reduce_condom_usage_with_test_reduction", i),
+                 cumulative_years = 50,
+                 art_coverage_decrease = FALSE,
+                 art_interrupt_rate_increase = 2/100,
+                 art_decr_start = 2025
+  )
+}
+
+filepaths <- paste0("results/reduce_condom_usage_with_test_reduction", condom_reduction_values, ".csv")
+temp <- lapply(filepaths, read.csv)
+names(temp) <- condom_reduction_values
+reduce_condom_usage_with_test_reduction <- bind_rows(temp, .id = "condom_usage_reduction")
+
+write_csv(reduce_condom_usage_with_test_reduction, "results/reduce_condom_usage_with_test_reduction")
+
+
+reduce_condom_usage_with_test_reduction %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
+  filter(pitc_reduction_year == 2025, indicator == "CondomUsage", year > 1990) %>% 
+  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.25, show.legend = F) +
+  geom_line(aes(colour = scenario), show.legend = T) +
+  geom_hline(aes(yintercept = 0.001), lty = "dotted") + 
+  xlab("") +
+  scale_y_continuous("HIV incidence per 1000 (15-49 years)", labels = (function(l) {round(l*1e3,1)})) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14)) +
+  facet_wrap(vars(test_reduction),labeller = as_labeller(c("0" = "No PITC reduction",
+                                                           "10" = "10% PITC reduction",
+                                                           "20" = "20% PITC reduction",
+                                                           "30" = "30% PITC reduction",
+                                                           "40" = "40% PITC reduction",
+                                                           "50" = "50% PITC reduction",
+                                                           "60" = "60% PITC reduction",
+                                                           "70" = "70% PITC reduction",
+                                                           "80" = "80% PITC reduction",
+                                                           "90" = "90% PITC reduction",
+                                                           "100" = "100% PITC reduction")), 
+             ncol = 2) +
+  scale_fill_discrete(labels = c("Baseline", "Reduced \nPITC \nonly")) + 
+  scale_color_discrete(labels = c("Baseline", "Reduced \nPITC \nonly")) + theme(legend.title = element_blank())
+
+
+n_comdom_reduction_values <- length(condom_reduction_values)
+condom_reduction_dfs <- replicate(n_comdom_reduction_values, tibble())
+for (i in 1:n_comdom_reduction_values) {
+  condom_reduction_dfs[[i]] <- find_inc_and_elimination(filter(reduce_condom_usage_with_test_reduction, 
+                                                               condom_usage_reduction == condom_reduction_values[i]))
+}
+names(condom_reduction_dfs) <- condom_reduction_values
+condom_reduction_inc_elim <- bind_rows(condom_reduction_dfs, .id = "condom_usage_reduction")
+
+
+ # plotting 
+condom_reduction_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 
+                                    pitc_reduction_year = as.factor(pitc_reduction_year),
+                                    condom_usage_reduction = factor(condom_usage_reduction, 
+                                                                    levels = as.character(condom_reduction_values))) %>% 
+  filter(pitc_reduction_year == 2025) %>% 
+  ggplot(aes(pitc_reduction_percentage, elimination_year, group = condom_usage_reduction, color = condom_usage_reduction)) + 
+  geom_line(aes(color = condom_usage_reduction)) +
+  xlab("PITC reduction (%)") + 
+  theme_classic() + 
+  scale_y_continuous("Year HIV eliminaton attained", n.breaks = 10, na.value = 2200,limits = c(2040, 2100)) + 
+  theme(axis.text = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 10)) + 
+  scale_color_discrete("Condom \nusage \nprobability \ndecrease") +
+  facet_wrap(vars(pitc_reduction_year),labeller = as_labeller(c(`2025` = "PITC reduced in 2025",
+                                                                `2030` = "PITC reduced in 2030",
+                                                                `2035` = "PITC reduced in 2035",
+                                                                `2040` = "PITC reduced in 2040", 
+                                                                `2045` = "PITC reduced in 2045", 
+                                                                `2050` = "PITC reduced in 2050")))
+
+# hiv incidence at 2100
+condom_reduction_inc_elim %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                     condom_usage_reduction = factor(condom_usage_reduction,
+                                                                     levels = as.character(condom_reduction_values))) %>% 
+  filter(pitc_reduction_year == 2025) %>% 
+  ggplot(aes(pitc_reduction_percentage, mean_incidence_2100, group = condom_usage_reduction, fill = condom_usage_reduction)) + 
+  geom_line(aes(color = condom_usage_reduction)) +
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, fill = condom_usage_reduction), alpha = 0.10, show.legend = F) +
+  xlab("PITC reduction (%)") + 
+  theme_classic() + 
+  scale_y_continuous("HIV incidence per 1000 (15-49 years) in 2100", labels = (function(l) {round(l*1e3,1)})) + 
+  expand_limits(y = 0) +
+  geom_hline(aes(yintercept = 0.001), lty = "dotted") +
+  theme(axis.text = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 10)) + 
+  scale_color_discrete("Condom \nusage \nprobability \ndecrease") +
+  facet_wrap(vars(pitc_reduction_year),labeller = as_labeller(c(`2025` = "PITC reduced in 2025",
+                                                                `2030` = "PITC reduced in 2030",
+                                                                `2035` = "PITC reduced in 2035",
+                                                                `2040` = "PITC reduced in 2040", 
+                                                                `2045` = "PITC reduced in 2045", 
+                                                                `2050` = "PITC reduced in 2050")))
+
+
+

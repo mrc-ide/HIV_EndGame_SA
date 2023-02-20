@@ -25,7 +25,7 @@ const int FixedARTinitiation = 0; // 1 = fix the rates of ART initiation at the 
 const int InputARTinitiationRates = 0; // 1 = specify rates of ART initiation in Rollout.txt
 									   // 0 = specify numbers starting ART in Rollout.txt
 const int PropnalImmART = 1; // 1 if immediate ART start is proportional to later rate of ART start
-const int ExcludeInterrupters = 1; // 1 = exclude temporary ART interrupters when calculating
+const int ExcludeInterrupters = 0; // 1 = exclude temporary ART interrupters when calculating
 								   // numbers currently on ART
 const int UseNumbersTests = 1; // 1 = calculate rates of testing from numbers of HIV tests
 const int ProvModel = 0; // 1 if modelling a province, 0 for national model
@@ -64,8 +64,8 @@ const int CalibARTbyAgeP2 = 1; // 1 = calibrate to age distribution of kids on A
 const int CalibChildPIP = 0; // 1 = calibrate to child deaths in facilities
 const int CalibARTcoverage = 1; // 1 = calibrate to ARV metabolite data
 const int CalibMarriageData = 0; // 1 = calibrate to marriage data
-const int UTTretention = 0; // 1 = toggle HIV Investment Case 95% ART coverage by 2025 scenario
-double UTTretval = 0.002; // adjusment to ART retention in HIV Investment Case 95% ART coverage by 2025 scenario
+const int UTTretention = 1; // 1 = toggle HIV Investment Case 95% ART coverage by 2025 scenario
+double UTTretval = 0.02; // adjusment to ART retention in HIV Investment Case 95% ART coverage by 2025 scenario
 
 //=============================================================================
 // Parameters in the 'Adult assumptions' sheet

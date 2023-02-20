@@ -34,7 +34,7 @@ check_art_retention <- function(pitc_reduction_years,
                     "AIDSdeathsAdultM", "AIDSdeathsAdultF", "TotSexActs",
                     "SWsexActs", "TotProtSexActs", "SWsexActsProt", "HIVinc15to49", 
                     "ARTcoverageAdult", "AdultARTinterrupters", "AdultInterruptPropn", "TotalART15F", "TotalART15M", 
-                    "ARTcoverageDiag")
+                    "ARTcoverageDiag", "DiagnosedHIV_M", "DiagnosedHIV_F")
   
   # create empty folder for results
   
@@ -131,6 +131,8 @@ check_art_retention <- function(pitc_reduction_years,
     pivot_wider(names_from = indicator) %>%
     mutate(TotalAIDSdeathsadult = AIDSdeathsAdultF + AIDSdeathsAdultM) %>%
     mutate(TotalART15 = TotalART15F + TotalART15M) %>% 
+    mutate(TotalDiagnosedHIV = DiagnosedHIV_F + DiagnosedHIV_M) %>% 
+    mutate(ARTCoverage_lise = TotalART15/TotalDiagnosedHIV) %>% 
     mutate(art_interrupt_rate = AdultARTinterrupters / TotalART15) %>% 
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
 
@@ -177,6 +179,7 @@ check_art_retention <- function(pitc_reduction_years,
 }
 
 system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa.exe -O2")
+
 check_art_retention(pitc_reduction_years = c(2025), 
                     pitc_reduction_percentage = c(100),
                     condom_usage_reduction = FALSE, 
@@ -195,7 +198,7 @@ check_art_retention(pitc_reduction_years = c(2025),
 
 lise_art_retention <- read_csv("results/check_art_retention.csv")
 
-lise_art_retention %>% filter(indicator == "art_interrupt_rate", scenario == "intervention") %>% ggplot(aes(year, mean)) +
+lise_art_retention %>% filter(indicator == "art_interrupt_rate", scenario == "baseline") %>% ggplot(aes(year, mean)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
   geom_line(aes()) +
   xlab("Years") +
@@ -204,7 +207,7 @@ lise_art_retention %>% filter(indicator == "art_interrupt_rate", scenario == "in
   geom_vline(aes(xintercept = 2020), lty = "dotted") + 
   scale_y_continuous("Proportion of adults on ART who interrupt ART")
   
-lise_art_retention %>% filter(indicator == "ARTcoverageAdult", scenario == "intervention" , year < 2030) %>% ggplot(aes(year, mean)) +
+lise_art_retention %>% filter(indicator == "ARTcoverageDiag", scenario == "baseline" , year < 2030) %>% ggplot(aes(year, mean)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
   geom_line(aes()) +
   xlab("Years") +

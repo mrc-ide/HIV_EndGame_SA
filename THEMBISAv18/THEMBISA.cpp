@@ -13180,19 +13180,23 @@ void OneYear()
 {
 	int im;
 	CurrYear +=1;
-	if (UTTretention == 1 && CurrYear >= 2020) {
-						for (int id = 0; id < 6; id++) {
-									 for (int is = 0; is < 2; is++) {
-													OnARTbyIntDur[id][is] = 1.0 - UTTretval * (1.0 - OnARTbyIntDur[id][is]);
-													OnARThalfIntDur[id][is] = 1.0 - UTTretval * (1.0 - OnARThalfIntDur[id][is]);
-									 }
-						}
+	if (UTTretention == 1 && CurrYear == 2020) {
+		for (int id = 0; id < 6; id++) {
+			for (int is = 0; is < 2; is++) {
+				OnARTbyIntDur[id][is] = 1.0 - UTTretval * (1.0 - OnARTbyIntDur[id][is]);
+				OnARThalfIntDur[id][is] = 1.0 - UTTretval * (1.0 - OnARThalfIntDur[id][is]);
 			}
+		}
+	}
 
 	if(CurrYear==1985){
 		GetCurrBehavDbnF();
 		GetCurrBehavDbnM();
 		UpdatePop();
+	}
+	if (CurrYear > StartYear && RR_ARTinterruption[CurrYear - StartYear] != RR_ARTinterruption[CurrYear - StartYear - 1]) {
+		CalcInterruptions();
+		SetFertByStage();
 	}
 	ResetMonthlyCum();
 	//ResultsAtStartOfYr();

@@ -8,9 +8,9 @@ library(purrr)
 
 pitc_reduction_years <- seq(2025, 2050, 5)
 pitc_reduction_percentage <- seq(0, 100, 10)
-condom_usage_reduction <- FALSE
-condom_usage_decrease <- 0
-condom_incr_start <- 2025
+condom_usage_reduction <- TRUE
+condom_usage_decrease <- seq(0,14,2)
+condom_incr_start <- seq(2025, 2040, 5)
 art_coverage_increase <- FALSE
 art_interrupt_rate_decrease <- 0
 art_incr_start <- 2025

@@ -109,7 +109,7 @@ names(temp) <- art_change_values
 decrease_art_retention_with_test_reduction <- bind_rows(temp, .id = "art_int_reduction")
 
 write_csv(decrease_art_retention_with_test_reduction, "results/decrease_art_retention_with_test_reduction_comb.csv")
-
+decrease_art_retention_with_test_reduction <- read_csv("results/decrease_art_retention_with_test_reduction_comb.csv")
 
 decrease_art_retention_with_test_reduction %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
   filter(pitc_reduction_year == 2025, indicator == "HIVinc15to49", year > 1990) %>% 
@@ -222,7 +222,7 @@ names(temp) <- art_change_values
 increase_art_retention_with_test_reduction <- bind_rows(temp, .id = "art_int_reduction")
 
 write_csv(increase_art_retention_with_test_reduction, "results/increase_art_retention_with_test_reduction.csv")
-
+increase_art_retention_with_test_reduction <- read_csv("results/increase_art_retention_with_test_reduction.csv")
 
 increase_art_retention_with_test_reduction %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
   filter(pitc_reduction_year == 2025, indicator == "HIVinc15to49", year > 1990) %>% 
@@ -261,21 +261,34 @@ for (i in 1:n_art_int_values) {
 names(art_improvement_dfs) <- art_change_values
 art_improvement_inc_elim <- bind_rows(art_improvement_dfs, .id = "art_int_improvement")
 
+# joining art_improvement and art_reduction dfs 
+
+art_change_inc_elim <- bind_rows(art_improvement_inc_elim, art_reduction_inc_elim)
+art_change_inc_elim <- art_change_inc_elim %>%
+  mutate(art_int_improvement = if_else(!is.na(art_int_improvement), paste0("–", as.character(art_int_improvement), "%"), art_int_improvement)) %>% 
+  mutate(art_int_reduction = if_else(!is.na(art_int_reduction), paste0(as.character(art_int_reduction), "%"), art_int_reduction)) %>% 
+  mutate(art_change = art_int_improvement) %>% 
+  mutate(art_change = if_else(is.na(art_int_improvement), art_int_reduction, art_change)) %>% 
+  select(-c(art_int_improvement, art_int_reduction))
+
+art_change_inc_elim$art_change[which(art_change_inc_elim$art_change == "–0%")] <- "0%"
+art_change_inc_elim <- art_change_inc_elim %>% mutate(art_change = factor(art_change, levels = c("8%", "6%", "4%", "2%", "0%", "–2%", "–4%", "–6%", "–8%")))
+
 
 # plotting 
-art_improvement_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 
+art_change_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 
                                   pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
   filter(pitc_reduction_year == 2025) %>% 
-  ggplot(aes(pitc_reduction_percentage, elimination_year, group = art_int_improvement, color = art_int_improvement)) + 
-  geom_line(aes(color = art_int_improvement)) +
+  ggplot(aes(pitc_reduction_percentage, elimination_year, group = art_change, color = art_change)) + 
+  geom_line(aes(color = art_change)) +
   xlab("PITC reduction (%)") + 
   theme_classic() + 
-  scale_y_continuous("Year HIV eliminaton attained", n.breaks = 10, na.value = 2200,limits = c(2040, 2100)) + 
+  scale_y_continuous("Year HIV eliminaton attained", n.breaks = 10,limits = c(2040, 2100)) + 
   theme(axis.text = element_text(size = 12),
         axis.title.y = element_text(size = 12),
         axis.title.x = element_text(size = 12),
         legend.text = element_text(size = 10)) + 
-  scale_color_discrete("ART \ninterruption \nrate \ndecrease") +
+  scale_color_discrete("ART \ninterruption \nrate \nchange") +
   facet_wrap(vars(pitc_reduction_year),labeller = as_labeller(c(`2025` = "PITC reduced in 2025",
                                                                 `2030` = "PITC reduced in 2030",
                                                                 `2035` = "PITC reduced in 2035",
@@ -284,11 +297,11 @@ art_improvement_inc_elim %>% mutate(elimination_year = as.numeric(elimination_ye
                                                                 `2050` = "PITC reduced in 2050")))
 
 # hiv incidence at 2100
-art_improvement_inc_elim %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+art_change_inc_elim %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
   #filter(pitc_reduction_year == 2025) %>% 
-  ggplot(aes(pitc_reduction_percentage, mean_incidence_2100, group = art_int_improvement, fill = art_int_improvement)) + 
-  geom_line(aes(color = art_int_improvement)) +
-  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, fill = art_int_improvement), alpha = 0.10, show.legend = F) +
+  ggplot(aes(pitc_reduction_percentage, mean_incidence_2100, group = art_change, fill = art_change)) + 
+  geom_line(aes(color = art_change)) +
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, fill = art_change), alpha = 0.10, show.legend = F) +
   xlab("PITC reduction (%)") + 
   theme_classic() + 
   scale_y_continuous("HIV incidence per 1000 (15-49 years) in 2100", labels = (function(l) {round(l*1e3,1)})) + 
@@ -298,7 +311,7 @@ art_improvement_inc_elim %>% mutate(pitc_reduction_year = as.factor(pitc_reducti
         axis.title.y = element_text(size = 12),
         axis.title.x = element_text(size = 12),
         legend.text = element_text(size = 10)) + 
-  scale_color_discrete("ART \ninterruption \nrate \ndecrease") +
+  scale_color_discrete("ART \ninterruption \nchange") +
   facet_wrap(vars(pitc_reduction_year),labeller = as_labeller(c(`2025` = "PITC reduced in 2025",
                                                                 `2030` = "PITC reduced in 2030",
                                                                 `2035` = "PITC reduced in 2035",
@@ -306,6 +319,38 @@ art_improvement_inc_elim %>% mutate(pitc_reduction_year = as.factor(pitc_reducti
                                                                 `2045` = "PITC reduced in 2045", 
                                                                 `2050` = "PITC reduced in 2050")))
 
+#### heatmaps ####
+
+art_change_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 
+                               pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  # filter(pitc_reduction_year == 2025) %>% 
+  ggplot(aes(pitc_reduction_percentage, art_change, fill = round(1000*mean_incidence_2100,2))) + 
+  geom_tile() + geom_text(aes(label = round(1000*mean_incidence_2100,2)), color = "black", size = 2.5) +
+  facet_wrap(~pitc_reduction_year) + scale_fill_gradient2("Mean HIV \nincidence \n(15-49y) \nper 1000 \nin 2100",
+                                                          low = "blue",
+                                                          mid = "#FFFFCC",
+                                                          high = "#FF0000", 
+                                                          midpoint = 1) +
+  ylab("Change in relative rate of ART interruption") +
+  xlab("PITC reduction (%)") + theme_classic()
+
+art_change_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 
+                               pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(pitc_reduction_year == 2025) %>% 
+  ggplot(aes(x = pitc_reduction_percentage, y = art_change, fill = mean_incidence_2100)) + 
+  geom_tile() + geom_text(aes(label = round(1000*mean_incidence_2100,2)), color = "white", size = 2.5) +
+  facet_wrap(~pitc_reduction_year) + scale_fill_continuous("Mean HIV \nincidence \nin 2100",type = "viridis") +
+  ylab("Change in relative rate of ART interruption") +
+  xlab("PITC reduction (%)") + theme_classic()
+
+art_change_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 
+                               pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  # filter(pitc_reduction_year == 2025) %>% 
+  ggplot(aes(pitc_reduction_percentage, art_change, fill = elimination_year)) + 
+  geom_tile() + 
+  facet_wrap(~pitc_reduction_year) + scale_fill_continuous("HIV \nelimination \nyear", limits = c(2040, 2100),type = "viridis") +
+  ylab("Change in Relative Rate of ART Interruption") + 
+  xlab("PITC reduction (%)")
 
 #### condom reduction values ####
 

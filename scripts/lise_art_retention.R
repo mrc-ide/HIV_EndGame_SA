@@ -57,7 +57,7 @@ check_art_retention <- function(pitc_reduction_years,
   art_decr_years <- seq(art_decr_start, art_decr_start+10, 1) # years for which art interruption rate decreases
   cumulative_years <- cumulative_years # number of years over which cumulative values are calculated
   if (art_coverage_increase) {
-    art_maintenance_years <- seq(2100, 2100, 1)
+    art_maintenance_years <- seq(art_incr_start+11, 2100, 1)
   }
   if (art_coverage_decrease) {
     art_maintenance_years <- seq(art_decr_start+11, 2100, 1)
@@ -176,17 +176,17 @@ check_art_retention <- function(pitc_reduction_years,
   write_csv(cumulative_summary, paste0("results/cumulative_", summary_name, ".csv"))
 }
 
-system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa.exe -O2")
+
 check_art_retention(pitc_reduction_years = c(2025), 
                     pitc_reduction_percentage = c(100),
                     condom_usage_reduction = FALSE, 
                     fsw_condom_usage_decrease = (0.07/3),
                     st_condom_usage_decrease = 0.07, 
                     lt_condom_usage_decrease = 0.07,
-                    condom_incr_start = 2025,
+                    condom_incr_start = 2030,
                     art_coverage_increase = TRUE,
-                    art_interrupt_rate_decrease = 0.8,
-                    art_incr_start = 2020,
+                    art_interrupt_rate_decrease = 0.08,
+                    art_incr_start = 2030,
                     summary_name = "check_art_retention",
                     cumulative_years = 50,
                     art_coverage_decrease = FALSE,
@@ -195,16 +195,60 @@ check_art_retention(pitc_reduction_years = c(2025),
 
 lise_art_retention <- read_csv("results/check_art_retention.csv")
 
-lise_art_retention %>% filter(indicator == "art_interrupt_rate", scenario == "intervention") %>% ggplot(aes(year, mean)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
-  geom_line(aes()) +
+lise_art_retention %>% filter(indicator == "art_interrupt_rate") %>% 
+ggplot(aes(year, mean, group = scenario, fill = scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.9, show.legend = F) +
+  geom_line(aes(color = scenario)) +
   xlab("Years") +
   theme_classic() +
   expand_limits(y = 0) +
   geom_vline(aes(xintercept = 2020), lty = "dotted") + 
   scale_y_continuous("Proportion of adults on ART who interrupt ART")
   
-lise_art_retention %>% filter(indicator == "ARTcoverageAdult", scenario == "intervention" , year < 2030) %>% ggplot(aes(year, mean)) +
+lise_art_retention %>% filter(indicator == "ARTcoverageDiag") %>% 
+  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.9, show.legend = F) +
+  geom_line(aes(color = scenario)) +
+  xlab("Years") +
+  theme_classic() +
+  expand_limits(y = 0) +
+  geom_vline(aes(xintercept = 2025), lty = "dotted") + 
+  geom_hline(aes(yintercept = 0.95), lty = "dotted") +
+  scale_y_continuous("ART coverage diagnosed")
+
+
+
+output_names <- c("TotalART15F", "TotalART15M", "DiagnosedHIV_F", "DiagnosedHIV_M")  
+system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa.exe -O2")  
+baseline <- run_thembisa_scenario_prev_year(pitc_reduction_year = NA,
+                                            condom_usage_reduction = FALSE,
+                                            fsw_condom_usage_decrease = 0,
+                                            st_condom_usage_decrease = 0,
+                                            lt_condom_usage_decrease = 0,
+                                            condom_incr_years = NA,
+                                            condom_maintenance_years = condom_maintenance_years,
+                                            art_coverage_increase = FALSE,
+                                            art_coverage_decrease = FALSE,
+                                            art_interrupt_rate_decrease = NA,
+                                            art_incr_years = art_incr_years,
+                                            art_interrupt_rate_increase = art_interrupt_rate_increase,
+                                            art_decr_years = art_decr_years,
+                                            art_maintenance_years = art_maintenance_years,
+                                            output_names = output_names, 
+                                            base_rate_reduction = base_rate_reduction)
+baseline_summary_exclude_0 <- baseline %>% 
+  mutate %>% pivot_wider(names_from = indicator) %>%
+  mutate(TotalDiagnosed = DiagnosedHIV_F + DiagnosedHIV_M) %>% 
+  mutate(TotalART15 = TotalART15F + TotalART15M) %>% 
+  mutate(ARTCoverageLise = TotalART15 / TotalDiagnosed) %>% 
+  pivot_longer(-(year:parameter_set), names_to = "indicator") %>% 
+  filter(year >= 2010) %>% 
+  dplyr::group_by(year, indicator) %>%
+  dplyr::summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
+                   lower_CI = quantile(value, probs = 0.025))
+
+
+baseline_summary_exclude_0 %>% filter(indicator == "ARTCoverageLise", year < 2030) %>% ggplot(aes(year, mean)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
   geom_line(aes()) +
   xlab("Years") +
@@ -214,8 +258,72 @@ lise_art_retention %>% filter(indicator == "ARTcoverageAdult", scenario == "inte
   geom_vline(aes(xintercept = 2025), lty = "dotted") + 
   scale_y_continuous("ART coverage")
 
+
+baseline_summary_exclude_0 %>% filter(indicator == "TotalDiagnosed", year < 2030) %>% ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
+  geom_line(aes()) +
+  xlab("Years") +
+  theme_classic() +
+  expand_limits(y = 0) +
+  scale_y_continuous("Total diagnosed")
+
+baseline_summary_exclude_0 %>% filter(indicator == "TotalART15", year < 2030) %>% ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
+  geom_line(aes()) +
+  xlab("Years") +
+  theme_classic() +
+  expand_limits(y = 0) +
+  scale_y_continuous("Total ART")
+
+
+
+baseline_summary_exclude_1 <- baseline %>% 
+  mutate %>% pivot_wider(names_from = indicator) %>%
+  mutate(TotalDiagnosed = DiagnosedHIV_F + DiagnosedHIV_M) %>% 
+  mutate(TotalART15 = TotalART15F + TotalART15M) %>% 
+  mutate(ARTCoverageLise = TotalART15 / TotalDiagnosed) %>% 
+  pivot_longer(-(year:parameter_set), names_to = "indicator") %>% 
+  filter(year >= 2010) %>% 
+  dplyr::group_by(year, indicator) %>%
+  dplyr::summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
+                   lower_CI = quantile(value, probs = 0.025))
+
+
+baseline_summary_exclude_1 %>% filter(indicator == "ARTCoverageLise", year < 2030) %>% ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
+  geom_line(aes()) +
+  xlab("Years") +
+  theme_classic() +
+  expand_limits(y = 0) +
+  geom_hline(aes(yintercept = 0.95), lty = "dotted") +
+  geom_vline(aes(xintercept = 2025), lty = "dotted") + 
+  scale_y_continuous("ART coverage")
   
-  
-  
-  
-  
+
+baseline_summary_exclude_1 %>% filter(indicator == "TotalDiagnosed", year < 2030) %>% ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
+  geom_line(aes()) +
+  xlab("Years") +
+  theme_classic() +
+  expand_limits(y = 0) +
+  scale_y_continuous("Total diagnosed")
+
+baseline_summary_exclude_1 %>% filter(indicator == "TotalART15", year < 2030) %>% ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.9, show.legend = F) +
+  geom_line(aes()) +
+  xlab("Years") +
+  theme_classic() +
+  expand_limits(y = 0) +
+  scale_y_continuous("Total ART")
+exclude_dfs <- list(baseline_summary_exclude_0, baseline_summary_exclude_1)
+names(exclude_dfs) <- c(0,1)
+baseline_summary_exclude_vs <- bind_rows(exclude_dfs,.id = "ExcludeInterrupters")
+
+baseline_summary_exclude_vs %>% filter(indicator == "TotalART15", year < 2030) %>% 
+  ggplot(aes(year, mean, group = ExcludeInterrupters, fill = ExcludeInterrupters)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = ExcludeInterrupters), alpha = 0.9, show.legend = F) +
+  geom_line(aes(color = ExcludeInterrupters)) +
+  xlab("Years") +
+  theme_classic() +
+  expand_limits(y = 0) +
+  scale_y_continuous("Total ART")

@@ -3187,3 +3187,16 @@ THEMBISAv18/TotSexActs.txt
 THEMBISAv18/TotSexWorkers.txt
 THEMBISAv18/VLsuppressed.txt
 orderly/thembisa_orderly/data/README.md
+orderly/thembisa_orderly/contexts/bin/task_run
+orderly/thembisa_orderly/contexts/*
+orderly/thembisa_orderly/src/thembisa/conan/*
+orderly/thembisa_orderly/src/thembisa/contexts/*
+orderly/thembisa_orderly/src/thembisa/db/*
+orderly/thembisa_orderly/src/thembisa/bin/*
+orderly/thembisa_orderly/src/thembisa/context_config
+orderly/thembisa_orderly/src/thembisa/id
+orderly/thembisa_orderly/src/thembisa/lib/*
+orderly/thembisa_orderly/src/thembisa/logs/*
+orderly/thembisa_orderly/src/thembisa/bundles/*
+orderly/thembisa_orderly/src/thembisa/output/*
+orderly/thembisa_orderly/src/thembisa/workers/*

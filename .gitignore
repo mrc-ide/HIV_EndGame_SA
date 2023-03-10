@@ -3200,3 +3200,4 @@ orderly/thembisa_orderly/src/thembisa/logs/*
 orderly/thembisa_orderly/src/thembisa/bundles/*
 orderly/thembisa_orderly/src/thembisa/output/*
 orderly/thembisa_orderly/src/thembisa/workers/*
+results/*

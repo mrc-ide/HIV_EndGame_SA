@@ -103,7 +103,10 @@ artefacts:
         - TotSexWorkers.txt
         - VLsuppressed.txt
         - Rollout.txt
-        
+        - ARTcoverageDiagF.txt
+        - ARTcoverageDiagM.txt
+        - Prev15to49.txt
+        - ARTcoverageDiag15.txt
 
 # An optional name to describe the report in more detail than its
 # directory name (which must be short) but less detail than
@@ -125,6 +128,9 @@ parameters:
   pitc_reduction_percentage: ~
   condom_usage_reduction: ~
   condom_usage_decrease: ~
+  condom_decr_start: ~
+  condom_usage_promotion: ~
+  condom_usage_increase: ~
   condom_incr_start: ~
   art_coverage_increase: ~
   art_interrupt_rate_decrease: ~

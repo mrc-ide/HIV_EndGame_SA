@@ -162,10 +162,10 @@ reduce_condom_usage_prev_year  <- function(formatted_data,
                                            fsw_condom_usage_decrease, 
                                            st_condom_usage_decrease,
                                            lt_condom_usage_decrease,
-                                           condom_incr_years){
+                                           condom_decr_years){
   data <- readLines("Rollout_Original.txt")
   formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
-  for (year in condom_incr_years){ #loops over each condom usage increase year and changes the proportion reduction of probability
+  for (year in condom_decr_years){ #loops over each condom usage decrease year and changes the proportion reduction of probability
     formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_fsw", 
                                                      new_values = (1-fsw_condom_usage_decrease), 
                                                      starting_year = year)
@@ -174,6 +174,29 @@ reduce_condom_usage_prev_year  <- function(formatted_data,
                                                      starting_year = year)
     formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_lt", 
                                                      new_values = (1-lt_condom_usage_decrease), 
+                                                     starting_year = year)
+  }
+  return(formatted_data2)
+}
+
+# to be included in run_thembisa_scenario_prev_year - increases condom usage by a percentage of the previous year's
+increase_condom_usage_prev_year  <- function(formatted_data, 
+                                           output_names, 
+                                           fsw_condom_usage_increase, 
+                                           st_condom_usage_increase,
+                                           lt_condom_usage_increase,
+                                           condom_incr_years){
+  data <- readLines("Rollout_Original.txt")
+  formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
+  for (year in condom_incr_years){ #loops over each condom usage increase year and changes the proportion increase of probability
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_fsw", 
+                                                     new_values = (1+fsw_condom_usage_increase), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_st", 
+                                                     new_values = (1+st_condom_usage_increase), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_lt", 
+                                                     new_values = (1+lt_condom_usage_increase), 
                                                      starting_year = year)
   }
   return(formatted_data2)
@@ -251,6 +274,11 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
                                             fsw_condom_usage_decrease, 
                                             st_condom_usage_decrease,
                                             lt_condom_usage_decrease,
+                                            condom_decr_years,
+                                            condom_usage_promotion,
+                                            fsw_condom_usage_increase, 
+                                            st_condom_usage_increase,
+                                            lt_condom_usage_increase,
                                             condom_incr_years,
                                             condom_maintenance_years,
                                             art_coverage_increase,
@@ -285,9 +313,18 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
                                                      fsw_condom_usage_decrease, 
                                                      st_condom_usage_decrease,
                                                      lt_condom_usage_decrease,
-                                                     condom_incr_years)
+                                                     condom_decr_years)
     formatted_data2 <- maintain_condom_usage(formatted_data2, output_names,
                                                      condom_maintenance_years)
+  }
+  if (condom_usage_promotion == TRUE){
+    formatted_data2 <- increase_condom_usage_prev_year(formatted_data2, output_names,
+                                                     fsw_condom_usage_increase, 
+                                                     st_condom_usage_increase,
+                                                     lt_condom_usage_increase,
+                                                     condom_incr_years)
+    formatted_data2 <- maintain_condom_usage(formatted_data2, output_names,
+                                             condom_maintenance_years)
   }
   if (!is.na(pitc_reduction_year)){
     formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 
@@ -440,56 +477,71 @@ calc_all_cumulatives <- function(pitc_reduction_years, follow_up_years, df){
 #### find elimination year ####
 # these functions find the elimination year or record not attained and mean+95% CI of incidence at 2100
 
-find_elimination_year <- function(simulation_df, reduction_year, pitc_reduction){
+find_elimination_year <- function(simulation_df, reduction_year, pitc_reduction, future_variable, future_values){
   inc <- simulation_df %>% 
     filter(scenario == "intervention", indicator == "HIVinc15to49",
-           pitc_reduction_year == reduction_year, test_reduction == pitc_reduction, year > 2020) %>% 
-    pivot_wider(names_from = indicator, values_from = "mean")
+           pitc_reduction_year == reduction_year, test_reduction == pitc_reduction,
+           future_variability == future_variable, future_value == future_values, year > 2020)
   # identify earliest year incidence <0.001 or record not attained
-  if (!is.na(filter(inc, HIVinc15to49 < 0.001)$HIVinc15to49[1])) {
-    HIV_elimination_year <- filter(inc, HIVinc15to49 < 0.001)$year[1]
+  if (!is.na(filter(inc, mean < 0.001)$mean[1])) {
+    HIV_elimination_year <- filter(inc, mean < 0.001)$year[1]
   } else {
     HIV_elimination_year <- NA}
   HIV_elimination_year
 }
 find_elimination_years <- function(simulation_df){
-  df_name <- deparse(substitute(simulation_df))
+  future_variable <- unique(simulation_df$future_variability)
+  future_values <- unique(simulation_df$future_value)
   pitc_reduction_years <- unique(simulation_df$pitc_reduction_year)
   pitc_reduction_percentages <- unique(simulation_df$test_reduction)
-  elimination_years <- data.frame(expand_grid(simulation_df = df_name, pitc_reduction_year = pitc_reduction_years, 
-                                              pitc_reduction_percentage = pitc_reduction_percentages, 
+  elimination_years <- data.frame(expand_grid(pitc_reduction_year = pitc_reduction_years, 
+                                              pitc_reduction_percentage = pitc_reduction_percentages,
+                                              future_variability = future_variable, 
+                                              future_value = future_values,
                                               elimination_year = NA))
-  input_values <- expand_grid(pitc_reduction_year = pitc_reduction_years, 
-                                          pitc_reduction_percentage = pitc_reduction_percentages)
-  for (i in 1:length(input_values$pitc_reduction_year)){
+  input_values <- expand_grid(pitc_reduction_year = pitc_reduction_years,
+                              pitc_reduction_percentage = pitc_reduction_percentages,
+                              future_variability = future_variable, 
+                              future_value = future_values)
+  for (i in 1:nrow(elimination_years)){
     elimination_years$elimination_year[i] <- find_elimination_year(simulation_df,
-                                                                   input_values$pitc_reduction_year[i],
-                                                                   input_values$pitc_reduction_percentage[i])
+                                                                   reduction_year = input_values$pitc_reduction_year[i],
+                                                                   pitc_reduction = input_values$pitc_reduction_percentage[i],
+                                                                   future_variable = input_values$future_variability[i], 
+                                                                   future_values = input_values$future_value[i])
   }
   elimination_years
 }
 
 
 find_incidences_at_2100 <- function(simulation_df){
-  df_name <- deparse(substitute(simulation_df))
+  future_variable <- unique(simulation_df$future_variability)
+  future_values <- unique(simulation_df$future_value)
   pitc_reduction_years <- unique(simulation_df$pitc_reduction_year)
   pitc_reduction_percentages <- unique(simulation_df$test_reduction)
-  incidences_at_2100 <- data.frame(expand_grid(simulation_df = df_name, pitc_reduction_year = pitc_reduction_years, 
-                                   pitc_reduction_percentage = pitc_reduction_percentages, 
-                                   mean_incidence_2100 = NA,
-                                   lower_ci = NA,
-                                   upper_ci = NA))
-  input_values <- expand_grid(pitc_reduction_year = pitc_reduction_years, 
+  incidences_at_2100 <- data.frame(expand_grid(future_variability = future_variable, 
+                                               future_value = future_values, 
+                                               pitc_reduction_year = pitc_reduction_years,
+                                               pitc_reduction_percentage = pitc_reduction_percentages,
+                                               mean_incidence_2100 = NA,
+                                               lower_ci = NA,
+                                               upper_ci = NA))
+  input_values <- expand_grid(future_variability = future_variable, 
+                              future_value = future_values, 
+                              pitc_reduction_year = pitc_reduction_years, 
                               pitc_reduction_percentage = pitc_reduction_percentages)
   
   
   for (i in 1:length(input_values$pitc_reduction_year)){
     inc <- simulation_df %>% 
-      filter(scenario == "intervention", indicator == "HIVinc15to49",
-             pitc_reduction_year == input_values$pitc_reduction_year[i], 
-             test_reduction == input_values$pitc_reduction_percentage[i], year > 2020) %>% 
-      pivot_wider(names_from = indicator, values_from = "mean")
-    incidences_at_2100$mean_incidence_2100[i] <- tail(inc$HIVinc15to49, 1)
+      filter(scenario == "intervention", 
+             indicator == "HIVinc15to49",
+             pitc_reduction_year == input_values$pitc_reduction_year[i],
+             test_reduction == input_values$pitc_reduction_percentage[i],
+             future_variability == input_values$future_variability[i], 
+             future_value == input_values$future_value[i], 
+             year == 2100)
+    incidences_at_2100$mean_incidence_2100[i] <- tail(inc$mean, 1)
     incidences_at_2100$lower_ci[i] <- tail(inc$lower_CI, 1)
     incidences_at_2100$upper_ci[i] <- tail(inc$upper_CI, 1)
   }
@@ -499,9 +551,8 @@ find_incidences_at_2100 <- function(simulation_df){
 find_inc_and_elimination <- function(simulation_df){
   incidences <- find_incidences_at_2100(simulation_df)
   years <- find_elimination_years(simulation_df) 
-  inner_join(years, incidences, by = c("simulation_df", "pitc_reduction_year", "pitc_reduction_percentage"))
+  inner_join(years, incidences, by = c("future_variability", "future_value", "pitc_reduction_year", "pitc_reduction_percentage"))
 }
-
 
 
 

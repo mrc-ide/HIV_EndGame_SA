@@ -15,20 +15,23 @@ workdir <- "Q:/Git/HIV_EndGame_SA/orderly/thembisa_orderly/src/thembisa"
 setwd(workdir)
 getwd()
 
-# check that ordely works where you are
+# check that orderly works where you are
 orderly::orderly_run(parameters = list(pitc_reduction_years = 2025,
-                     pitc_reduction_percentage = 0,
-                     condom_usage_reduction = FALSE,
-                     condom_usage_decrease = 0,
-                     condom_incr_start = 2020,
-                     art_coverage_increase = FALSE,
-                     art_interrupt_rate_decrease = 0,
-                     art_incr_start= 2020,
-                     art_coverage_decrease = FALSE,
-                     art_interrupt_rate_increase = 2020,
-                     art_decr_start = 0,
-                     cumulative_years = 50,
-                     summary_name = "summary"))
+                                       pitc_reduction_percentage = 0,
+                                       condom_usage_reduction = FALSE,
+                                       condom_usage_decrease = 0,
+                                       condom_decr_start = 2020,
+                                       condom_usage_promotion = TRUE,
+                                       condom_incr_start = 2025,
+                                       condom_usage_increase = 1,
+                                       art_coverage_increase = FALSE,
+                                       art_interrupt_rate_decrease = 0,
+                                       art_incr_start= 2020,
+                                       art_coverage_decrease = FALSE,
+                                       art_interrupt_rate_increase = 2020,
+                                       art_decr_start = 0,
+                                       cumulative_years = 50,
+                                       summary_name = "summary"))
 
 
 task <- "thembisa"
@@ -39,11 +42,14 @@ output_path <- "output"
 
 # parameter values - change for each run
 
-pitc_reduction_years<- seq(2025, 2050, 5)
-pitc_reduction_percentage <- seq(0,100,10) 
-condom_usage_reduction <- FALSE
-condom_usage_decrease <- 0
+pitc_reduction_years<- c(2025)
+pitc_reduction_percentage <- seq(0,100,10)
+condom_usage_reduction <- TRUE
+condom_usage_decrease <- seq(0,7,1)
 condom_incr_start <- 2025
+condom_usage_promotion <- FALSE
+condom_usage_increase <- 0
+condom_decr_start <- 2025
 art_coverage_increase <- FALSE
 art_interrupt_rate_decrease <- 0 
 art_incr_start <- 2025
@@ -59,7 +65,10 @@ pars <- expand_grid(pitc_reduction_years,
                     pitc_reduction_percentage, 
                     condom_usage_reduction,
                     condom_usage_decrease,
-                    condom_incr_start, 
+                    condom_decr_start,
+                    condom_usage_promotion,
+                    condom_incr_start,
+                    condom_usage_increase,
                     art_coverage_increase,
                     art_interrupt_rate_decrease,
                     art_incr_start,
@@ -78,6 +87,9 @@ bundle <- lapply(X = seq_len(nrow(pars)), FUN = function(i){
                       pitc_reduction_percentage = pars$pitc_reduction_percentage[i],
                       condom_usage_reduction = pars$condom_usage_reduction[i],
                       condom_usage_decrease = pars$condom_usage_decrease[i],
+                      condom_decr_start = pars$condom_decr_start[i],
+                      condom_usage_promotion = pars$condom_usage_promotion[i],
+                      condom_usage_increase = pars$condom_usage_increase[i],
                       condom_incr_start = pars$condom_incr_start[i],
                       art_coverage_increase = pars$art_coverage_increase[i],
                       art_interrupt_rate_decrease = pars$art_interrupt_rate_decrease[i],
@@ -120,13 +132,14 @@ batch_name <- t$name
 obj$task_bundle_get(batch_name)$results()
 # status
 t$status()
+which(t$status()=="RUNNING")
 # look at logs of tasks
 tasks <- t$tasks
 # check log of specific tasks - task 1 below
-tasks[[1]]$log()
-
+tasks[[4]]$log()
+t$status()
 # import to archive
-for (output in t$wait(100)) {
+for (output in t$wait(100)[]) {
   out <- strsplit(output$path, "\\\\")[[1]]
   output_filename <- out[length(out)]
   orderly::orderly_bundle_import(file.path(workdir, output_path, output_filename),
@@ -142,6 +155,9 @@ archive_task_names <- unlist(lapply(seq_len(nrow(pars)), function(i) {
                           parameter:pitc_reduction_percentage == pitc_reduction_percentage &&  
                           parameter:condom_usage_reduction == condom_usage_reduction &&
                           parameter:condom_usage_decrease == condom_usage_decrease &&
+                          parameter:condom_decr_start == condom_incr_start &&
+                          parameter:condom_usage_promotion == condom_usage_promotion &&
+                          parameter:condom_usage_increase == condom_usage_increase &&
                           parameter:condom_incr_start == condom_incr_start &&
                           parameter:art_coverage_increase == art_coverage_increase &&
                           parameter:art_interrupt_rate_decrease == art_interrupt_rate_decrease &&
@@ -155,6 +171,9 @@ archive_task_names <- unlist(lapply(seq_len(nrow(pars)), function(i) {
                                             pitc_reduction_percentage = pars$pitc_reduction_percentage[i],
                                             condom_usage_reduction = pars$condom_usage_reduction[i],
                                             condom_usage_decrease = pars$condom_usage_decrease[i],
+                                            condom_decr_start = pars$condom_incr_start[i],
+                                            condom_usage_promotion = pars$condom_usage_promotion[i],
+                                            condom_usage_increase = pars$condom_usage_increase[i],
                                             condom_incr_start = pars$condom_incr_start[i],
                                             art_coverage_increase = pars$art_coverage_increase[i],
                                             art_interrupt_rate_decrease = pars$art_interrupt_rate_decrease[i],
@@ -165,6 +184,7 @@ archive_task_names <- unlist(lapply(seq_len(nrow(pars)), function(i) {
                                             cumulative_years = pars$cumulative_years[i],
                                             summary_name = pars$summary_name[i])
   )}))
+
 sum(is.na(archive_task_names))
 archive_task_names <- archive_task_names[which(!is.na(archive_task_names))]
 # combine the summary csvs

@@ -1818,6 +1818,7 @@ PostOutputArray EnrolmentRatio15M(116);
 PostOutputArray EnrolmentRatio15F(116);
 PostOutputArray EnrolmentRatioU15(116);
 PostOutputArray ARTcoverageDiag(116);
+PostOutputArray ARTcoverageDiag15(116);
 PostOutputArray ARTcoverageDiagM(116);
 PostOutputArray ARTcoverageDiagF(116);
 PostOutputArray ARTcoverageDiagU15(116);

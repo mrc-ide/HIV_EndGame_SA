@@ -9788,6 +9788,7 @@ void ResultsAtStartOfYr()
 			TotalART15M.out[CurrSim - 1][iy])/ (Temp1 + Temp2 + Temp3 + Temp4);
 		ARTcoverageDiag.out[CurrSim - 1][iy] = TotalOnART.out[CurrSim - 1][iy] / (Temp3 + Temp4 +
 			DiagnosedHIV_U15.out[CurrSim - 1][iy]);
+		ARTcoverageDiag15.out[CurrSim - 1][iy] = (TotalART15F.out[CurrSim - 1][iy] + TotalART15M.out[CurrSim - 1][iy]) / (Temp3 + Temp4);
 		ARTcoverageDiagM.out[CurrSim - 1][iy] = TotalART15M.out[CurrSim - 1][iy] / Temp3;
 		ARTcoverageDiagF.out[CurrSim - 1][iy] = TotalART15F.out[CurrSim - 1][iy] / Temp4;
 		ARTcoverageDiagU15.out[CurrSim - 1][iy] = TotalARTunder15.out[CurrSim - 1][iy] /
@@ -16420,9 +16421,9 @@ void RunSample()
     // PrevClients.RecordSample("PrevClients.txt");
     // NegClients.RecordSample("NegClients.txt");
 	TotalHIV.RecordSample("TotalHIV.txt");
-    TotHIV15.RecordSample("TotHIV15.txt");
+  TotHIV15.RecordSample("TotHIV15.txt");
     // Prev15to24.RecordSample("Prev15to24.txt");
-    // Prev15to49.RecordSample("Prev15to49.txt");
+  Prev15to49.RecordSample("Prev15to49.txt");
     // Prev25plus.RecordSample("Prev25plus.txt");
     // Prev0to14.RecordSample("Prev0to14.txt");
     // Prev2to14.RecordSample("Prev2to14.txt");
@@ -16547,6 +16548,9 @@ void RunSample()
 	StartingARTtot.RecordSample("StartingARTtot.txt");
 	ARTcoverageAdult.RecordSample("ARTcoverageAdult.txt");
 	ARTcoverageDiag.RecordSample("ARTcoverageDiag.txt");
+	ARTcoverageDiag15.RecordSample("ARTcoverageDiag15.txt");
+	ARTcoverageDiagF.RecordSample("ARTcoverageDiagF.txt");
+	ARTcoverageDiagM.RecordSample("ARTcoverageDiagM.txt");
 	/*NewARTunder200.RecordSample("NewARTunder200.txt");
 	NewART200to349.RecordSample("NewART200to349.txt");
 	NewART350to499.RecordSample("NewART350to499.txt");

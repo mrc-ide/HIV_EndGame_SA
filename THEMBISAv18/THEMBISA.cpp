@@ -6051,7 +6051,7 @@ void UpdateMixingST()
 void UpdateCondomUse()
 {
 	int ia, ib;
-	double CondomUse20, Temp1, Temp2, Temp3, Temp4;
+	double CondomUse20, Temp1, Temp2, Temp3, Temp4, OddsCondomST[81][2], OddsCondomLT[81][2], OddsCondomFSW;
 
 	Temp1 = pow((CurrYear - 1985) / MedianCondomBCC, ShapeCondomBCC);
 	Temp2 = 1.0 - pow(0.5, Temp1);
@@ -6073,12 +6073,19 @@ void UpdateCondomUse()
 			ProbCondomLT[ia][1] = ProbCondomST[ia][1] * RRcondomMarital;
 			if (ProbCondomLT[ia][1] > 0.9999){ ProbCondomLT[ia][1] = 0.9999; }
 		}
-		ProbCondomST[ia][1] *= STreduction;
-		ProbCondomLT[ia][1] *= LTreduction;
+		OddsCondomST[ia][1] = ProbCondomST[ia][1] / (1 - ProbCondomST[ia][1]);
+		OddsCondomST[ia][1] *= STreduction;
+		ProbCondomST[ia][1] = OddsCondomST[ia][1] / (1 + OddsCondomST[ia][1]);
+		
+		OddsCondomLT[ia][1] = ProbCondomLT[ia][1] / (1 - ProbCondomLT[ia][1]);
+		OddsCondomLT[ia][1] *= LTreduction;
+		ProbCondomLT[ia][1] = OddsCondomLT[ia][1] / (1 + OddsCondomLT[ia][1]);
 	}
 
 	ProbCondomFSW = 1.0 / (1.0 + (1.0 - CondomUse20) / (CondomUse20 * ORcondomFSW));
-	ProbCondomFSW *= FSWreduction;
+	OddsCondomFSW = ProbCondomFSW / (1 - ProbCondomFSW);
+	OddsCondomFSW *= FSWreduction;
+	ProbCondomFSW = OddsCondomFSW / (1 + OddsCondomFSW);
 
 	// Calculate male rates of condom use
 	for(ia=0; ia<81; ia++){

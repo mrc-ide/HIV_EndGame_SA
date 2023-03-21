@@ -36,13 +36,13 @@ run_on_cluster <- function(pitc_reduction_years,
   pitc_reduction_years <- pitc_reduction_years # establish years PITC changes occur
   pitc_reduction_percentage <- pitc_reduction_percentage # percentages of pitc that is reduced
   condom_usage_reduction <- condom_usage_reduction # switch for reducing condom usage
-  fsw_condom_usage_decrease <- condom_usage_decrease/300 # proportion of previous year's probability that fsw condom usage probability decreases by each year
+  fsw_condom_usage_decrease <- condom_usage_decrease/100 # proportion of previous year's probability that fsw condom usage probability decreases by each year
   st_condom_usage_decrease <- condom_usage_decrease/100 # proportion of previous year's probability that st condom usage probability decreases by each year
   lt_condom_usage_decrease <- condom_usage_decrease/100 # proportion of previous year's probability that lt condom usage probability decreases by each year
   condom_decr_years <- seq(condom_decr_start, condom_decr_start+10, 1) # years for which condom usage probabilities are decreased
   
   condom_usage_promotion <- condom_usage_promotion # switch for increasing condom usage
-  fsw_condom_usage_increase <- condom_usage_increase/300 # proportion of previous year's probability that fsw condom usage probability increases by each year
+  fsw_condom_usage_increase <- condom_usage_increase/100 # proportion of previous year's probability that fsw condom usage probability increases by each year
   st_condom_usage_increase <- condom_usage_increase/100 # proportion of previous year's probability that st condom usage probability increases by each year
   lt_condom_usage_increase <- condom_usage_increase/100 # proportion of previous year's probability that lt condom usage probability increases by each year
   condom_incr_years <- seq(condom_incr_start, condom_incr_start+10, 1) # years for which condom usage probabilities are increased

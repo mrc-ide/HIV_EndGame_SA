@@ -161,30 +161,43 @@ condom_promotion_cumulative <- condom_promotion_cumulative %>% mutate(overall_co
 condom_change_cumulative <- bind_rows(condom_reduction_cumulative, condom_promotion_cumulative)
 #### correcting incorrectly saved future value ####
 unique_task_names <- unique(condom_change_summary$task_name)
-condom_change_summary %>% filter(indicator == "CondomUsage", test_reduction == 0, pitc_reduction_year == 2025, year == 2035, scenario == "intervention")
+
+
 for (i in 1:length(unique_task_names)){
   condom_usage_value <- unique(condom_change_summary[which(condom_change_summary$task_name == unique_task_names[i]),]$overall_condom_usage)
-  condom_change_cumulative[which(condom_change_summary$task_name == unique_task_names[i]),]$overall_condom_usage <- condom_usage_value
+  condom_change_cumulative[which(condom_change_cumulative$task_name == unique_task_names[i]),]$overall_condom_usage <- condom_usage_value
 }
-max(unique(condom_change_cumulative$overall_condom_usage))
+unique(condom_change_cumulative$overall_condom_usage)
 
-condom_change_cumulative %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
-  filter(indicator == "NewAdultHIV", 
-         scenario == "absolute_dif",
-         pitc_reduction_year == 2025)  
-
-
-class(condom_change_cumulative$overall_condom_usage)
 condom_change_cumulative %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
   filter(indicator == "NewAdultHIV", 
          scenario == "absolute_dif",
          pitc_reduction_year == 2025,
-         overall_condom_usage == 55,
+         overall_condom_usage == 55 | overall_condom_usage == 33.0 | overall_condom_usage == 20.5,
          test_reduction != 10, test_reduction !=30, test_reduction !=50, test_reduction !=70, test_reduction !=90) %>% 
   ggplot(aes(as.factor(test_reduction), mean, group = as.factor(overall_condom_usage), fill = as.factor(overall_condom_usage))) +
   geom_crossbar(aes(ymin = lower_CI, ymax = upper_CI, color = as.factor(overall_condom_usage)), show.legend = T,width = 0.5, position = position_dodge(width = 1), alpha = 0.5) +
   geom_point(aes(color = as.factor(pitc_reduction_year)), shape = 18, size =3, position = position_dodge(width = 1), show.legend = F, color = "white") +
   xlab("PITC reduction (%)") + scale_y_continuous("Additional HIV infections (millions)", labels = (function(l) {round(l/1e6,1)})) +
+  scale_fill_discrete(labels = c("Reduced condom usage", "Status quo condom usage", "Improved condom usage"),) + 
+  scale_color_discrete(labels = c("Reduced condom usage", "Status quo condom usage", "Improved condom usage")) +
+  theme_classic() +
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14),
+        legend.text = element_text(size = 12)) +
+  theme(legend.title = element_blank())
+
+condom_change_cumulative %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2025,
+         overall_condom_usage == 55 | overall_condom_usage == 33.0 | overall_condom_usage == 20.5,
+         test_reduction != 10, test_reduction !=30, test_reduction !=50, test_reduction !=70, test_reduction !=90) %>% 
+  ggplot(aes(as.factor(test_reduction), mean, group = as.factor(overall_condom_usage), fill = as.factor(overall_condom_usage))) +
+  geom_crossbar(aes(ymin = lower_CI, ymax = upper_CI, color = as.factor(overall_condom_usage)), show.legend = T,width = 0.5, position = position_dodge(width = 1), alpha = 0.5) +
+  geom_point(aes(color = as.factor(pitc_reduction_year)), shape = 18, size =3, position = position_dodge(width = 1), show.legend = F, color = "white") +
+  xlab("PITC reduction (%)") + scale_y_continuous("Additional AIDS-related deaths (millions)", labels = (function(l) {round(l/1e6,1)})) +
   scale_fill_discrete(labels = c("Reduced condom usage", "Status quo condom usage", "Improved condom usage"),) + 
   scale_color_discrete(labels = c("Reduced condom usage", "Status quo condom usage", "Improved condom usage")) +
   theme_classic() +

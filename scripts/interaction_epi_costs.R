@@ -48,20 +48,38 @@ cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_
   filter(indicator == "NewAdultHIV", 
          scenario == "absolute_dif",
          pitc_reduction_year == 2025,
-         art_int_rate == 0.9 | art_int_rate == 0.78 | art_int_rate == 0.53,  
-         test_reduction != 10, test_reduction !=30, test_reduction !=50, test_reduction !=70, test_reduction !=90) %>% 
+         #test_reduction != 10, test_reduction !=30, test_reduction !=50, test_reduction !=70, test_reduction !=90
+         ) %>% 
   ggplot(aes(as.factor(test_reduction), mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
-  geom_crossbar(aes(ymin = lower_CI, ymax = upper_CI, color = as.factor(art_int_rate)), show.legend = T,width = 0.5, position = position_dodge(width = 1), alpha = 0.5) +
-  geom_point(aes(color = as.factor(pitc_reduction_year)), shape = 18, size =3, position = position_dodge(width = 1), show.legend = F, color = "white") +
-  xlab("PITC reduction (%)") + scale_y_continuous("Additional HIV infections (millions)", labels = (function(l) {round(l/1e6,1)})) +
-  scale_fill_discrete(labels = c("Reduced ART retention", "Status quo ART retention", "Improved ART retention"),) + 
-  scale_color_discrete(labels = c("Reduced ART retention", "Status quo ART retention", "Improved ART retention")) +
+  geom_crossbar(aes(ymin = lower_CI, ymax = upper_CI, color = as.factor(art_int_rate)), show.legend = T,width = 0.5, position = position_dodge(width = 1), alpha = 0.8) +
+  geom_point(aes(color = as.factor(pitc_reduction_year)), shape = 18, size =1, position = position_dodge(width = 1), show.legend = F, color = "white") +
+  xlab("Testing reduction (%)") + scale_y_continuous("Additional HIV infections (millions)", labels = (function(l) {round(l/1e6,1)})) +
+  scale_fill_discrete("Female ART \nretention rate") + 
+  scale_color_discrete("Female ART \nretention rate") +
   theme_classic() +
   theme(axis.text = element_text(size = 14), 
         axis.title.y = element_text(size = 14), 
         axis.title.x = element_text(size = 14),
-        legend.text = element_text(size = 12)) +
-  theme(legend.title = element_blank())
+        legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 0), lty = "dotted")
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                 art_int_rate = round((1-art_int_rate),2)) %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2025,
+         test_reduction >=80,
+  ) %>% 
+  ggplot(aes(test_reduction, mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.01) +
+  geom_line(aes(color = as.factor(art_int_rate)),show.legend = T) +
+  xlab("Testing reduction (%)") + scale_y_continuous("Additional HIV infections (millions)", labels = (function(l) {round(l/1e6,1)})) +
+  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "Baseline", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "Baseline", "0.82", "0.85", "0.88", "0.90")) + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14),
+        legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 0), lty = "dotted")
 
 cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
                                  art_int_rate = round((1-art_int_rate),2)) %>% 
@@ -88,7 +106,7 @@ cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_
 cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
                                  art_int_rate = (1-art_int_rate)) %>% 
   filter(indicator == "NewAdultHIV", 
-         scenario == "absolute_dif") %>% 
+         scenario == "absolute_dif", pitc_reduction_year == 2025) %>% 
   ggplot(aes(test_reduction, art_int_rate, z = mean/10**6)) + 
   geom_raster(aes(fill = mean/10**6), interpolate = TRUE) + 
   geom_contour(color = "black") + 
@@ -98,13 +116,13 @@ cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_
                        mid = "#FFFFCC",
                        high = "#FF0000", 
                        midpoint = 0) +
-  ylab("Female ART interruption rate") + scale_y_continuous(trans = "logit") +
+  ylab("Female ART retention rate") + scale_y_continuous(trans = "logit") +
   xlab("PITC reduction (%)") + theme_classic()
 
 
 # additional AIDS related deaths
 
-cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),art_int_rate = (1-art_int_rate)) %>% 
   filter(pitc_reduction_year == 2025, 
          indicator == "TotalAIDSdeathsadult", 
          scenario == "absolute_dif") %>% 
@@ -117,7 +135,7 @@ cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_
                        mid = "#FFFFCC",
                        high = "#FF0000", 
                        midpoint = 0) +
-  ylab("Female ART interruption rate") + scale_y_continuous(trans = "logit") +
+  ylab("Female ART retention rate") + scale_y_continuous(trans = "logit") +
   xlab("PITC reduction (%)") + theme_classic()
 
 

@@ -26,7 +26,8 @@ run_on_cluster <- function(pitc_reduction_years,
                     "AIDSdeathsAdultM", "AIDSdeathsAdultF", "TotSexActs",
                     "SWsexActs", "TotProtSexActs", "SWsexActsProt", "HIVinc15to49", 
                     "Prev15to49", "ARTcoverageDiagM", "ARTcoverageDiagF", "MalesOver15", 
-                    "FemalesOver15", "TotHIV15", "ARTcoverageDiag15")
+                    "FemalesOver15", "TotHIV15", "ARTcoverageAdult", 
+                    "VLsuppressed15", "VLunsuppressed15")
   
   # create empty folder for results
   

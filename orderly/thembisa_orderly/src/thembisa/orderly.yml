@@ -107,6 +107,8 @@ artefacts:
         - ARTcoverageDiagM.txt
         - Prev15to49.txt
         - ARTcoverageDiag15.txt
+        - VLsuppressed15.txt
+        - VLunsuppressed15.txt
 
 # An optional name to describe the report in more detail than its
 # directory name (which must be short) but less detail than

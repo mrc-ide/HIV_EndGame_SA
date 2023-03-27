@@ -44,12 +44,12 @@ output_path <- "output"
 # parameter values - change for each run
 
 pitc_reduction_years<- c(2025)
-pitc_reduction_percentage <- seq(0,100,5)
+pitc_reduction_percentage <- seq(0, 100, 5)
 condom_usage_reduction <- FALSE
 condom_usage_decrease <- 0
 condom_incr_start <- 2025
-condom_usage_promotion <- TRUE
-condom_usage_increase <- seq(0, 14, 0.5)
+condom_usage_promotion <- FALSE
+condom_usage_increase <- 0
 condom_decr_start <- 2025
 art_coverage_increase <- FALSE
 art_interrupt_rate_decrease <- 0 
@@ -78,6 +78,9 @@ pars <- expand_grid(pitc_reduction_years,
                     art_decr_start,
                     cumulative_years,
                     summary_name)
+
+# delete output folder from src before packing bundles
+unlink("output", recursive = TRUE)
 
 # pack up bundles 
 bundle <- lapply(X = seq_len(nrow(pars)), FUN = function(i){
@@ -138,7 +141,7 @@ which(t$status()=="ERROR")
 # look at logs of tasks
 tasks <- t$tasks
 # check log of specific tasks - task 1 below
-tasks[[4]]$log()
+tasks[[11]]$log()
 t$status()
 # import to archive
 for (output in t$wait(100)[]) {

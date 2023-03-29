@@ -45,8 +45,8 @@ output_path <- "output"
 
 pitc_reduction_years<- c(2025)
 pitc_reduction_percentage <- seq(0, 100, 5)
-condom_usage_reduction <- FALSE
-condom_usage_decrease <- 0
+condom_usage_reduction <- TRUE
+condom_usage_decrease <- seq(7.5,14,0.5)
 condom_incr_start <- 2025
 condom_usage_promotion <- FALSE
 condom_usage_increase <- 0
@@ -115,6 +115,9 @@ sources <- c("R/modify_rollout_orderly.R", "R/read_and_run_orderly.R", "R/suppor
 ctx <- context::context_save(path = root, packages = packages, sources = sources)
 obj <- didehpc::queue_didehpc(context = ctx, config = config)
 
+# config for other cluster
+config <- didehpc::didehpc_config(credentials = "spr21",cluster = "big", shares = share)
+
 # check that context is set up
 h <- obj$enqueue(packageVersion("ggplot2"))
 h$log()
@@ -141,7 +144,7 @@ which(t$status()=="ERROR")
 # look at logs of tasks
 tasks <- t$tasks
 # check log of specific tasks - task 1 below
-tasks[[11]]$log()
+tasks[[22]]$log()
 t$status()
 # import to archive
 for (output in t$wait(100)[]) {

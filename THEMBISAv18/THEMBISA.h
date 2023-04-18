@@ -1780,6 +1780,8 @@ PostOutputArray TotNewNeed15F(31);
 PostOutputArray TotNewNeed15M(31);
 PostOutputArray VLsuppressed(116);
 PostOutputArray VLsuppressed15(116);
+PostOutputArray VLsuppressed15total(116);
+PostOutputArray VLunsuppressed15total(116);
 PostOutputArray VLunsuppressed15(116);
 PostOutputArray VLsuppressedM(116);
 PostOutputArray VLsuppressedF(116);

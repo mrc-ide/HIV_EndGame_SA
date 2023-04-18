@@ -1,30 +1,26 @@
 #### cumulative heatmaps ####
 
-art_change_values <- seq(0, 8, 2)
-filepaths <- paste0("results/cumulative_decrease_art_retention_with_test_reduction", art_change_values, ".csv")
+art_change_values <- seq(0, 14, 0.5)
+filepaths <- paste0("results/cumulative_decrease_art_retention_", art_change_values, ".csv")
 temp <- lapply(filepaths, read.csv)
 names(temp) <- art_change_values
-cumulative_decrease_art_retention_with_test_reduction <- bind_rows(temp, .id = "art_int_reduction")
+cumulative_decrease_art_retention <- bind_rows(temp, .id = "art_int_reduction")
 
-filepaths <- paste0("results/cumulative_increase_art_retention_with_test_reduction", art_change_values, ".csv")
+filepaths <- paste0("results/cumulative_increase_art_retention_", art_change_values, ".csv")
 temp <- lapply(filepaths, read.csv)
 names(temp) <- art_change_values
-cumulative_increase_art_retention_with_test_reduction <- bind_rows(temp, .id = "art_int_improvement")
+cumulative_increase_art_retention <- bind_rows(temp, .id = "art_int_improvement")
 
-cumulative_decrease_art_retention_with_test_reduction <- 
-  cumulative_decrease_art_retention_with_test_reduction %>% 
-  mutate(art_int_rate = (0.22*((1+(as.numeric(art_int_reduction)/100))**10)))
-
-cumulative_increase_art_retention_with_test_reduction <- 
-  cumulative_increase_art_retention_with_test_reduction %>% 
-  mutate(art_int_rate = (0.22*((1-(as.numeric(art_int_improvement)/100))**10)))
-
-cumulative_art_change <- bind_rows(cumulative_decrease_art_retention_with_test_reduction, 
-                                   cumulative_increase_art_retention_with_test_reduction)
+cumulative_art_change <- bind_rows(cumulative_decrease_art_retention, 
+                                   cumulative_increase_art_retention)
 
 cumulative_art_change <- cumulative_art_change %>% 
-  select(-c(art_int_improvement, art_int_reduction))
-
+  select(-c(art_int_improvement, art_int_reduction)) %>% 
+  mutate(art_int_rate = case_when(
+    future_variability == "art_deterioration" ~ (0.22*((1+(as.numeric(future_value)))**10)),
+    future_variability == "art_improvement" ~ (0.22*((1-(as.numeric(future_value)))**10))))
+cumulative_art_change <- cumulative_art_change %>% mutate(art_ret_rate = 1- art_int_rate)
+write_csv(cumulative_art_change, "THEMBISAv18/results/art_change_cumulative.csv")
 #### plotting ####
 
 # additional HIV infections #
@@ -62,24 +58,177 @@ cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_
         axis.title.x = element_text(size = 14),
         legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 0), lty = "dotted")
 
+#### Figure 4 ####
+
 cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
                                  art_int_rate = round((1-art_int_rate),2)) %>% 
   filter(indicator == "NewAdultHIV", 
-         scenario == "absolute_dif",
+         scenario == "absolute_dif" ,
          pitc_reduction_year == 2025,
-         test_reduction >=80,
   ) %>% 
   ggplot(aes(test_reduction, mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.01) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.05) +
   geom_line(aes(color = as.factor(art_int_rate)),show.legend = T) +
   xlab("Testing reduction (%)") + scale_y_continuous("Additional HIV infections (millions)", labels = (function(l) {round(l/1e6,1)})) +
-  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "Baseline", "0.82", "0.85", "0.88", "0.90")) + 
-  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "Baseline", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
   theme_classic() +
   theme(axis.text = element_text(size = 14), 
         axis.title.y = element_text(size = 14), 
         axis.title.x = element_text(size = 14),
         legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 0), lty = "dotted")
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                 art_int_rate = round((1-art_int_rate),2)) %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2025,
+  ) %>% 
+  ggplot(aes(test_reduction, mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.05) +
+  geom_line(aes(color = as.factor(art_int_rate)),show.legend = T) +
+  xlab("Testing reduction (%)") + scale_y_continuous("Additional AIDS-related deaths (millions)", labels = (function(l) {round(l/1e6,1)})) +
+  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14),
+        legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 0), lty = "dotted")
+
+
+#### cumulative infection and deaths 
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                 art_int_rate = round((1-art_int_rate),2)) %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "intervention",
+         pitc_reduction_year == 2025,
+  ) %>% 
+  ggplot(aes(test_reduction, mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.05) +
+  geom_line(aes(color = as.factor(art_int_rate)),show.legend = T) +
+  xlab("Testing reduction (%)") + scale_y_continuous("Cumulative HIV infections (millions)", labels = (function(l) {round(l/1e6,1)})) +
+  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14),
+        legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 3.788054e+06), lty = "dotted")
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                 art_int_rate = round((1-art_int_rate),2)) %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "intervention",
+         pitc_reduction_year == 2025,
+  ) %>% 
+  ggplot(aes(test_reduction, mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.05) +
+  geom_line(aes(color = as.factor(art_int_rate)),show.legend = T) +
+  xlab("Testing reduction (%)") + scale_y_continuous("Cumulative AIDS-related deaths (millions)", labels = (function(l) {round(l/1e6,1)})) +
+  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14),
+        legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 1.745765e+06), lty = "dotted")
+
+
+#### change from baseline ####
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                 art_int_rate = round((1-art_int_rate),2)) %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "percent_change",
+         pitc_reduction_year == 2025,
+  ) %>% 
+  ggplot(aes(test_reduction, mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.05) +
+  geom_line(aes(color = as.factor(art_int_rate)),show.legend = T) +
+  xlab("Testing reduction (%)") + scale_y_continuous("Change from baseline: HIV infections (%)") +
+  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14),
+        legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 0), lty = "dotted")
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                 art_int_rate = round((1-art_int_rate),2)) %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "percent_change",
+         pitc_reduction_year == 2025,
+  ) %>% 
+  ggplot(aes(test_reduction, mean, group = as.factor(art_int_rate), fill = as.factor(art_int_rate))) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), show.legend = T,alpha = 0.05) +
+  geom_line(aes(color = as.factor(art_int_rate)),show.legend = T) +
+  xlab("Testing reduction (%)") + scale_y_continuous("Additional AIDS-related deaths (millions)", labels = (function(l) {round(l/1e6,1)})) +
+  scale_fill_discrete("Female ART \nretention rate", labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  scale_color_discrete("Female ART \nretention rate",labels = c("0.53", "0.61", "0.67", "0.73", "0.78 (Baseline)", "0.82", "0.85", "0.88", "0.90")) + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 14), 
+        axis.title.y = element_text(size = 14), 
+        axis.title.x = element_text(size = 14),
+        legend.text = element_text(size = 12)) + geom_hline(aes(yintercept = 0), lty = "dotted")
+
+
+
+#### finding where absolute difference = 0 ####
+library(metR)
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif") %>% 
+  ggplot(aes(test_reduction, art_ret_rate, z = mean/10**6)) + 
+  with_blur(sigma = 0 ,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(color = "0 additional \ninfections"),breaks = 0,show.legend = TRUE) + 
+  scale_fill_gradient2("Additional \nHIV \ninfections \n(millions)",
+                       low = "navyblue",
+                       mid = "white",
+                       high = "#FF0000", 
+                       midpoint = 0) +
+  ylab("Female ART retention rate") + scale_y_continuous(trans = "logit") +
+  xlab("Testing reduction (%)") + theme_classic() + scale_color_discrete("",type = "black")
+
+#### plotting only the contour lines where additional HIV infections = 0 for different years ####
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                                 art_int_rate = (1-art_int_rate)) %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif") %>% 
+  ggplot(aes(test_reduction, art_int_rate, z = mean/10**6, group = pitc_reduction_year, color = pitc_reduction_year)) + 
+  geom_contour(breaks = 0,show.legend = TRUE) + 
+  scale_fill_gradient2("Additional \nHIV \ninfections \n(millions)",
+                       low = "blue",
+                       mid = "white",
+                       high = "#FF0000", 
+                       midpoint = 0) +
+  ylab("Female ART retention rate") + scale_y_continuous() +
+  xlab("Testing reduction (%)") + theme_classic() + scale_color_discrete("")
+
+
+#### deaths ####
+
+cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif") %>% 
+  ggplot(aes(test_reduction, art_ret_rate, z = mean/10**6)) + 
+  geom_raster(aes(fill = mean/10**6), interpolate = TRUE) +
+  geom_contour(aes(color = "0 additional \ndeaths"),breaks = 0,show.legend = TRUE) + 
+  scale_fill_gradient2("Additional \nAIDS-related \ndeaths \n(millions)",
+                       low = "navyblue",
+                       mid = "white",
+                       high = "#FF0000", 
+                       midpoint = 0) +
+  ylab("Female ART retention rate") + scale_y_continuous(trans = "logit") +
+  xlab("Testing reduction (%)") + theme_classic() + scale_color_discrete("",type = "black")
+
+#### old stuff ####
+
+
 
 cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
                                  art_int_rate = round((1-art_int_rate),2)) %>% 
@@ -141,7 +290,8 @@ cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_
 
 #### condom usage reductions ####
 
-condom_reduction_cumulative <- read_csv("results/condom_reduction_cumulative.csv")
+condom_reduction_cumulative <- read_csv("/Users/stefan/Documents/HIV_EndGame_SA/results/condom_reduction_cumulative.csv")
+condom_reduction_summary <- read_csv("/Users/stefan/Documents/HIV_EndGame_SA/results/condom_reduction_summary.csv")
 
 unique_future_values <- unique(condom_reduction_summary$future_value)
 overall_condom_usage_range <- condom_reduction_summary %>% filter(indicator == "CondomUsage", 
@@ -155,8 +305,31 @@ condom_reduction_cumulative <- condom_reduction_cumulative %>% mutate(overall_co
                                                                                                  future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5],
                                                                                                  future_value == unique_future_values[6] ~ condom_usage_reduction_labels[6],
                                                                                                  future_value == unique_future_values[7] ~ condom_usage_reduction_labels[7],
-                                                                                                 future_value == unique_future_values[8] ~ condom_usage_reduction_labels[8]))
-condom_promotion_cumulative <- read_csv("results/condom_promotion_cumulative.csv")
+                                                                                                 future_value == unique_future_values[8] ~ condom_usage_reduction_labels[8],
+                                                                                                 future_value == unique_future_values[9] ~ condom_usage_reduction_labels[9],
+                                                                                                 future_value == unique_future_values[10] ~ condom_usage_reduction_labels[10],
+                                                                                                 future_value == unique_future_values[11] ~ condom_usage_reduction_labels[11],
+                                                                                                 future_value == unique_future_values[12] ~ condom_usage_reduction_labels[12],
+                                                                                                 future_value == unique_future_values[13] ~ condom_usage_reduction_labels[13],
+                                                                                                 future_value == unique_future_values[14] ~ condom_usage_reduction_labels[14],
+                                                                                                 future_value == unique_future_values[15] ~ condom_usage_reduction_labels[15],
+                                                                                                 future_value == unique_future_values[16] ~ condom_usage_reduction_labels[16],
+                                                                                                 future_value == unique_future_values[17] ~ condom_usage_reduction_labels[17],
+                                                                                                 future_value == unique_future_values[18] ~ condom_usage_reduction_labels[18],
+                                                                                                 future_value == unique_future_values[19] ~ condom_usage_reduction_labels[19],
+                                                                                                 future_value == unique_future_values[20] ~ condom_usage_reduction_labels[20],
+                                                                                                 future_value == unique_future_values[21] ~ condom_usage_reduction_labels[21],
+                                                                                                 future_value == unique_future_values[22] ~ condom_usage_reduction_labels[22],
+                                                                                                 future_value == unique_future_values[23] ~ condom_usage_reduction_labels[23],
+                                                                                                 future_value == unique_future_values[24] ~ condom_usage_reduction_labels[24],
+                                                                                                 future_value == unique_future_values[25] ~ condom_usage_reduction_labels[25],
+                                                                                                 future_value == unique_future_values[26] ~ condom_usage_reduction_labels[26],
+                                                                                                 future_value == unique_future_values[27] ~ condom_usage_reduction_labels[27],
+                                                                                                 future_value == unique_future_values[28] ~ condom_usage_reduction_labels[28],
+                                                                                                 future_value == unique_future_values[29] ~ condom_usage_reduction_labels[29],
+                                                                                                 future_value == unique_future_values[30] ~ condom_usage_reduction_labels[30]))
+condom_promotion_cumulative <- read_csv("/Users/stefan/Documents/HIV_EndGame_SA/results/condom_promotion_cumulative.csv")
+condom_promotion_summary <- read_csv("/Users/stefan/Documents/HIV_EndGame_SA/results/condom_promotion_summary.csv")
 unique_future_values <- unique(condom_promotion_summary$future_value)
 overall_condom_usage_range <- condom_promotion_summary %>% filter(indicator == "CondomUsage", 
                                                                   test_reduction == 0, pitc_reduction_year == 2025,
@@ -175,8 +348,31 @@ condom_promotion_cumulative <- condom_promotion_cumulative %>% mutate(overall_co
                                                                                                        future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5],
                                                                                                        future_value == unique_future_values[6] ~ condom_usage_reduction_labels[6],
                                                                                                        future_value == unique_future_values[7] ~ condom_usage_reduction_labels[7],
-                                                                                                       future_value == unique_future_values[8] ~ condom_usage_reduction_labels[8]))
+                                                                                                       future_value == unique_future_values[8] ~ condom_usage_reduction_labels[8],
+                                                                                                       future_value == unique_future_values[9] ~ condom_usage_reduction_labels[9],
+                                                                                                       future_value == unique_future_values[10] ~ condom_usage_reduction_labels[10],
+                                                                                                       future_value == unique_future_values[11] ~ condom_usage_reduction_labels[11],
+                                                                                                       future_value == unique_future_values[12] ~ condom_usage_reduction_labels[12],
+                                                                                                       future_value == unique_future_values[13] ~ condom_usage_reduction_labels[13],
+                                                                                                       future_value == unique_future_values[14] ~ condom_usage_reduction_labels[14],
+                                                                                                       future_value == unique_future_values[15] ~ condom_usage_reduction_labels[15],
+                                                                                                       future_value == unique_future_values[16] ~ condom_usage_reduction_labels[16],
+                                                                                                       future_value == unique_future_values[17] ~ condom_usage_reduction_labels[17],
+                                                                                                       future_value == unique_future_values[18] ~ condom_usage_reduction_labels[18],
+                                                                                                       future_value == unique_future_values[19] ~ condom_usage_reduction_labels[19],
+                                                                                                       future_value == unique_future_values[20] ~ condom_usage_reduction_labels[20],
+                                                                                                       future_value == unique_future_values[21] ~ condom_usage_reduction_labels[21],
+                                                                                                       future_value == unique_future_values[22] ~ condom_usage_reduction_labels[22],
+                                                                                                       future_value == unique_future_values[23] ~ condom_usage_reduction_labels[23],
+                                                                                                       future_value == unique_future_values[24] ~ condom_usage_reduction_labels[24],
+                                                                                                       future_value == unique_future_values[25] ~ condom_usage_reduction_labels[25],
+                                                                                                       future_value == unique_future_values[26] ~ condom_usage_reduction_labels[26],
+                                                                                                       future_value == unique_future_values[27] ~ condom_usage_reduction_labels[27],
+                                                                                                       future_value == unique_future_values[28] ~ condom_usage_reduction_labels[28],
+                                                                                                       future_value == unique_future_values[29] ~ condom_usage_reduction_labels[29],
+                                                                                                       future_value == unique_future_values[30] ~ condom_usage_reduction_labels[30]))
 condom_change_cumulative <- bind_rows(condom_reduction_cumulative, condom_promotion_cumulative)
+which(is.na(condom_change_cumulative$overall_condom_usage))
 #### correcting incorrectly saved future value ####
 unique_task_names <- unique(condom_change_summary$task_name)
 
@@ -186,6 +382,8 @@ for (i in 1:length(unique_task_names)){
   condom_change_cumulative[which(condom_change_cumulative$task_name == unique_task_names[i]),]$overall_condom_usage <- condom_usage_value
 }
 unique(condom_change_cumulative$overall_condom_usage)
+sum(is.na(condom_change_cumulative$overall_condom_usage))
+write_csv(condom_change_cumulative, "results/condom_change_cumulative.csv")
 
 condom_change_cumulative %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
   filter(indicator == "NewAdultHIV", 
@@ -227,7 +425,7 @@ condom_change_cumulative %>% mutate(pitc_reduction_year = as.factor(pitc_reducti
 
 
 
-condom_reduction_cumulative %>% 
+condom_change_cumulative %>% 
   mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
          condom_usage_reduction = as.numeric(condom_usage_reduction)) %>% 
   filter(pitc_reduction_year == 2025, 
@@ -264,25 +462,32 @@ cumulative_reduce_condom_usage_with_test_reduction %>%
   ylab("Overall condom usage (%)") + scale_y_continuous(trans = "log") +
   xlab("PITC reduction (%)") + theme_classic()
 
+#### deaths + condom ####
 
-#### normalised y-axis ####
-cumulative_art_change <- cumulative_art_change %>% mutate(art_int_rate_norm = art_int_rate - 0.22)
-range(cumulative_art_change$art_int_rate_norm)
-
-# additional HIV infections #
-cumulative_art_change %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "NewAdultHIV", 
+condom_change_cumulative %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(indicator == "NewAdultHIV", 
          scenario == "absolute_dif") %>% 
-  ggplot(aes(test_reduction, art_int_rate_norm, z = mean/10**6)) + 
-  geom_raster(aes(fill = mean/10**6), interpolate = TRUE) + 
-  geom_contour(color = "black") + 
-  geom_text_contour(skip = 0, stroke = 0.1, stroke.colour = "white") +
-  scale_fill_gradient2("Additional \nHIV \ninfections \n(millions)",
-                       low = "blue",
-                       mid = "#FFFFCC",
+  ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  geom_raster(aes(fill = mean/10**6), interpolate = TRUE) +
+  geom_contour(aes(color = "0 additional \ndeaths"),breaks = 0,show.legend = TRUE) + 
+  scale_fill_gradient2("Additional \nHIV infection \n(millions)",
+                       low = "navyblue",
+                       mid = "white",
                        high = "#FF0000", 
                        midpoint = 0) +
-  ylab("Change in female ART interruption rate") + scale_y_continuous(trans = "exp") +
-  xlab("PITC reduction (%)") + theme_classic()
+  ylab("Overall condom usage") + scale_y_continuous(trans = "log", breaks = c(10, 15, 20, 25, 30, 33, 35, 40, 45, 50, 55), labels = c("10", "15", "20","25", "30", "Baseline", 35, "40", "45", "50", "55")) +
+  xlab("Testing reduction (%)") + theme_classic() + scale_color_discrete("",type = "black")
 
+condom_change_cumulative %>% mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif") %>% 
+  ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  geom_raster(aes(fill = mean/10**6), interpolate = TRUE) +
+  geom_contour(aes(color = "0 additional \ndeaths"),breaks = 0,show.legend = TRUE) + 
+  scale_fill_gradient2("Additional \nHIV infection \n(millions)",
+                       low = "navyblue",
+                       mid = "white",
+                       high = "#FF0000", 
+                       midpoint = 0) +
+  ylab("Overall condom usage") + scale_y_continuous(trans = "log", breaks = c(10, 15, 20, 25, 30, 33, 35, 40, 45, 50, 55), labels = c("10", "15", "20","25", "30", "Baseline", 35, "40", "45", "50", "55")) +
+  xlab("Testing reduction (%)") + theme_classic() + scale_color_discrete("",type = "black")

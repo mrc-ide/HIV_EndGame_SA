@@ -9812,6 +9812,10 @@ void ResultsAtStartOfYr()
 		VLsuppressedAllM1000.out[CurrSim - 1][iy] = ARTcoverage15M.out[CurrSim - 1][iy] * VLsuppressed1000M.out[CurrSim - 1][iy];
 		VLsuppressedAllF1000.out[CurrSim - 1][iy] = ARTcoverage15F.out[CurrSim - 1][iy] * VLsuppressed1000F.out[CurrSim - 1][iy];
 		VLsuppressedAllP1000.out[CurrSim - 1][iy] = ARTcoverageU15.out[CurrSim - 1][iy] * VLsuppressed1000P.out[CurrSim - 1][iy];
+		VLsuppressed15total.out[CurrSim - 1][iy] = (VLsuppressedM.out[CurrSim - 1][iy] * TotalART15M.out[CurrSim - 1][iy] +
+		  VLsuppressedF.out[CurrSim - 1][iy] * TotalART15F.out[CurrSim - 1][iy]) / TotHIV15.out[CurrSim - 1][iy];
+		VLunsuppressed15total.out[CurrSim - 1][iy] = 1 - VLsuppressed15total.out[CurrSim - 1][iy];
+
 		if (CurrYear == 2012){
 			// Calculate profile by age and sex in 2012
 			for (ig = 0; ig < 2; ig++){
@@ -16576,6 +16580,8 @@ void RunSample()
 	TotNewNeed15M.RecordSample("TotNewNeed15M.txt");*/
 	VLsuppressed.RecordSample("VLsuppressed.txt");
 	VLsuppressed15.RecordSample("VLsuppressed15.txt");
+	VLsuppressed15total.RecordSample("VLsuppressed15total.txt");
+	VLunsuppressed15total.RecordSample("VLunsuppressed15total.txt");
 	VLunsuppressed15.RecordSample("VLunsuppressed15.txt");
 	/*ARTerror.RecordSample("ARTerror.txt");
 	AdultRootM.RecordSample("AdultRootM.txt");

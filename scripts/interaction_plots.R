@@ -9,8 +9,8 @@ source("R/cluster_function_orderly.R")
 system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa.exe -O2")
 system("./thembisa.exe")
 
-run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5), 
-               pitc_reduction_percentage = seq(0, 100, 5),
+run_on_cluster(pitc_reduction_years = 2025, 
+               pitc_reduction_percentage = 100,
                condom_usage_reduction = FALSE,
                condom_usage_decrease = 0,
                condom_decr_start = 2025,
@@ -23,8 +23,8 @@ run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5),
                art_coverage_decrease = FALSE,
                art_interrupt_rate_increase = 0,
                art_decr_start = 2025,
-               cumulative_years = 50,
-               summary_name = "test_reduction_only_summary" 
+               cumulative_years = 75,
+               summary_name = "quick_test_75_years" 
 )
 
 test_reduction_only <- read_csv("THEMBISAv18/results/test_reduction_only_summary.csv")
@@ -435,36 +435,36 @@ incidence_change %>%
 
 #### decreasing ART retention ####
 
-art_change_values <- seq(0, 8, 2)
+art_change_values <- seq(0, 14, 0.5)
 
 for (i in art_change_values){
-  run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5), 
-                 pitc_reduction_percentage = seq(0,100,10),
+  run_on_cluster(pitc_reduction_years = seq(2030, 2050, 5), 
+                 pitc_reduction_percentage = seq(0,100,5),
                  condom_usage_reduction = FALSE, 
                  fsw_condom_usage_decrease = 0,
                  st_condom_usage_decrease = 0, 
                  lt_condom_usage_decrease = 0,
                  condom_incr_start = 2025,
                  art_coverage_increase = FALSE,
-                 art_interrupt_rate_decrease = 2/100,
+                 art_interrupt_rate_decrease = 0/100,
                  art_incr_start = 2025,
                  summary_name = paste0("decrease_art_retention_with_test_reduction", i),
                  cumulative_years = 50,
                  art_coverage_decrease = TRUE,
                  art_interrupt_rate_increase = i/100,
-                 art_decr_start = 2025
+                 art_decr_start = seq(2025)
   )
 }
 
-filepaths <- paste0("results/decrease_art_retention_with_test_reduction", art_change_values, ".csv")
+filepaths <- paste0("results/decrease_art_retention_", art_change_values, ".csv")
 temp <- lapply(filepaths, read.csv)
 names(temp) <- art_change_values
-decrease_art_retention_with_test_reduction <- bind_rows(temp, .id = "art_int_reduction")
+decrease_art_retention_summary <- bind_rows(temp, .id = "art_int_reduction")
 
-write_csv(decrease_art_retention_with_test_reduction, "results/decrease_art_retention_with_test_reduction_comb.csv")
-decrease_art_retention_with_test_reduction <- read_csv("results/decrease_art_retention_with_test_reduction_comb.csv")
+write_csv(decrease_art_retention_summary, "results/decrease_art_retention_summary.csv")
+decrease_art_retention_summary <- read_csv("results/decrease_art_retention_summary.csv")
 
-decrease_art_retention_with_test_reduction %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
+decrease_art_retention_summary %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
   filter(pitc_reduction_year == 2025, indicator == "HIVinc15to49", year > 1990) %>% 
   ggplot(aes(year, mean, group = scenario, fill = scenario)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.25, show.legend = F) +
@@ -548,7 +548,7 @@ art_reduction_inc_elim %>% mutate(pitc_reduction_year = as.factor(pitc_reduction
 
 #### increasing ART retention ####
 
-art_change_values <- seq(0, 8, 2)
+art_change_values <- seq(0, 14, 0.5)
 
 for (i in art_change_values){
   run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5), 
@@ -569,15 +569,212 @@ for (i in art_change_values){
   )
 }
 
-filepaths <- paste0("results/increase_art_retention_with_test_reduction", art_change_values, ".csv")
+filepaths <- paste0("results/increase_art_retention_", art_change_values, ".csv")
 temp <- lapply(filepaths, read.csv)
 names(temp) <- art_change_values
-increase_art_retention_with_test_reduction <- bind_rows(temp, .id = "art_int_reduction")
+increase_art_retention_summary <- bind_rows(temp, .id = "art_int_reduction")
 
-write_csv(increase_art_retention_with_test_reduction, "results/increase_art_retention_with_test_reduction.csv")
-increase_art_retention_with_test_reduction <- read_csv("results/increase_art_retention_with_test_reduction.csv")
+write_csv(increase_art_retention_summary, "results/increase_art_retention_summary.csv")
+increase_art_retention_summary <- read_csv("results/increase_art_retention_summary.csv")
 
-increase_art_retention_with_test_reduction %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
+#### combine art change summary ####
+
+art_change_summary <- bind_rows(increase_art_retention_summary, decrease_art_retention_summary)
+art_change_summary <- art_change_summary %>% mutate(art_int_rate = case_when(
+  future_variability == "art_deterioration" ~ (0.1486*((1+(as.numeric(future_value)))**10)),
+  future_variability == "art_improvement" ~ (0.1486*((1-(as.numeric(future_value)))**10))))
+art_change_summary <- art_change_summary %>% mutate(art_ret_rate = 1 - art_int_rate)
+unique(art_change_summary$art_ret_rate)
+write_csv(art_change_summary, "results/art_change_summary.csv")
+
+
+#### calculating ART coverage in ART retention rate changes ####
+art_coverage_range <- art_change_summary %>% filter(indicator == "ARTcoverageAdult", 
+                                                    test_reduction == 0, pitc_reduction_year == 2025,
+                                                    year == 2035, scenario == "intervention") %>% select(mean)
+art_coverage_labels <- round(art_coverage_range$mean)
+unique_future_values_art <- unique(art_change_summary$future_value)
+art_change_summary <- art_change_summary %>% mutate(art_coverage_2035 = case_when(future_value == unique_future_values_art[1] & future_variability == "art_improvement" ~ art_coverage_labels[1],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_improvement" ~ art_coverage_labels[2],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_improvement" ~ art_coverage_labels[3],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_improvement" ~ art_coverage_labels[4],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_improvement" ~ art_coverage_labels[5],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_improvement" ~ art_coverage_labels[6],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_improvement" ~ art_coverage_labels[7],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_improvement" ~ art_coverage_labels[8],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_improvement" ~ art_coverage_labels[9],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_improvement" ~ art_coverage_labels[10],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_improvement" ~ art_coverage_labels[11],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_improvement" ~ art_coverage_labels[12],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_improvement" ~ art_coverage_labels[13],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_improvement" ~ art_coverage_labels[14],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_improvement" ~ art_coverage_labels[15],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_improvement" ~ art_coverage_labels[16],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_improvement" ~ art_coverage_labels[17],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_improvement" ~ art_coverage_labels[18],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_improvement" ~ art_coverage_labels[19],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_improvement" ~ art_coverage_labels[20],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_improvement" ~ art_coverage_labels[21],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_improvement" ~ art_coverage_labels[22],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_improvement" ~ art_coverage_labels[23],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_improvement" ~ art_coverage_labels[24],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_improvement" ~ art_coverage_labels[25],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_improvement" ~ art_coverage_labels[26],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_improvement" ~ art_coverage_labels[27],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_improvement" ~ art_coverage_labels[28],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_improvement" ~ art_coverage_labels[29],
+                                                                                  future_value == unique_future_values_art[1] & future_variability == "art_deterioration" ~ art_coverage_labels[30],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_deterioration" ~ art_coverage_labels[31],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_deterioration" ~ art_coverage_labels[32],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_deterioration" ~ art_coverage_labels[33],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_deterioration" ~ art_coverage_labels[34],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_deterioration" ~ art_coverage_labels[35],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_deterioration" ~ art_coverage_labels[36],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_deterioration" ~ art_coverage_labels[37],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_deterioration" ~ art_coverage_labels[38],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_deterioration" ~ art_coverage_labels[39],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_deterioration" ~ art_coverage_labels[40],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_deterioration" ~ art_coverage_labels[41],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_deterioration" ~ art_coverage_labels[42],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_deterioration" ~ art_coverage_labels[43],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_deterioration" ~ art_coverage_labels[44],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_deterioration" ~ art_coverage_labels[45],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_deterioration" ~ art_coverage_labels[46],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_deterioration" ~ art_coverage_labels[47],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_deterioration" ~ art_coverage_labels[48],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_deterioration" ~ art_coverage_labels[49],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_deterioration" ~ art_coverage_labels[50],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_deterioration" ~ art_coverage_labels[51],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_deterioration" ~ art_coverage_labels[52],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_deterioration" ~ art_coverage_labels[53],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_deterioration" ~ art_coverage_labels[54],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_deterioration" ~ art_coverage_labels[55],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_deterioration" ~ art_coverage_labels[56],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_deterioration" ~ art_coverage_labels[57],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_deterioration" ~ art_coverage_labels[58]))
+
+art_change_inc_elim <- art_change_inc_elim %>% mutate(art_coverage_2035 = case_when(future_value == unique_future_values_art[1] & future_variability == "art_improvement" ~ art_coverage_labels[1],
+                                                                                    future_value == unique_future_values_art[2]  & future_variability == "art_improvement" ~ art_coverage_labels[2],
+                                                                                    future_value == unique_future_values_art[3]  & future_variability == "art_improvement" ~ art_coverage_labels[3],
+                                                                                    future_value == unique_future_values_art[4]  & future_variability == "art_improvement" ~ art_coverage_labels[4],
+                                                                                    future_value == unique_future_values_art[5]  & future_variability == "art_improvement" ~ art_coverage_labels[5],
+                                                                                    future_value == unique_future_values_art[6]  & future_variability == "art_improvement" ~ art_coverage_labels[6],
+                                                                                    future_value == unique_future_values_art[7]  & future_variability == "art_improvement" ~ art_coverage_labels[7],
+                                                                                    future_value == unique_future_values_art[8]  & future_variability == "art_improvement" ~ art_coverage_labels[8],
+                                                                                    future_value == unique_future_values_art[9]  & future_variability == "art_improvement" ~ art_coverage_labels[9],
+                                                                                    future_value == unique_future_values_art[10]  & future_variability == "art_improvement" ~ art_coverage_labels[10],
+                                                                                    future_value == unique_future_values_art[11]  & future_variability == "art_improvement" ~ art_coverage_labels[11],
+                                                                                    future_value == unique_future_values_art[12]  & future_variability == "art_improvement" ~ art_coverage_labels[12],
+                                                                                    future_value == unique_future_values_art[13]  & future_variability == "art_improvement" ~ art_coverage_labels[13],
+                                                                                    future_value == unique_future_values_art[14]  & future_variability == "art_improvement" ~ art_coverage_labels[14],
+                                                                                    future_value == unique_future_values_art[15]  & future_variability == "art_improvement" ~ art_coverage_labels[15],
+                                                                                    future_value == unique_future_values_art[16]  & future_variability == "art_improvement" ~ art_coverage_labels[16],
+                                                                                    future_value == unique_future_values_art[17]  & future_variability == "art_improvement" ~ art_coverage_labels[17],
+                                                                                    future_value == unique_future_values_art[18]  & future_variability == "art_improvement" ~ art_coverage_labels[18],
+                                                                                    future_value == unique_future_values_art[19]  & future_variability == "art_improvement" ~ art_coverage_labels[19],
+                                                                                    future_value == unique_future_values_art[20]  & future_variability == "art_improvement" ~ art_coverage_labels[20],
+                                                                                    future_value == unique_future_values_art[21]  & future_variability == "art_improvement" ~ art_coverage_labels[21],
+                                                                                    future_value == unique_future_values_art[22]  & future_variability == "art_improvement" ~ art_coverage_labels[22],
+                                                                                    future_value == unique_future_values_art[23]  & future_variability == "art_improvement" ~ art_coverage_labels[23],
+                                                                                    future_value == unique_future_values_art[24]  & future_variability == "art_improvement" ~ art_coverage_labels[24],
+                                                                                    future_value == unique_future_values_art[25]  & future_variability == "art_improvement" ~ art_coverage_labels[25],
+                                                                                    future_value == unique_future_values_art[26]  & future_variability == "art_improvement" ~ art_coverage_labels[26],
+                                                                                    future_value == unique_future_values_art[27]  & future_variability == "art_improvement" ~ art_coverage_labels[27],
+                                                                                    future_value == unique_future_values_art[28]  & future_variability == "art_improvement" ~ art_coverage_labels[28],
+                                                                                    future_value == unique_future_values_art[29]  & future_variability == "art_improvement" ~ art_coverage_labels[29],
+                                                                                    future_value == unique_future_values_art[1] & future_variability == "art_deterioration" ~ art_coverage_labels[30],
+                                                                                    future_value == unique_future_values_art[2]  & future_variability == "art_deterioration" ~ art_coverage_labels[31],
+                                                                                    future_value == unique_future_values_art[3]  & future_variability == "art_deterioration" ~ art_coverage_labels[32],
+                                                                                    future_value == unique_future_values_art[4]  & future_variability == "art_deterioration" ~ art_coverage_labels[33],
+                                                                                    future_value == unique_future_values_art[5]  & future_variability == "art_deterioration" ~ art_coverage_labels[34],
+                                                                                    future_value == unique_future_values_art[6]  & future_variability == "art_deterioration" ~ art_coverage_labels[35],
+                                                                                    future_value == unique_future_values_art[7]  & future_variability == "art_deterioration" ~ art_coverage_labels[36],
+                                                                                    future_value == unique_future_values_art[8]  & future_variability == "art_deterioration" ~ art_coverage_labels[37],
+                                                                                    future_value == unique_future_values_art[9]  & future_variability == "art_deterioration" ~ art_coverage_labels[38],
+                                                                                    future_value == unique_future_values_art[10]  & future_variability == "art_deterioration" ~ art_coverage_labels[39],
+                                                                                    future_value == unique_future_values_art[11]  & future_variability == "art_deterioration" ~ art_coverage_labels[40],
+                                                                                    future_value == unique_future_values_art[12]  & future_variability == "art_deterioration" ~ art_coverage_labels[41],
+                                                                                    future_value == unique_future_values_art[13]  & future_variability == "art_deterioration" ~ art_coverage_labels[42],
+                                                                                    future_value == unique_future_values_art[14]  & future_variability == "art_deterioration" ~ art_coverage_labels[43],
+                                                                                    future_value == unique_future_values_art[15]  & future_variability == "art_deterioration" ~ art_coverage_labels[44],
+                                                                                    future_value == unique_future_values_art[16]  & future_variability == "art_deterioration" ~ art_coverage_labels[45],
+                                                                                    future_value == unique_future_values_art[17]  & future_variability == "art_deterioration" ~ art_coverage_labels[46],
+                                                                                    future_value == unique_future_values_art[18]  & future_variability == "art_deterioration" ~ art_coverage_labels[47],
+                                                                                    future_value == unique_future_values_art[19]  & future_variability == "art_deterioration" ~ art_coverage_labels[48],
+                                                                                    future_value == unique_future_values_art[20]  & future_variability == "art_deterioration" ~ art_coverage_labels[49],
+                                                                                    future_value == unique_future_values_art[21]  & future_variability == "art_deterioration" ~ art_coverage_labels[50],
+                                                                                    future_value == unique_future_values_art[22]  & future_variability == "art_deterioration" ~ art_coverage_labels[51],
+                                                                                    future_value == unique_future_values_art[23]  & future_variability == "art_deterioration" ~ art_coverage_labels[52],
+                                                                                    future_value == unique_future_values_art[24]  & future_variability == "art_deterioration" ~ art_coverage_labels[53],
+                                                                                    future_value == unique_future_values_art[25]  & future_variability == "art_deterioration" ~ art_coverage_labels[54],
+                                                                                    future_value == unique_future_values_art[26]  & future_variability == "art_deterioration" ~ art_coverage_labels[55],
+                                                                                    future_value == unique_future_values_art[27]  & future_variability == "art_deterioration" ~ art_coverage_labels[56],
+                                                                                    future_value == unique_future_values_art[28]  & future_variability == "art_deterioration" ~ art_coverage_labels[57],
+                                                                                    future_value == unique_future_values_art[29]  & future_variability == "art_deterioration" ~ art_coverage_labels[58]))
+
+
+cumulative_art_change <- cumulative_art_change %>% mutate(art_coverage_2035 = case_when(future_value == unique_future_values_art[1] & future_variability == "art_improvement" ~ art_coverage_labels[1],
+                                                                                        future_value == unique_future_values_art[2]  & future_variability == "art_improvement" ~ art_coverage_labels[2],
+                                                                                        future_value == unique_future_values_art[3]  & future_variability == "art_improvement" ~ art_coverage_labels[3],
+                                                                                        future_value == unique_future_values_art[4]  & future_variability == "art_improvement" ~ art_coverage_labels[4],
+                                                                                        future_value == unique_future_values_art[5]  & future_variability == "art_improvement" ~ art_coverage_labels[5],
+                                                                                        future_value == unique_future_values_art[6]  & future_variability == "art_improvement" ~ art_coverage_labels[6],
+                                                                                        future_value == unique_future_values_art[7]  & future_variability == "art_improvement" ~ art_coverage_labels[7],
+                                                                                        future_value == unique_future_values_art[8]  & future_variability == "art_improvement" ~ art_coverage_labels[8],
+                                                                                        future_value == unique_future_values_art[9]  & future_variability == "art_improvement" ~ art_coverage_labels[9],
+                                                                                        future_value == unique_future_values_art[10]  & future_variability == "art_improvement" ~ art_coverage_labels[10],
+                                                                                        future_value == unique_future_values_art[11]  & future_variability == "art_improvement" ~ art_coverage_labels[11],
+                                                                                        future_value == unique_future_values_art[12]  & future_variability == "art_improvement" ~ art_coverage_labels[12],
+                                                                                        future_value == unique_future_values_art[13]  & future_variability == "art_improvement" ~ art_coverage_labels[13],
+                                                                                        future_value == unique_future_values_art[14]  & future_variability == "art_improvement" ~ art_coverage_labels[14],
+                                                                                        future_value == unique_future_values_art[15]  & future_variability == "art_improvement" ~ art_coverage_labels[15],
+                                                                                        future_value == unique_future_values_art[16]  & future_variability == "art_improvement" ~ art_coverage_labels[16],
+                                                                                        future_value == unique_future_values_art[17]  & future_variability == "art_improvement" ~ art_coverage_labels[17],
+                                                                                        future_value == unique_future_values_art[18]  & future_variability == "art_improvement" ~ art_coverage_labels[18],
+                                                                                        future_value == unique_future_values_art[19]  & future_variability == "art_improvement" ~ art_coverage_labels[19],
+                                                                                        future_value == unique_future_values_art[20]  & future_variability == "art_improvement" ~ art_coverage_labels[20],
+                                                                                        future_value == unique_future_values_art[21]  & future_variability == "art_improvement" ~ art_coverage_labels[21],
+                                                                                        future_value == unique_future_values_art[22]  & future_variability == "art_improvement" ~ art_coverage_labels[22],
+                                                                                        future_value == unique_future_values_art[23]  & future_variability == "art_improvement" ~ art_coverage_labels[23],
+                                                                                        future_value == unique_future_values_art[24]  & future_variability == "art_improvement" ~ art_coverage_labels[24],
+                                                                                        future_value == unique_future_values_art[25]  & future_variability == "art_improvement" ~ art_coverage_labels[25],
+                                                                                        future_value == unique_future_values_art[26]  & future_variability == "art_improvement" ~ art_coverage_labels[26],
+                                                                                        future_value == unique_future_values_art[27]  & future_variability == "art_improvement" ~ art_coverage_labels[27],
+                                                                                        future_value == unique_future_values_art[28]  & future_variability == "art_improvement" ~ art_coverage_labels[28],
+                                                                                        future_value == unique_future_values_art[29]  & future_variability == "art_improvement" ~ art_coverage_labels[29],
+                                                                                        future_value == unique_future_values_art[1] & future_variability == "art_deterioration" ~ art_coverage_labels[30],
+                                                                                        future_value == unique_future_values_art[2]  & future_variability == "art_deterioration" ~ art_coverage_labels[31],
+                                                                                        future_value == unique_future_values_art[3]  & future_variability == "art_deterioration" ~ art_coverage_labels[32],
+                                                                                        future_value == unique_future_values_art[4]  & future_variability == "art_deterioration" ~ art_coverage_labels[33],
+                                                                                        future_value == unique_future_values_art[5]  & future_variability == "art_deterioration" ~ art_coverage_labels[34],
+                                                                                        future_value == unique_future_values_art[6]  & future_variability == "art_deterioration" ~ art_coverage_labels[35],
+                                                                                        future_value == unique_future_values_art[7]  & future_variability == "art_deterioration" ~ art_coverage_labels[36],
+                                                                                        future_value == unique_future_values_art[8]  & future_variability == "art_deterioration" ~ art_coverage_labels[37],
+                                                                                        future_value == unique_future_values_art[9]  & future_variability == "art_deterioration" ~ art_coverage_labels[38],
+                                                                                        future_value == unique_future_values_art[10]  & future_variability == "art_deterioration" ~ art_coverage_labels[39],
+                                                                                        future_value == unique_future_values_art[11]  & future_variability == "art_deterioration" ~ art_coverage_labels[40],
+                                                                                        future_value == unique_future_values_art[12]  & future_variability == "art_deterioration" ~ art_coverage_labels[41],
+                                                                                        future_value == unique_future_values_art[13]  & future_variability == "art_deterioration" ~ art_coverage_labels[42],
+                                                                                        future_value == unique_future_values_art[14]  & future_variability == "art_deterioration" ~ art_coverage_labels[43],
+                                                                                        future_value == unique_future_values_art[15]  & future_variability == "art_deterioration" ~ art_coverage_labels[44],
+                                                                                        future_value == unique_future_values_art[16]  & future_variability == "art_deterioration" ~ art_coverage_labels[45],
+                                                                                        future_value == unique_future_values_art[17]  & future_variability == "art_deterioration" ~ art_coverage_labels[46],
+                                                                                        future_value == unique_future_values_art[18]  & future_variability == "art_deterioration" ~ art_coverage_labels[47],
+                                                                                        future_value == unique_future_values_art[19]  & future_variability == "art_deterioration" ~ art_coverage_labels[48],
+                                                                                        future_value == unique_future_values_art[20]  & future_variability == "art_deterioration" ~ art_coverage_labels[49],
+                                                                                        future_value == unique_future_values_art[21]  & future_variability == "art_deterioration" ~ art_coverage_labels[50],
+                                                                                        future_value == unique_future_values_art[22]  & future_variability == "art_deterioration" ~ art_coverage_labels[51],
+                                                                                        future_value == unique_future_values_art[23]  & future_variability == "art_deterioration" ~ art_coverage_labels[52],
+                                                                                        future_value == unique_future_values_art[24]  & future_variability == "art_deterioration" ~ art_coverage_labels[53],
+                                                                                        future_value == unique_future_values_art[25]  & future_variability == "art_deterioration" ~ art_coverage_labels[54],
+                                                                                        future_value == unique_future_values_art[26]  & future_variability == "art_deterioration" ~ art_coverage_labels[55],
+                                                                                        future_value == unique_future_values_art[27]  & future_variability == "art_deterioration" ~ art_coverage_labels[56],
+                                                                                        future_value == unique_future_values_art[28]  & future_variability == "art_deterioration" ~ art_coverage_labels[57],
+                                                                                        future_value == unique_future_values_art[29]  & future_variability == "art_deterioration" ~ art_coverage_labels[58]))
+
+
+
+increase_art_retention_summary %>% mutate(intervention_year = as.factor(pitc_reduction_year)) %>% 
   filter(pitc_reduction_year == 2025, indicator == "HIVinc15to49", year > 1990) %>% 
   ggplot(aes(year, mean, group = scenario, fill = scenario)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.25, show.legend = F) +
@@ -623,9 +820,144 @@ art_change_inc_elim <- art_change_inc_elim %>% mutate(art_int_rate = case_when(
   future_variability == "art_improvement" ~ (0.22*((1-(as.numeric(future_value)))**10))))
 art_change_inc_elim <- art_change_inc_elim %>% mutate(art_ret_rate = 1 - art_int_rate)
 unique(art_change_inc_elim$art_ret_rate)
+
+#### changed art retention rate calculation ####
+art_change_inc_elim <- art_change_inc_elim %>% mutate(art_int_rate = case_when(
+  future_variability == "art_deterioration" ~ (0.1486*((1+(as.numeric(future_value)))**10)),
+  future_variability == "art_improvement" ~ (0.1486*((1-(as.numeric(future_value)))**10))))
+
+art_change_inc_elim <- art_change_inc_elim %>% mutate(art_ret_rate = 1 - art_int_rate)
 write_csv(art_change_inc_elim, "results/art_change_inc_elim.csv")
 
 art_change_inc_elim <- read_csv("results/art_change_inc_elim.csv")
+
+#### add art_coverage_2035 as column ####
+
+#### calculating ART coverage in ART retention rate changes ####
+art_coverage_range <- art_change_summary %>% filter(indicator == "ARTcoverageAdult", 
+                                                    test_reduction == 0, pitc_reduction_year == 2025,
+                                                    year == 2035, scenario == "intervention") %>% select(mean)
+art_coverage_labels <- round(art_coverage_range$mean)
+unique_future_values_art <- unique(art_change_summary$future_value)
+art_change_summary <- art_change_summary %>% mutate(art_coverage_2035 = case_when(future_value == unique_future_values_art[1] & future_variability == "art_improvement" ~ art_coverage_labels[1],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_improvement" ~ art_coverage_labels[2],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_improvement" ~ art_coverage_labels[3],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_improvement" ~ art_coverage_labels[4],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_improvement" ~ art_coverage_labels[5],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_improvement" ~ art_coverage_labels[6],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_improvement" ~ art_coverage_labels[7],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_improvement" ~ art_coverage_labels[8],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_improvement" ~ art_coverage_labels[9],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_improvement" ~ art_coverage_labels[10],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_improvement" ~ art_coverage_labels[11],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_improvement" ~ art_coverage_labels[12],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_improvement" ~ art_coverage_labels[13],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_improvement" ~ art_coverage_labels[14],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_improvement" ~ art_coverage_labels[15],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_improvement" ~ art_coverage_labels[16],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_improvement" ~ art_coverage_labels[17],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_improvement" ~ art_coverage_labels[18],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_improvement" ~ art_coverage_labels[19],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_improvement" ~ art_coverage_labels[20],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_improvement" ~ art_coverage_labels[21],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_improvement" ~ art_coverage_labels[22],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_improvement" ~ art_coverage_labels[23],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_improvement" ~ art_coverage_labels[24],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_improvement" ~ art_coverage_labels[25],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_improvement" ~ art_coverage_labels[26],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_improvement" ~ art_coverage_labels[27],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_improvement" ~ art_coverage_labels[28],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_improvement" ~ art_coverage_labels[29],
+                                                                                  future_value == unique_future_values_art[1] & future_variability == "art_deterioration" ~ art_coverage_labels[30],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_deterioration" ~ art_coverage_labels[31],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_deterioration" ~ art_coverage_labels[32],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_deterioration" ~ art_coverage_labels[33],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_deterioration" ~ art_coverage_labels[34],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_deterioration" ~ art_coverage_labels[35],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_deterioration" ~ art_coverage_labels[36],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_deterioration" ~ art_coverage_labels[37],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_deterioration" ~ art_coverage_labels[38],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_deterioration" ~ art_coverage_labels[39],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_deterioration" ~ art_coverage_labels[40],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_deterioration" ~ art_coverage_labels[41],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_deterioration" ~ art_coverage_labels[42],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_deterioration" ~ art_coverage_labels[43],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_deterioration" ~ art_coverage_labels[44],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_deterioration" ~ art_coverage_labels[45],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_deterioration" ~ art_coverage_labels[46],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_deterioration" ~ art_coverage_labels[47],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_deterioration" ~ art_coverage_labels[48],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_deterioration" ~ art_coverage_labels[49],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_deterioration" ~ art_coverage_labels[50],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_deterioration" ~ art_coverage_labels[51],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_deterioration" ~ art_coverage_labels[52],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_deterioration" ~ art_coverage_labels[53],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_deterioration" ~ art_coverage_labels[54],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_deterioration" ~ art_coverage_labels[55],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_deterioration" ~ art_coverage_labels[56],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_deterioration" ~ art_coverage_labels[57],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_deterioration" ~ art_coverage_labels[58]))
+
+art_change_inc_elim <- art_change_inc_elim %>% mutate(art_coverage_2035 = case_when(future_value == unique_future_values_art[1] & future_variability == "art_improvement" ~ art_coverage_labels[1],
+                                                                                    future_value == unique_future_values_art[2]  & future_variability == "art_improvement" ~ art_coverage_labels[2],
+                                                                                    future_value == unique_future_values_art[3]  & future_variability == "art_improvement" ~ art_coverage_labels[3],
+                                                                                    future_value == unique_future_values_art[4]  & future_variability == "art_improvement" ~ art_coverage_labels[4],
+                                                                                    future_value == unique_future_values_art[5]  & future_variability == "art_improvement" ~ art_coverage_labels[5],
+                                                                                    future_value == unique_future_values_art[6]  & future_variability == "art_improvement" ~ art_coverage_labels[6],
+                                                                                    future_value == unique_future_values_art[7]  & future_variability == "art_improvement" ~ art_coverage_labels[7],
+                                                                                    future_value == unique_future_values_art[8]  & future_variability == "art_improvement" ~ art_coverage_labels[8],
+                                                                                    future_value == unique_future_values_art[9]  & future_variability == "art_improvement" ~ art_coverage_labels[9],
+                                                                                    future_value == unique_future_values_art[10]  & future_variability == "art_improvement" ~ art_coverage_labels[10],
+                                                                                    future_value == unique_future_values_art[11]  & future_variability == "art_improvement" ~ art_coverage_labels[11],
+                                                                                    future_value == unique_future_values_art[12]  & future_variability == "art_improvement" ~ art_coverage_labels[12],
+                                                                                    future_value == unique_future_values_art[13]  & future_variability == "art_improvement" ~ art_coverage_labels[13],
+                                                                                    future_value == unique_future_values_art[14]  & future_variability == "art_improvement" ~ art_coverage_labels[14],
+                                                                                    future_value == unique_future_values_art[15]  & future_variability == "art_improvement" ~ art_coverage_labels[15],
+                                                                                    future_value == unique_future_values_art[16]  & future_variability == "art_improvement" ~ art_coverage_labels[16],
+                                                                                    future_value == unique_future_values_art[17]  & future_variability == "art_improvement" ~ art_coverage_labels[17],
+                                                                                    future_value == unique_future_values_art[18]  & future_variability == "art_improvement" ~ art_coverage_labels[18],
+                                                                                    future_value == unique_future_values_art[19]  & future_variability == "art_improvement" ~ art_coverage_labels[19],
+                                                                                    future_value == unique_future_values_art[20]  & future_variability == "art_improvement" ~ art_coverage_labels[20],
+                                                                                    future_value == unique_future_values_art[21]  & future_variability == "art_improvement" ~ art_coverage_labels[21],
+                                                                                    future_value == unique_future_values_art[22]  & future_variability == "art_improvement" ~ art_coverage_labels[22],
+                                                                                    future_value == unique_future_values_art[23]  & future_variability == "art_improvement" ~ art_coverage_labels[23],
+                                                                                    future_value == unique_future_values_art[24]  & future_variability == "art_improvement" ~ art_coverage_labels[24],
+                                                                                    future_value == unique_future_values_art[25]  & future_variability == "art_improvement" ~ art_coverage_labels[25],
+                                                                                    future_value == unique_future_values_art[26]  & future_variability == "art_improvement" ~ art_coverage_labels[26],
+                                                                                    future_value == unique_future_values_art[27]  & future_variability == "art_improvement" ~ art_coverage_labels[27],
+                                                                                    future_value == unique_future_values_art[28]  & future_variability == "art_improvement" ~ art_coverage_labels[28],
+                                                                                    future_value == unique_future_values_art[29]  & future_variability == "art_improvement" ~ art_coverage_labels[29],
+                                                                                    future_value == unique_future_values_art[1] & future_variability == "art_deterioration" ~ art_coverage_labels[30],
+                                                                                    future_value == unique_future_values_art[2]  & future_variability == "art_deterioration" ~ art_coverage_labels[31],
+                                                                                    future_value == unique_future_values_art[3]  & future_variability == "art_deterioration" ~ art_coverage_labels[32],
+                                                                                    future_value == unique_future_values_art[4]  & future_variability == "art_deterioration" ~ art_coverage_labels[33],
+                                                                                    future_value == unique_future_values_art[5]  & future_variability == "art_deterioration" ~ art_coverage_labels[34],
+                                                                                    future_value == unique_future_values_art[6]  & future_variability == "art_deterioration" ~ art_coverage_labels[35],
+                                                                                    future_value == unique_future_values_art[7]  & future_variability == "art_deterioration" ~ art_coverage_labels[36],
+                                                                                    future_value == unique_future_values_art[8]  & future_variability == "art_deterioration" ~ art_coverage_labels[37],
+                                                                                    future_value == unique_future_values_art[9]  & future_variability == "art_deterioration" ~ art_coverage_labels[38],
+                                                                                    future_value == unique_future_values_art[10]  & future_variability == "art_deterioration" ~ art_coverage_labels[39],
+                                                                                    future_value == unique_future_values_art[11]  & future_variability == "art_deterioration" ~ art_coverage_labels[40],
+                                                                                    future_value == unique_future_values_art[12]  & future_variability == "art_deterioration" ~ art_coverage_labels[41],
+                                                                                    future_value == unique_future_values_art[13]  & future_variability == "art_deterioration" ~ art_coverage_labels[42],
+                                                                                    future_value == unique_future_values_art[14]  & future_variability == "art_deterioration" ~ art_coverage_labels[43],
+                                                                                    future_value == unique_future_values_art[15]  & future_variability == "art_deterioration" ~ art_coverage_labels[44],
+                                                                                    future_value == unique_future_values_art[16]  & future_variability == "art_deterioration" ~ art_coverage_labels[45],
+                                                                                    future_value == unique_future_values_art[17]  & future_variability == "art_deterioration" ~ art_coverage_labels[46],
+                                                                                    future_value == unique_future_values_art[18]  & future_variability == "art_deterioration" ~ art_coverage_labels[47],
+                                                                                    future_value == unique_future_values_art[19]  & future_variability == "art_deterioration" ~ art_coverage_labels[48],
+                                                                                    future_value == unique_future_values_art[20]  & future_variability == "art_deterioration" ~ art_coverage_labels[49],
+                                                                                    future_value == unique_future_values_art[21]  & future_variability == "art_deterioration" ~ art_coverage_labels[50],
+                                                                                    future_value == unique_future_values_art[22]  & future_variability == "art_deterioration" ~ art_coverage_labels[51],
+                                                                                    future_value == unique_future_values_art[23]  & future_variability == "art_deterioration" ~ art_coverage_labels[52],
+                                                                                    future_value == unique_future_values_art[24]  & future_variability == "art_deterioration" ~ art_coverage_labels[53],
+                                                                                    future_value == unique_future_values_art[25]  & future_variability == "art_deterioration" ~ art_coverage_labels[54],
+                                                                                    future_value == unique_future_values_art[26]  & future_variability == "art_deterioration" ~ art_coverage_labels[55],
+                                                                                    future_value == unique_future_values_art[27]  & future_variability == "art_deterioration" ~ art_coverage_labels[56],
+                                                                                    future_value == unique_future_values_art[28]  & future_variability == "art_deterioration" ~ art_coverage_labels[57],
+                                                                                    future_value == unique_future_values_art[29]  & future_variability == "art_deterioration" ~ art_coverage_labels[58]))
+
+write_csv(art_change_inc_elim, "results/art_change_inc_elim.csv")
 
 # plotting 
 art_change_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 
@@ -897,7 +1229,7 @@ condom_promotion_inc_elim <- condom_promotion_inc_elim %>% mutate(overall_condom
 
 condom_change_summary <- bind_rows(condom_promotion_summary, condom_reduction_summary)
 condom_change_inc_elim <- bind_rows(condom_promotion_inc_elim, condom_reduction_inc_elim)
-
+write_csv(condom_change_inc_elim, "results/condom_change_inc_elim.csv")
 # plotting 
 
 condom_change_inc_elim %>% mutate(elimination_year = as.numeric(elimination_year), 

@@ -15,10 +15,10 @@ cumulative_art_change <- bind_rows(cumulative_decrease_art_retention,
                                    cumulative_increase_art_retention)
 
 cumulative_art_change <- cumulative_art_change %>% 
-  select(-c(art_int_improvement, art_int_reduction)) %>% 
+  # select(-c(art_int_improvement, art_int_reduction)) %>% 
   mutate(art_int_rate = case_when(
-    future_variability == "art_deterioration" ~ (0.22*((1+(as.numeric(future_value)))**10)),
-    future_variability == "art_improvement" ~ (0.22*((1-(as.numeric(future_value)))**10))))
+    future_variability == "art_deterioration" ~ (0.1486*((1+(as.numeric(future_value)))**10)),
+    future_variability == "art_improvement" ~ (0.1486*((1-(as.numeric(future_value)))**10))))
 cumulative_art_change <- cumulative_art_change %>% mutate(art_ret_rate = 1- art_int_rate)
 write_csv(cumulative_art_change, "THEMBISAv18/results/art_change_cumulative.csv")
 #### plotting ####

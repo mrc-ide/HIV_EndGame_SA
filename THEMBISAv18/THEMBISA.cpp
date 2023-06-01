@@ -1822,7 +1822,7 @@ void Adult::GetEndProfile()
 			Temp1 = 0.0;
 			for (ia = 5; ia<40; ia++){
 				Temp1 += NewHIV[ia];}
-			HIVincMSM.out[CurrSim - 1][CurrYear - 1985] += Temp1;
+			NewHIVinMSM.out[CurrSim - 1][CurrYear - 1985] += Temp1;
 		}
 		Temp1 = 0.0;
 		Temp2 = 0.0;
@@ -8776,7 +8776,7 @@ void ResetMonthlyCum()
 	if(FixedUncertainty==1 || CalibHCTprev==1 || CalibHCTprevP == 1 || CalibHCTtotP == 1){
 		NewHIVinClients = 0.0;
 		NewHIVinFSW.out[CurrSim-1][CurrYear-1985] = 0.0;
-		HIVincMSM.out[CurrSim - 1][CurrYear - 1985] = 0.0;
+		NewHIVinMSM.out[CurrSim - 1][CurrYear - 1985] = 0.0;
 		NewElig350[0] = 0.0;
 		NewElig350[1] = 0.0;
 		NewElig500[0] = 0.0;
@@ -13130,7 +13130,8 @@ void ResultsAtEndOfYr2()
 
 	// HIV incidence in key populations
 	HIVincFSW.out[CurrSim - 1][iy] = NewHIVinFSW.out[CurrSim - 1][iy] / NegFSW.out[CurrSim - 1][iy];
-	HIVincMSM.out[CurrSim - 1][iy] = HIVincMSM.out[CurrSim - 1][iy] / NegMSM.out[CurrSim - 1][iy];
+	HIVincMSM.out[CurrSim - 1][iy] = NewHIVinMSM.out[CurrSim - 1][iy] / NegMSM.out[CurrSim - 1][iy];
+	HIVincClients.out[CurrSim - 1][iy] = NewHIVclients.out[CurrSim - 1][iy] / NegClients.out[CurrSim - 1][iy];
 
 	// Incidence:prevalence ratio
 	IncPrevRatio.out[CurrSim - 1][iy] = TotalNewHIV.out[CurrSim - 1][iy] / TotalHIV.out[CurrSim - 1][iy];
@@ -16461,20 +16462,40 @@ void RunSample()
 
 	// Write HIV incidence outputs to text files
   NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
+  HIVincFSW.RecordSample("HIVincFSW.txt");
   NewHIVclients.RecordSample("NewHIVclients.txt");
+  HIVincClients.RecordSample("HIVincClients.txt");
+  NewHIVinMSM.RecordSample("NewHIVinMSM.txt");
+  HIVincMSM.RecordSample("HIVincMSM.txt");
   NewAdultHIV.RecordSample("NewAdultHIV.txt");
-	HIVinc0to14.RecordSample("HIVinc0to14.txt");
-	HIVinc15to49.RecordSample("HIVinc15to49.txt");
-	HIVinc15to49M.RecordSample("HIVinc15to49M.txt");
-	HIVinc15to49F.RecordSample("HIVinc15to49F.txt");
-	HIVinc15to24M.RecordSample("HIVinc15to24M.txt");
-	HIVinc15to24F.RecordSample("HIVinc15to24F.txt");
-	HIVinc25to49M.RecordSample("HIVinc25to49M.txt");
-	HIVinc25to49F.RecordSample("HIVinc25to49F.txt");
-	HIVinc50F.RecordSample("HIVinc50F.txt");
-	HIVinc50M.RecordSample("HIVinc50M.txt");
-	HIVinc15plusM.RecordSample("HIVinc15plusM.txt");
-	HIVinc15plusF.RecordSample("HIVinc15plusF.txt");
+  NewHIVU15.RecordSample("NewHIVU15.txt");
+  HIVinc0to14.RecordSample("HIVinc0to14.txt");
+  NewHIV15to49.RecordSample("NewHIV15to49.txt");
+  HIVinc15to49.RecordSample("HIVinc15to49.txt");
+  NewHIV15to49M.RecordSample("NewHIV15to49M.txt");
+  HIVinc15to49M.RecordSample("HIVinc15to49M.txt");
+  NewHIV15to49F.RecordSample("NewHIV15to49F.txt");
+  HIVinc15to49F.RecordSample("HIVinc15to49F.txt");
+  NewHIV15to24.RecordSample("NewHIV15to24.txt");
+  HIVinc15to24.RecordSample("HIVinc15to24.txt");
+  NewHIV15to24M.RecordSample("NewHIV15to24M.txt");
+  HIVinc15to24M.RecordSample("HIVinc15to24M.txt");
+  NewHIV15to24F.RecordSample("NewHIV15to24F.txt");
+  HIVinc15to24F.RecordSample("HIVinc15to24F.txt");
+  NewHIV25to49.RecordSample("NewHIV25to49.txt");
+  HIVinc25to49.RecordSample("HIVinc25to49.txt");
+  NewHIV25to49M.RecordSample("NewHIV25to49M.txt");
+  HIVinc25to49M.RecordSample("HIVinc25to49M.txt");
+  NewHIV25to49F.RecordSample("NewHIV25to49F.txt");
+  HIVinc25to49F.RecordSample("HIVinc25to49F.txt");
+  NewHIV50.RecordSample("NewHIV50.txt");
+  HIVinc50.RecordSample("HIVinc50.txt");
+  NewHIV50F.RecordSample("NewHIV50F.txt");
+  HIVinc50F.RecordSample("HIVinc50F.txt");
+  NewHIV50M.RecordSample("NewHIV50M.txt");
+  HIVinc50M.RecordSample("HIVinc50M.txt");
+  HIVinc15plusF.RecordSample("HIVinc15plusM.txt");
+  HIVinc15plusF.RecordSample("HIVinc15plusF.txt");
 	/*HIVinc2000.RecordSample("HIVinc2000.txt");
 	HIVinc2010.RecordSample("HIVinc2010.txt");
 	PAFforCSW.RecordSample("PAFforCSW.txt");

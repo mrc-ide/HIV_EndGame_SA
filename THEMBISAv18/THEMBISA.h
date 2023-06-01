@@ -1025,7 +1025,7 @@ double RandPrior[MCMCdim]; // Random numbers used to sample from prior in curren
 double Cholesky1[MCMCdim][MCMCdim];
 double Covariance[MCMCdim][MCMCdim]; // The covariance matrix for the MCMC parameters
 const int InitSample = 2;
-const int ResampleSize = 2;
+const int ResampleSize = 1000;
 int SampleID[ResampleSize];
 int CurrSim;
 double temp[ResampleSize][41]; // Previously local to the SampleInput function in OutputArray class
@@ -1570,6 +1570,7 @@ PostOutputArray Prev10to14F(31);*/
 // HIV incidence outputs
 PostOutputArray NewHIVinFSW(116);
 PostOutputArray NewHIVclients(116);
+PostOutputArray NewHIVinMSM(116);
 PostOutputArray HIVinc0to14(116);
 PostOutputArray HIVinc15to49(116);
 PostOutputArray HIVinc15to49adj(116);
@@ -1592,6 +1593,7 @@ PostOutputArray HIVinc2010(18); // HIV incidence by age, sex in 2010
 PostOutputArray PAFforCSW(41);
 PostOutputArray HIVincFSW(116);
 PostOutputArray HIVincMSM(116);
+PostOutputArray HIVincClients(116);
 PostOutputArray ANCincidence(116);
 PostOutputArray ANCincidenceAdj(116);
 PostOutputArray NewMTCT(116);
@@ -1973,7 +1975,7 @@ PostOutputArray Neg50M(116);
 PostOutputArray Neg50F(116);
 PostOutputArray NegFSW(116);
 PostOutputArray NegMSM(116);
-PostOutputArray NegClients(41);
+PostOutputArray NegClients(116);
 
 // New infection total
 PostOutputArray NewHIVU15(116);

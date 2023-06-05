@@ -28,13 +28,13 @@ output_names <- c("NewHIVinFSW", "HIVincFSW",
                   "NewHIV50", "HIVinc50",
                   "NewHIV50M", "HIVinc50M",
                   "NewHIV50F", "HIVinc50F", 
-                  "TotalNewHIV")
+                  "TotalNewHIV", "NewHIV15F","NewHIV15M")
 
 # vector of the infection only output names 
 infection_outputs <- c("NewHIVinFSW",
                        "NewHIVclients",
                        "NewHIVinMSM",
-                       "NewHIVU15",
+                       "NewHIV0to14",
                        "NewHIV15to49",
                        "NewHIV15to49M",
                        "NewHIV15to49F",
@@ -123,6 +123,8 @@ baseline_summary <- as.data.frame(baseline) %>%
 # save summary csv
 write_csv(baseline_summary, "results/inc_inf_by_population.csv")
 
+baseline_summary$indicator[which(baseline_summary$indicator == "NewHIVU15")] <- "NewHIV0to14"
+write_csv(baseline_summary, "results/inc_inf_by_population.csv")
 # function to plot incidences quickly 
 plot_incidence <- function(output_name) {
   baseline_summary %>% 
@@ -180,8 +182,8 @@ for (i in 1:length(incidence_outputs)){
 # facet_wrap of incidences 
 
 baseline_summary %>% 
-  filter(indicator %in% "TotalNewHIV",
-         year > 2020) %>% 
+  filter(indicator %in% infection_outputs,
+         year > 1990) %>% 
   ggplot(aes(year, mean)) +
   geom_ribbon(aes(ymin = lower_CI, 
                   ymax = upper_CI), 
@@ -194,11 +196,12 @@ baseline_summary %>%
         axis.title.x = element_text(size = 12),
         legend.text = element_text(size = 12)) +
   scale_y_continuous("New HIV infections") +
-  facet_wrap(~indicator, scales = "free_y")
+  facet_wrap(~indicator, scales = "free_y",
+             labeller = as_labeller(function(string) sub("NewHIV","",string)))
 
 baseline_summary %>% 
   filter(indicator %in% incidence_outputs,
-         year > 2020) %>% 
+         year > 1990) %>% 
   ggplot(aes(year, mean)) +
   geom_ribbon(aes(ymin = lower_CI, 
                   ymax = upper_CI), 
@@ -212,11 +215,32 @@ baseline_summary %>%
         legend.text = element_text(size = 12)) +
   scale_y_continuous("HIV incidence per 1000", 
                      labels =(function(l) {round(l*1e3,1)})) +
-  facet_wrap(~indicator, scales = "free_y")
+  facet_wrap(~indicator, scales = "free_y", 
+             labeller = as_labeller(function(string) sub("HIVinc","",string)))
+
+
+baseline_summary%>% 
+  filter(indicator %in% proportion_total_infections,
+         year > 2020) %>% 
+  ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, 
+                  ymax = upper_CI), 
+              alpha = 0.25) +
+  geom_line(aes()) +
+  xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12)) +
+  scale_y_continuous("Proportion of total infections")+
+  facet_wrap(~indicator, scales = "free_y", 
+             labeller = as_labeller(function(string) sub("Prop_Inf_","",string)))
+
 
 baseline_summary%>% 
   filter(indicator %in% proportion_total_infections[1:3],
-         year > 2020) %>% 
+         year > 1990) %>% 
   ggplot(aes(year, mean, group = indicator, fill = indicator)) +
   geom_ribbon(aes(ymin = lower_CI, 
                   ymax = upper_CI), 
@@ -228,11 +252,28 @@ baseline_summary%>%
         axis.title.y = element_text(size = 12), 
         axis.title.x = element_text(size = 12),
         legend.text = element_text(size = 12)) +
-  scale_y_continuous("Proportion of total infections")
+  scale_y_continuous("Proportion of total infections") + 
+  scale_fill_discrete("Population", labels = c("Clients of FSW","FSW","MSM")) +
+  scale_colour_discrete("Population", labels = c("Clients of FSW","FSW","MSM"))
+
+baseline_summary%>% 
+  filter(indicator %in% proportion_total_infections[1:3],
+         year > 1990) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_bar(aes(color = indicator),position = "stack", stat = "identity") +
+  xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12)) +
+  scale_y_continuous("Proportion of total infections") + 
+  scale_fill_discrete("Population", labels = c("Clients of FSW","FSW","MSM")) +
+  scale_colour_discrete("Population", labels = c("Clients of FSW","FSW","MSM"))
 
 baseline_summary%>% 
   filter(indicator %in% proportion_total_infections[c(4,5,8,11)],
-         year > 2020) %>% 
+         year > 1990) %>% 
   ggplot(aes(year, mean, group = indicator, fill = indicator)) +
   geom_ribbon(aes(ymin = lower_CI, 
                   ymax = upper_CI), 
@@ -244,4 +285,105 @@ baseline_summary%>%
         axis.title.y = element_text(size = 12), 
         axis.title.x = element_text(size = 12),
         legend.text = element_text(size = 12)) +
-  scale_y_continuous("Proportion of total infections")
+  scale_y_continuous("Proportion of total infections") + 
+  scale_fill_discrete("Age group", labels = c("0-14", "15-24", "25-49", "50+")) +
+  scale_colour_discrete("Age group", labels = c("0-14", "15-24", "25-49", "50+"))
+
+baseline_summary%>% 
+  filter(indicator %in% proportion_total_infections[c(4,5,8,11)],
+         year > 1990) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_bar(aes(color = indicator), position = "stack", stat = "identity") +
+  xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12)) +
+  scale_y_continuous("Proportion of total infections") + 
+  scale_fill_discrete("Age group", labels = c("0-14", "15-24", "25-49", "50+")) +
+  scale_colour_discrete("Age group", labels = c("0-14", "15-24", "25-49", "50+"))
+
+baseline_summary%>% 
+  filter(indicator %in% proportion_total_infections[c(6,7,9,10,12,13)],
+         year > 1990) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, 
+                  ymax = upper_CI), 
+              alpha = 0.25) +
+  geom_line(aes(color = indicator)) +
+  xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12)) +
+  scale_y_continuous("Proportion of total infections") + 
+  scale_fill_discrete("Age and sex", labels = c("15-24 Female","15-24 Male","25-49 Female", "25-49 Male", "50+ Female", "50+ Male")) +
+  scale_colour_discrete("Age and sex", labels = c("15-24 Female","15-24 Male","25-49 Female", "25-49 Male", "50+ Female", "50+ Male"))
+
+baseline_summary%>% 
+  filter(indicator %in% proportion_total_infections[c(4,5,8,11)],
+         year > 1990) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, 
+                  ymax = upper_CI), 
+              alpha = 0.25) +
+  geom_line(aes(color = indicator)) +
+  xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12)) +
+  scale_y_continuous("Proportion of total infections") + 
+  scale_fill_discrete("Age group", labels = c("0-14", "15-24", "25-49", "50+")) +
+  scale_colour_discrete("Age group", labels = c("0-14", "15-24", "25-49", "50+"))
+
+baseline_summary%>% 
+  filter(indicator %in% proportion_total_infections[c(4,6,7,9,10,12,13)],
+         year > 1990) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_bar(aes(color = indicator), position = "stack", stat = "identity") +
+  xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12)) +
+  scale_y_continuous("Proportion of total infections") + 
+  scale_fill_discrete("Age and sex", labels = c("0-14", "15-24 Female","15-24 Male","25-49 Female", "25-49 Male", "50+ Female", "50+ Male")) +
+  scale_colour_discrete("Age and sex", labels = c("0-14", "15-24 Female","15-24 Male","25-49 Female", "25-49 Male", "50+ Female", "50+ Male"))
+
+condom_change_summary %>% filter(
+  scenario == "baseline",
+  indicator == "CondomUsage",
+  year >= 1990) %>% 
+  ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.50, show.legend = F) +
+  geom_line(aes()) +
+  xlab(" ") +
+  ylab("Total condom usage (%)") + xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5)) + ggtitle("Total Condom Usage")
+
+condom_change_summary %>% filter(
+  scenario == "baseline",
+  indicator == "FSWCondomUsage",
+  year >= 1990) %>% 
+  ggplot(aes(year, mean)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI), alpha = 0.50, show.legend = F) +
+  geom_line(aes()) +
+  xlab(" ") +
+  ylab("FSW condom usage (%)") + xlab("") +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 12), 
+        axis.title.y = element_text(size = 12), 
+        axis.title.x = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5)) + ggtitle("FSW Condom Usage")
+

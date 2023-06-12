@@ -18,7 +18,7 @@ getwd()
 
 # check that orderly works where you are
 orderly::orderly_run(parameters = list(pitc_reduction_years = 2025,
-                                       pitc_reduction_percentage = 0,
+                                       pitc_reduction_percentage = 5,
                                        condom_usage_reduction = FALSE,
                                        condom_usage_decrease = 0,
                                        condom_decr_start = 2020,
@@ -43,25 +43,24 @@ output_path <- "output"
 
 # parameter values - change for each run
 
-pitc_reduction_years<- c(2025)
+pitc_reduction_years<- 2025
 pitc_reduction_percentage <- seq(0,100,5)
-condom_usage_reduction <- TRUE
-condom_usage_decrease <- seq(0,14,0.5)
-condom_incr_start <- 2025
+condom_usage_reduction <- FALSE
+condom_usage_decrease <- 0
+condom_decr_start <- 2025
 condom_usage_promotion <- FALSE
 condom_usage_increase <- 0
-condom_decr_start <- 2025
+condom_incr_start <- 2025
 art_coverage_increase <- FALSE
-art_interrupt_rate_decrease <- 0 
+art_interrupt_rate_decrease <- 0
 art_incr_start <- 2025
-art_coverage_decrease <- FALSE
-art_interrupt_rate_increase <- 0
+art_coverage_decrease <- TRUE
+art_interrupt_rate_increase <- seq(0, 14, 0.5)
 art_decr_start <- 2025
 cumulative_years <- 50
 summary_name <- "summary"
 
 # make a dataframe of all combinations of parameter values
-
 pars <- expand_grid(pitc_reduction_years, 
                     pitc_reduction_percentage, 
                     condom_usage_reduction,
@@ -78,6 +77,7 @@ pars <- expand_grid(pitc_reduction_years,
                     art_decr_start,
                     cumulative_years,
                     summary_name)
+# pars <- bind_rows(pars, pars2)
 
 # delete output folder from src before packing bundles
 unlink("output", recursive = TRUE)
@@ -143,7 +143,7 @@ length(which(t$status()=="ERROR"))
 # look at logs of tasks
 tasks <- t$tasks
 # check log of specific tasks - task 1 below
-tasks[[1]]$log()
+tasks[[609]]$log()
 complete <- which(t$status()=="COMPLETE")
 # import to archive
 for (output in t$wait(100)[complete]) {
@@ -194,7 +194,7 @@ archive_task_names <- unlist(lapply(seq_len(nrow(pars)), function(i) {
 t2 <- Sys.time()
 t3 <- t2 - t1
 
-if (sum(is.na(archive_task_names)) == 0){archive_task_names <- archive_task_names[which(!is.na(archive_task_names))]
+archive_task_names <- archive_task_names[which(!is.na(archive_task_names))]
 # combine the summary csvs
 filepaths <- paste0("M:/HIV_EndGame_SA/orderly/thembisa_orderly/archive/thembisa/", archive_task_names[which(!is.na(archive_task_names))], "/results/summary.csv")
 temp <- lapply(filepaths, read.csv)
@@ -205,7 +205,7 @@ combined_summary <- bind_rows(temp, .id = "task_name")
 csv_name <- unique(combined_summary$future_variability)
 
 # calculate HIV elimination year and incidence in 2100
-inc_and_elim <- find_inc_and_elimination(combined_summary)
+# inc_and_elim <- find_inc_and_elimination(combined_summary)
 
 # combine the cumulative csvs
 filepaths <- paste0("M:/HIV_EndGame_SA/orderly/thembisa_orderly/archive/thembisa/", archive_task_names, "/results/cumulative_summary.csv")
@@ -216,13 +216,14 @@ combined_cumulative <- bind_rows(temp, .id = "task_name")
 # save csvs in network drive
 
 csv_cumulative <- paste0("H:/ordely_outputs/", csv_name, "_cumulative.csv")
-csv_inc_elim <- paste0("H:/ordely_outputs/", csv_name, "_inc_elim.csv")
+# csv_inc_elim <- paste0("H:/ordely_outputs/", csv_name, "_inc_elim.csv")
 csv_summary <- paste0("H:/ordely_outputs/", csv_name, "_summary.csv")
 
 
 write_csv(combined_summary, csv_summary)
-write_csv(inc_and_elim, csv_inc_elim)
+# write_csv(inc_and_elim, csv_inc_elim)
 write_csv(combined_cumulative, csv_cumulative)
-}
+
+
 
 

@@ -189,7 +189,7 @@ sources:
 # referenced in "views" or "data"
 #
 resources:
-  - thembisa.exe
+  - thembisa
   - Rollout_Original.txt
   - StartingPop.txt
   - Non-HIVmort.txt

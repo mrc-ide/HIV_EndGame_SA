@@ -1,6 +1,6 @@
 # Compiles and runs the Thembisa model
 run_thembisa <- function(){
-  system("./thembisa.exe")
+  system("./thembisa")
 }
 
 # Read output from Thembisa and assign column headers

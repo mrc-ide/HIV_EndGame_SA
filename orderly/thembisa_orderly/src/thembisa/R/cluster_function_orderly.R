@@ -56,10 +56,10 @@ run_on_cluster <- function(pitc_reduction_years,
   } 
   
   art_coverage_increase <- art_coverage_increase # switch for reducing art interruption rate, thereby increasing ART retention
-  art_interrupt_rate_decrease <- art_interrupt_rate_decrease # proportion of previous year's rate that art interruption rate decreases by each year
+  art_interrupt_rate_decrease <- art_interrupt_rate_decrease/100 # proportion of previous year's rate that art interruption rate decreases by each year
   art_incr_years <- seq(art_incr_start, art_incr_start+10, 1) # years for which art interruption rate increases
   art_coverage_decrease <- art_coverage_decrease # switch for increasing art interruption rates, thereby reducing ART retention
-  art_interrupt_rate_increase <- art_interrupt_rate_increase # proportion of previous year's rate that art interruption rate increases
+  art_interrupt_rate_increase <- art_interrupt_rate_increase/100 # proportion of previous year's rate that art interruption rate increases
   art_decr_years <- seq(art_decr_start, art_decr_start+10, 1) # years for which art interruption rate decreases
   cumulative_years <- cumulative_years # number of years over which cumulative values are calculated
   if (art_coverage_increase) {
@@ -191,8 +191,12 @@ run_on_cluster <- function(pitc_reduction_years,
 
   # cumulative values
   cumulative_years <- cumulative_years
-  cumulative_values <- calc_all_cumulatives(pitc_reduction_years, cumulative_years, df = df)
+  cumulative_values <- calc_all_cumulatives(as.numeric(pitc_reduction_years), cumulative_years, df = df)
 
+  # calculate elimination years and add to cumulative values
+  
+  cumulative_values <- add_elimination_year_to_cumulative(cumulative_values, df)
+  
   # calculate cumulative percent change from baseline
 
   cumulative_values <- cumulative_values %>%
@@ -204,8 +208,8 @@ run_on_cluster <- function(pitc_reduction_years,
   # Plotting cumulative HIV infections over 40 year
   cumulative_summary <- cumulative_values %>%
     group_by(indicator, pitc_reduction_year, test_reduction, scenario) %>%
-    summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
-              lower_CI = quantile(value, probs = 0.025))
+    summarise(mean = mean(value), median = median(value), upper_CI = quantile(value, probs = 0.975, na.rm = TRUE),
+              lower_CI = quantile(value, probs = 0.025, na.rm = TRUE))
   
   cumulative_summary <- cumulative_summary %>% mutate(future_variability = "test_reduction_only", future_value = 0)
   if (condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase & !art_coverage_decrease){

@@ -554,7 +554,50 @@ find_inc_and_elimination <- function(simulation_df){
   inner_join(years, incidences, by = c("future_variability", "future_value", "pitc_reduction_year", "pitc_reduction_percentage"))
 }
 
+find_elimination_year_df <- function(df, reduction_year, pitc_reduction, parameter_set_number, scenario_number){
+  inc <- df %>% 
+    filter(scenario == scenario_number, indicator == "HIVinc15to49",
+           pitc_reduction_year == reduction_year, test_reduction == pitc_reduction,
+           parameter_set == parameter_set_number, year > 2020)
+  # identify earliest year incidence <0.001 or record not attained
+  if (!is.na(filter(inc, value < 0.001)$value[1])) {
+    HIV_elimination_year <- filter(inc, value < 0.001)$year[1]
+  } else {
+    HIV_elimination_year <- Inf}
+  HIV_elimination_year
+}
+find_elimination_years_df <- function(df){
+  parameter_sets <- unique(df$parameter_set)
+  pitc_reduction_years <- unique(df$pitc_reduction_year)
+  pitc_reduction_percentages <- unique(df$test_reduction)
+  scenarios <- unique(df$scenario)
+  elimination_years <- data.frame(expand_grid(pitc_reduction_year = pitc_reduction_years, 
+                                              pitc_reduction_percentage = pitc_reduction_percentages,
+                                              scenario = scenarios,
+                                              parameter_set = parameter_sets,
+                                              elimination_year = Inf))
+  input_values <- expand_grid(pitc_reduction_year = pitc_reduction_years,
+                              pitc_reduction_percentage = pitc_reduction_percentages,
+                              scenario = scenarios,
+                              parameter_set = parameter_sets)
+  for (i in 1:nrow(elimination_years)){
+    elimination_years$elimination_year[i] <- find_elimination_year_df(df,
+                                                                      reduction_year = input_values$pitc_reduction_year[i],
+                                                                      pitc_reduction = input_values$pitc_reduction_percentage[i],
+                                                                      scenario_number = input_values$scenario[i],
+                                                                      parameter_set_number = input_values$parameter_set[i])
+  }
+  elimination_years
+}
 
+add_elimination_year_to_cumulative <- function(cumulative_values, df){
+  elimination_years_prepped <- find_elimination_years_df(df) %>% 
+    mutate(indicator = "elimination_year", 
+           test_reduction = pitc_reduction_percentage, 
+           cumulative = as.numeric(elimination_year)) %>% 
+    select(indicator, pitc_reduction_year, scenario, parameter_set, test_reduction, cumulative)
+  bind_rows(cumulative_values, elimination_years_prepped)
+}
 
 
 

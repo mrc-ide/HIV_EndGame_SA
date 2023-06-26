@@ -50,7 +50,7 @@ fig1a <- test_reduction_only %>% mutate(test_reduction = as.factor(test_reductio
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
         legend.title = element_text(size = 11)) +
-  scale_y_continuous("", labels =(function(l) {round(l*1e3,1)}), breaks = c(0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007),expand = c(0, 0)) +
+  scale_y_continuous("HIV incidence", labels =(function(l) {round(l*1e3,1)}), breaks = c(0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007),expand = c(0, 0)) +
   scale_fill_discrete("General\nHTC\nreduction", labels = c("None", "25%", "50%", "75%", "100%"),) + 
   scale_color_discrete("General\nHTC\nreduction", labels = c("None", "25%", "50%", "75%", "100%")) + 
   ggtitle("HIV incidence \n(per 1000; 15-49 years)") 
@@ -279,8 +279,24 @@ Effect of altered ART coverage on impact of testing reductions
 load data of decrease and increase scenarios and combine
 
 ``` {r combined art change summary, echo = FALSE}
-decrease_art_retention_summary <- read_csv("results/art_deterioration_summary.csv")
-increase_art_retention_summary <- read_csv("results/art_improvement_summary.csv")
+decrease_art_retention_summary_2025 <- read_csv("results/art_deterioration_summary.csv")
+decrease_art_retention_summary_2030 <- read_csv("results/art_deterioration_2030_summary.csv")
+decrease_art_retention_summary_2035 <- read_csv("results/art_deterioration_2035_summary.csv")
+decrease_art_retention_summary_2040 <- read_csv("results/art_deterioration_2040_summary.csv")
+decrease_art_retention_summary_2045 <- read_csv("results/art_deterioration_2045_summary.csv")
+decrease_art_retention_summary_2050 <- read_csv("results/art_deterioration_2050_summary.csv")
+
+decrease_art_retention_summary <- bind_rows(decrease_art_retention_summary_2025, decrease_art_retention_summary_2030, decrease_art_retention_summary_2035, decrease_art_retention_summary_2040, decrease_art_retention_summary_2045, decrease_art_retention_summary_2050)
+
+increase_art_retention_summary_2025 <- read_csv("results/art_improvement_summary.csv")
+increase_art_retention_summary_2030 <- read_csv("results/art_improvement_2030_summary.csv")
+increase_art_retention_summary_2035 <- read_csv("results/art_improvement_2035_summary.csv")
+increase_art_retention_summary_2040 <- read_csv("results/art_improvement_2040_summary.csv")
+increase_art_retention_summary_2045 <- read_csv("results/art_improvement_2045_summary.csv")
+increase_art_retention_summary_2050 <- read_csv("results/art_improvement_2050_summary.csv")
+
+increase_art_retention_summary <- bind_rows(increase_art_retention_summary_2025, increase_art_retention_summary_2030, increase_art_retention_summary_2035, increase_art_retention_summary_2040, increase_art_retention_summary_2045, increase_art_retention_summary_2050)
+
 art_change_summary <- bind_rows(increase_art_retention_summary, decrease_art_retention_summary)
 art_change_summary <- art_change_summary %>% mutate(art_int_rate = case_when(
   future_variability == "art_deterioration" ~ (0.1486*((1+(as.numeric(future_value)))**10)),
@@ -288,7 +304,21 @@ art_change_summary <- art_change_summary %>% mutate(art_int_rate = case_when(
 art_change_summary <- art_change_summary %>% mutate(art_ret_rate = 1 - art_int_rate)
 write_csv(art_change_summary,"results/art_change_summary.csv")
 
-cumulative_art_change <- bind_rows(read_csv("results/art_improvement_cumulative.csv"),                           read_csv("results/art_deterioration_cumulative.csv"))
+decrease_art_retention_cumulative_2025 <- read_csv("results/art_deterioration_cumulative.csv")
+decrease_art_retention_cumulative_2030 <- read_csv("results/art_deterioration_2030_cumulative.csv")
+decrease_art_retention_cumulative_2035 <- read_csv("results/art_deterioration_2035_cumulative.csv")
+decrease_art_retention_cumulative_2040 <- read_csv("results/art_deterioration_2040_cumulative.csv")
+decrease_art_retention_cumulative_2045 <- read_csv("results/art_deterioration_2045_cumulative.csv")
+decrease_art_retention_cumulative_2050 <- read_csv("results/art_deterioration_2050_cumulative.csv")
+
+increase_art_retention_cumulative_2025 <- read_csv("results/art_improvement_cumulative.csv")
+increase_art_retention_cumulative_2030 <- read_csv("results/art_improvement_2030_cumulative.csv")
+increase_art_retention_cumulative_2035 <- read_csv("results/art_improvement_2035_cumulative.csv")
+increase_art_retention_cumulative_2040 <- read_csv("results/art_improvement_2040_cumulative.csv")
+increase_art_retention_cumulative_2045 <- read_csv("results/art_improvement_2045_cumulative.csv")
+increase_art_retention_cumulative_2050 <- read_csv("results/art_improvement_2050_cumulative.csv")
+
+cumulative_art_change <- bind_rows(increase_art_retention_cumulative_2025, increase_art_retention_cumulative_2030, increase_art_retention_cumulative_2035, increase_art_retention_cumulative_2040, increase_art_retention_cumulative_2045, increase_art_retention_cumulative_2050, decrease_art_retention_cumulative_2025, decrease_art_retention_cumulative_2030, decrease_art_retention_cumulative_2035, decrease_art_retention_cumulative_2040, decrease_art_retention_cumulative_2045, decrease_art_retention_cumulative_2050)
 
 cumulative_art_change <- cumulative_art_change %>% 
   mutate(art_int_rate = case_when(
@@ -675,7 +705,6 @@ fig3d
 
 ### Combined Figure 3
 
-
 ```{r fig3, echo = FALSE}
 
 fig3 <- ggarrange(fig3a, fig3b, fig3c, fig3d, nrow = 2, ncol = 2, labels = "AUTO", align = "v")
@@ -694,7 +723,13 @@ laod reduction and promotion scenarios and combine
 ```{r condom combine scenarios, echo = FALSE}
 
 #### read csv from cluster ####
-condom_reduction_summary <- read_csv("results/condom_reduction_summary.csv")
+condom_reduction_summary_2025 <- read_csv("results/condom_reduction_summary.csv")
+condom_reduction_summary_2030 <- read_csv("results/condom_reduction_2030_summary.csv")
+condom_reduction_summary_2035 <- read_csv("results/condom_reduction_2035_summary.csv")
+condom_reduction_summary_2040 <- read_csv("results/condom_reduction_2040_summary.csv")
+condom_reduction_summary_2045 <- read_csv("results/condom_reduction_2045_summary.csv")
+condom_reduction_summary_2050 <- read_csv("results/condom_reduction_2050_summary.csv")
+condom_reduction_summary <- bind_rows(condom_reduction_summary_2025, condom_reduction_summary_2030, condom_reduction_summary_2035, condom_reduction_summary_2040, condom_reduction_summary_2045, condom_reduction_summary_2050)
 unique_future_values <- unique(condom_reduction_summary$future_value)
 
 
@@ -738,7 +773,14 @@ condom_reduction_summary <- condom_reduction_summary %>% mutate(overall_condom_u
 #### condom promotion ####
 
 #### read csv from cluster ####
-condom_promotion_summary <- read_csv("results/condom_promotion_summary.csv")
+condom_promotion_summary_2025 <- read_csv("results/condom_promotion_summary.csv")
+condom_promotion_summary_2030 <- read_csv("results/condom_promotion_2030_summary.csv")
+condom_promotion_summary_2035 <- read_csv("results/condom_promotion_2035_summary.csv")
+condom_promotion_summary_2040 <- read_csv("results/condom_promotion_2040_summary.csv")
+condom_promotion_summary_2045 <- read_csv("results/condom_promotion_2045_summary.csv")
+condom_promotion_summary_2050 <- read_csv("results/condom_promotion_2050_summary.csv")
+
+condom_promotion_summary <- bind_rows(condom_promotion_summary_2025, condom_promotion_summary_2030, condom_promotion_summary_2035, condom_promotion_summary_2040, condom_promotion_summary_2045, condom_promotion_summary_2050)
 
 unique_future_values <- unique(condom_promotion_summary$future_value)
 overall_condom_usage_range <- condom_promotion_summary %>% filter(indicator == "CondomUsage", 
@@ -778,7 +820,14 @@ condom_promotion_summary <- condom_promotion_summary %>% mutate(overall_condom_u
 
 #### condom usage cumulative ####
 # reduction
-condom_reduction_cumulative <- read_csv("results/condom_reduction_cumulative.csv")
+condom_reduction_cumulative_2025 <- read_csv("results/condom_reduction_cumulative.csv")
+condom_reduction_cumulative_2030 <- read_csv("results/condom_reduction_2030_cumulative.csv")
+condom_reduction_cumulative_2035 <- read_csv("results/condom_reduction_2035_cumulative.csv")
+condom_reduction_cumulative_2040 <- read_csv("results/condom_reduction_2040_cumulative.csv")
+condom_reduction_cumulative_2045 <- read_csv("results/condom_reduction_2045_cumulative.csv")
+condom_reduction_cumulative_2050 <- read_csv("results/condom_reduction_2050_cumulative.csv")
+
+condom_reduction_cumulative <- bind_rows(condom_reduction_cumulative_2025, condom_reduction_cumulative_2030, condom_reduction_cumulative_2035, condom_reduction_cumulative_2040, condom_reduction_cumulative_2045, condom_reduction_cumulative_2050)
 
 unique_future_values <- unique(condom_reduction_summary$future_value)
 overall_condom_usage_range <- condom_reduction_summary %>% filter(indicator == "CondomUsage", 
@@ -817,7 +866,14 @@ condom_reduction_cumulative <- condom_reduction_cumulative %>% mutate(overall_co
                                                                                                  future_value == unique_future_values[30] ~ condom_usage_reduction_labels[30]))
 
 # promotion
-condom_promotion_cumulative <- read_csv("results/condom_promotion_cumulative.csv")
+condom_promotion_cumulative_2025 <- read_csv("results/condom_promotion_cumulative.csv")
+condom_promotion_cumulative_2030 <- read_csv("results/condom_promotion_2030_cumulative.csv")
+condom_promotion_cumulative_2035 <- read_csv("results/condom_promotion_2035_cumulative.csv")
+condom_promotion_cumulative_2040 <- read_csv("results/condom_promotion_2040_cumulative.csv")
+condom_promotion_cumulative_2045 <- read_csv("results/condom_promotion_2045_cumulative.csv")
+condom_promotion_cumulative_2050 <- read_csv("results/condom_promotion_2050_cumulative.csv")
+
+condom_promotion_cumulative <- bind_rows(condom_promotion_cumulative_2025, condom_promotion_cumulative_2030, condom_promotion_cumulative_2035, condom_promotion_cumulative_2040, condom_promotion_cumulative_2045, condom_promotion_cumulative_2050)
 
 unique_future_values <- unique(condom_promotion_summary$future_value)
 overall_condom_usage_range <- condom_promotion_summary %>% filter(indicator == "CondomUsage", 
@@ -953,7 +1009,7 @@ fig4a <- temp4a %>%
         legend.margin=margin(0,0,0,0),
         legend.box.spacing = unit(5, "pt"),
         aspect.ratio=1) + 
-  ggtitle("HIV incidence in 2100\n(per 1000; 15-49 years)") +
+  ggtitle("General HTC reduced from 2025") +
   annotate(geom = "text", x = 15, y = 33.9, label = "Baseline")
 fig4a
 ```
@@ -1020,7 +1076,7 @@ fig4b <- temp4b %>%
         aspect.ratio=1) +
   geom_hline(aes(yintercept = 33.9), lty = "dotted")+
   annotate(geom = "text", x=90, y=33.9, label="Baseline", parse = TRUE) + 
-  ggtitle("HIV elimination year\n")
+  ggtitle("General HTC reduced from 2025")
 fig4b
 ```
 
@@ -1147,7 +1203,6 @@ fig4d
 ```
 
 ### Combined Figure 4
-
 
 ``` {r fig4, echo = FALSE}
 fig4 <- ggarrange(fig4a, fig4b, fig4c, fig4d, nrow = 2, ncol = 2, legend = "right", labels = "AUTO")
@@ -2410,10 +2465,24 @@ suppfig10c <- condom_change_summary %>%
          year > 2020, 
          test_reduction == 0,
          overall_condom_usage %in% c(14.1, 20.4, 27.6, 42.4, 50.3, 58.2)
-         ) %>% mutate(overall_condom_usage = as.factor(round(overall_condom_usage,0))) %>% 
+         ) %>% 
   ggplot(aes(year, mean, group = overall_condom_usage)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = overall_condom_usage), alpha = 0.10, show.legend = F) +
   geom_line(aes(colour = overall_condom_usage), show.legend = T) +
+  geom_line(data = filter(condom_change_summary,scenario == "intervention",
+                   pitc_reduction_year == 2025,
+                   indicator == "ARTcoverageAdult",
+                   test_reduction == 0,
+                   year > 2020,
+                   overall_condom_usage %in% c(33.9)), 
+                   aes(year, mean, group = overall_condom_usage), linewidth = 0.75) +
+  geom_ribbon(data = filter(condom_change_summary,scenario == "intervention",
+                   pitc_reduction_year == 2025,
+                   indicator == "ARTcoverageAdult",
+                   year > 2020,
+                   test_reduction == 0,
+                   overall_condom_usage %in% c(33.9)
+         ), aes(ymin = lower_CI, ymax = upper_CI, fill = overall_condom_usage), alpha = 0.10, show.legend = F) +
   xlab("") +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 12), 
@@ -2421,10 +2490,13 @@ suppfig10c <- condom_change_summary %>%
         axis.title.x = element_text(size = 12),
         legend.text = element_text(size = 12),
         plot.title = element_text(face = "bold", size = 12, hjust = 0.5)) + 
-  ggtitle("Annual ART coverage \nwith different condom usage (%) in 2035") +
+  ggtitle("Annual ART coverage") +
   scale_y_continuous("ART coverage (%) \n(15+ years) \n", labels =(function(l) {round(l*1e2,1)})) + 
-  scale_colour_discrete() + 
-  theme(legend.title = element_blank()) 
+  scale_fill_manual(name = "Condom usage \nin 2035", 
+                    breaks = c(14.1, 20.4, 27.6,33.9, 42.4, 50.3, 58.2), 
+                    values = c(`14.1` = "#e41a1c", `20.4` = "#377eb8", `27.6` = "#4daf4a", `33.9` = "black", `42.4` = "#984ea3", `50.3` = "#ff7f00", `58.2` = "yellow3"), 
+                    labels= c("14.1%", "20.4%", "27.6%", "33.9% (Baseline)", "42.4%", "50.3%", "58.2%"), 
+                    aesthetics = c("colour", "fill")) 
 
 ```
 
@@ -2437,11 +2509,25 @@ suppfig10d <- condom_change_summary %>%
          indicator == "CondomUsage",
          year > 2020, 
          test_reduction == 0,
-         future_value %in% c(0, 1, 3, 5, 7, 9, 11, 13, 14)
-         ) %>% mutate(overall_condom_usage = as.factor(round(overall_condom_usage,0))) %>% 
+         overall_condom_usage %in% c(14.1, 20.4, 27.6, 42.4, 50.3, 58.2)
+         ) %>% 
   ggplot(aes(year, mean, group = overall_condom_usage)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = overall_condom_usage), alpha = 0.10, show.legend = F) +
   geom_line(aes(colour = overall_condom_usage), show.legend = T) +
+  geom_line(data = filter(condom_change_summary,scenario == "intervention",
+                   pitc_reduction_year == 2025,
+                   indicator == "CondomUsage",
+                   test_reduction == 0,
+                   year > 2020,
+                   overall_condom_usage %in% c(33.9)), 
+                   aes(year, mean, group = overall_condom_usage), linewidth = 0.75) +
+  geom_ribbon(data = filter(condom_change_summary,scenario == "intervention",
+                   pitc_reduction_year == 2025,
+                   indicator == "CondomUsage",
+                   year > 2020,
+                   test_reduction == 0,
+                   overall_condom_usage %in% c(33.9)
+         ), aes(ymin = lower_CI, ymax = upper_CI, fill = overall_condom_usage), alpha = 0.10, show.legend = F) +
   xlab("") +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 12), 
@@ -2449,10 +2535,13 @@ suppfig10d <- condom_change_summary %>%
         axis.title.x = element_text(size = 12),
         legend.text = element_text(size = 12),
         plot.title = element_text(face = "bold", size = 12, hjust = 0.5)) + 
-  ggtitle("Annual condom usage \nwith different condom usage (%) in 2035") +
+  ggtitle("Annual condom usage") +
   scale_y_continuous("Condom usage (%) \n (15+ years) \n") + 
-  scale_colour_discrete() + 
-  theme(legend.title = element_blank()) 
+  scale_fill_manual(name = "Condom usage \nin 2035", 
+                    breaks = c(14.1, 20.4, 27.6,33.9, 42.4, 50.3, 58.2), 
+                    values = c(`14.1` = "#e41a1c", `20.4` = "#377eb8", `27.6` = "#4daf4a", `33.9` = "black", `42.4` = "#984ea3", `50.3` = "#ff7f00", `58.2` = "yellow3"), 
+                    labels= c("14.1%", "20.4%", "27.6%", "33.9% (Baseline)", "42.4%", "50.3%", "58.2%"), 
+                    aesthetics = c("colour", "fill")) 
 
 ```
 
@@ -2464,6 +2553,2577 @@ suppfig10 <- ggarrange(suppfig10a, suppfig10b, suppfig10c, suppfig10d, ncol = 2,
 
 ```
 
+## Supplementary figure 11a 
+
+```{r supp fig11a, echo=FALSE}
+
+temp11a <- art_change_summary %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2030,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp11a, test_reduction == i)$art_coverage_2035
+  mean_incidence_2100 <- filter(temp11a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y =  mean_incidence_2100, 
+                                    xout = 
+                                      seq(min(art_change_summary$art_coverage_2035),
+                                          max(art_change_summary$art_coverage_2035),
+                                          length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  temp11a <- bind_rows(temp11a, interpolated) 
+}
+
+temp11a <- temp11a[which(is.na(temp11a$future_value)),]
+
+suppfig11a <- temp11a %>% 
+  ggplot(aes(test_reduction, art_coverage_2035)) + 
+  with_blur(
+    geom_raster(aes(fill = log(1000*mean)), interpolate = TRUE),
+    sigma = 0
+  ) +
+  geom_contour(aes(z = 1000*mean), color = "black", binwidth = 0.5) + 
+  geom_contour(aes(z = 1000*mean), color = "black", breaks = 1, linewidth = 0.80) + 
+  geom_text_contour(aes(z = 1000*mean),skip = 0, stroke = 0.1, stroke.colour = "white",label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2("",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=10, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV incidence in 2100\n(per 1000; 15-49 years)")
+suppfig11a
+
+
+```
+
+## Supplementary figure 11b
+
+```{r suppfig11b, echo=FALSE}
+temp11b <- cumulative_art_change %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2030, 
+         scenario == "intervention") %>% 
+  arrange(desc(art_coverage_2035)) 
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp11b, test_reduction == i)$art_coverage_2035
+  elimination_year <- filter(temp11b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = elimination_year, xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  temp11b <- bind_rows(temp11b, interpolated) 
+}
+
+temp11b <- temp11b[which(is.na(temp11b$future_value)),]
+
+temp11b[which(temp11b$median == Inf),] <- NA
+
+suppfig11b <- temp11b %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(pitc_reduction_year == 2030) %>% 
+  ggplot(aes(x = test_reduction, y = art_coverage_2035, z = median)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = median), 
+                        interpolate = TRUE)
+  ) + 
+  geom_contour(color = "black") + 
+  geom_text_contour(skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",check_overlap = TRUE,min.size = 100,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=90, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV elimination year\n")
+suppfig11b
+
+```
+
+## Supplementary figure 11c
+
+``` {r suppfig11c, echo=FALSE}
+temp11c <- cumulative_art_change %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp11c, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp11c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout =  seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  temp11c <- bind_rows(temp11c, interpolated) 
+}
+
+temp11c <- temp11c[which(is.na(temp11c$future_value)),]
+
+suppfig11c <- temp11c %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = c(0, 2.5),show.legend = FALSE, color = "black") + 
+  geom_contour(aes(),breaks = c(2.5, 5),show.legend = FALSE, color = "grey") +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0, 2.5, 5),skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2030-2080 (millions)")
+suppfig11c
+```
+
+## Supplementary Figure 11d 
+``` {r suppfig11d, echo = FALSE}
+temp11d <- cumulative_art_change %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp11d, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp11d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  temp11d <- bind_rows(temp11d, interpolated) 
+}
+
+temp11d <- temp11d[which(is.na(temp11d$future_value)),]
+
+suppfig11d <- temp11d %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = 0, color = "black", show.legend = FALSE) +
+  geom_contour(aes(),breaks = c(0.5, 1, 1.5), color = "grey",show.legend = FALSE) +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0,0.5, 1, 1.5), skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional AIDS deaths\n2030-2080 (millions)")
+suppfig11d
+```
+
+## Combined supplementary figure 11 
+```{r suppfig11, echo=FALSE}
+suppfig11 <- ggarrange(suppfig11a, suppfig11b, suppfig11c, suppfig11d, nrow = 2, ncol = 2, labels = "AUTO", align = "v")
+suppfig11
+ggsave(filename = "figures/suppfig11.pdf", plot = suppfig11, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig11.png", plot = suppfig11, device = "png", width = 20, units = "cm")
+```
+
+## Supplementary figure 12a 
+
+```{r supp fig12a, echo=FALSE}
+
+temp12a <- art_change_summary %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2035,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp12a, test_reduction == i)$art_coverage_2035
+  mean_incidence_2100 <- filter(temp12a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y =  mean_incidence_2100, 
+                                    xout = 
+                                      seq(min(art_change_summary$art_coverage_2035),
+                                          max(art_change_summary$art_coverage_2035),
+                                          length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp12a <- bind_rows(temp12a, interpolated) 
+}
+
+temp12a <- temp12a[which(is.na(temp12a$future_value)),]
+
+suppfig12a <- temp12a %>% 
+  ggplot(aes(test_reduction, art_coverage_2035)) + 
+  with_blur(
+    geom_raster(aes(fill = log(1000*mean)), interpolate = TRUE),
+    sigma = 0
+  ) +
+  geom_contour(aes(z = 1000*mean), color = "black", binwidth = 0.5) + 
+  geom_contour(aes(z = 1000*mean), color = "black", breaks = 1, linewidth = 0.80) + 
+  geom_text_contour(aes(z = 1000*mean),skip = 0, stroke = 0.1, stroke.colour = "white",label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2("",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=10, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV incidence in 2100\n(per 1000; 15-49 years)")
+suppfig12a
+
+
+```
+
+## Supplementary figure 12b
+
+```{r suppfig12b, echo=FALSE}
+temp12b <- cumulative_art_change %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2035, 
+         scenario == "intervention") %>% 
+  arrange(desc(art_coverage_2035)) 
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp12b, test_reduction == i)$art_coverage_2035
+  elimination_year <- filter(temp12b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = elimination_year, xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp12b <- bind_rows(temp12b, interpolated) 
+}
+
+temp12b <- temp12b[which(is.na(temp12b$future_value)),]
+
+temp12b[which(temp12b$median == Inf),] <- NA
+
+suppfig12b <- temp12b %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(pitc_reduction_year == 2035) %>% 
+  ggplot(aes(x = test_reduction, y = art_coverage_2035, z = median)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = median), 
+                        interpolate = TRUE)
+  ) + 
+  geom_contour(color = "black") + 
+  geom_text_contour(skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",check_overlap = TRUE,min.size = 100,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=90, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV elimination year\n")
+suppfig12b
+
+```
+
+## Supplementary figure 12c
+
+``` {r suppfig12c, echo=FALSE}
+temp12c <- cumulative_art_change %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp12c, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp12c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout =  seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp12c <- bind_rows(temp12c, interpolated) 
+}
+
+temp12c <- temp12c[which(is.na(temp12c$future_value)),]
+
+suppfig12c <- temp12c %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = c(0, 2.5),show.legend = FALSE, color = "black") + 
+  geom_contour(aes(),breaks = c(2.5, 5),show.legend = FALSE, color = "grey") +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0, 2.5, 5),skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2035-2085 (millions)")
+suppfig12c
+```
+
+## Supplementary Figure 12d 
+``` {r suppfig12d, echo = FALSE}
+temp12d <- cumulative_art_change %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp12d, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp12d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp12d <- bind_rows(temp12d, interpolated) 
+}
+
+temp12d <- temp12d[which(is.na(temp12d$future_value)),]
+
+suppfig12d <- temp12d %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = 0, color = "black", show.legend = FALSE) +
+  geom_contour(aes(),breaks = c(0.5, 1, 1.5), color = "grey",show.legend = FALSE) +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0,0.5, 1, 1.5), skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional AIDS deaths\n2035-2085 (millions)")
+suppfig12d
+```
+
+## Combined supplementary figure 12 
+```{r suppfig12, echo=FALSE}
+suppfig12 <- ggarrange(suppfig12a, suppfig12b, suppfig12c, suppfig12d, nrow = 2, ncol = 2, labels = "AUTO", align = "v")
+suppfig12
+ggsave(filename = "figures/suppfig12.pdf", plot = suppfig12, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig12.png", plot = suppfig12, device = "png", width = 20, units = "cm")
+```
+
+## Supplementary figure 13a 
+
+```{r supp fig13a, echo=FALSE}
+
+temp13a <- art_change_summary %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2040,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp13a, test_reduction == i)$art_coverage_2035
+  mean_incidence_2100 <- filter(temp13a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y =  mean_incidence_2100, 
+                                    xout = 
+                                      seq(min(art_change_summary$art_coverage_2035),
+                                          max(art_change_summary$art_coverage_2035),
+                                          length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  temp13a <- bind_rows(temp13a, interpolated) 
+}
+
+temp13a <- temp13a[which(is.na(temp13a$future_value)),]
+
+suppfig13a <- temp13a %>% 
+  ggplot(aes(test_reduction, art_coverage_2035)) + 
+  with_blur(
+    geom_raster(aes(fill = log(1000*mean)), interpolate = TRUE),
+    sigma = 0
+  ) +
+  geom_contour(aes(z = 1000*mean), color = "black", binwidth = 0.5) + 
+  geom_contour(aes(z = 1000*mean), color = "black", breaks = 1, linewidth = 0.80) + 
+  geom_text_contour(aes(z = 1000*mean),skip = 0, stroke = 0.1, stroke.colour = "white",label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2("",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=10, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV incidence in 2100\n(per 1000; 15-49 years)")
+suppfig13a
+
+
+```
+
+## Supplementary figure 13b
+
+```{r suppfig13b, echo=FALSE}
+temp13b <- cumulative_art_change %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2040, 
+         scenario == "intervention") %>% 
+  arrange(desc(art_coverage_2035)) 
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp13b, test_reduction == i)$art_coverage_2035
+  elimination_year <- filter(temp13b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = elimination_year, xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  temp13b <- bind_rows(temp13b, interpolated) 
+}
+
+temp13b <- temp13b[which(is.na(temp13b$future_value)),]
+
+temp13b[which(temp13b$median == Inf),] <- NA
+
+suppfig13b <- temp13b %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(pitc_reduction_year == 2040) %>% 
+  ggplot(aes(x = test_reduction, y = art_coverage_2035, z = median)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = median), 
+                        interpolate = TRUE)
+  ) + 
+  geom_contour(color = "black") + 
+  geom_text_contour(skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",check_overlap = TRUE,min.size = 100,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=90, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV elimination year\n")
+suppfig13b
+
+```
+
+## Supplementary figure 13c
+
+``` {r suppfig13c, echo=FALSE}
+temp13c <- cumulative_art_change %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp13c, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp13c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout =  seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  temp13c <- bind_rows(temp13c, interpolated) 
+}
+
+temp13c <- temp13c[which(is.na(temp13c$future_value)),]
+
+suppfig13c <- temp13c %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = c(0, 2.5),show.legend = FALSE, color = "black") + 
+  geom_contour(aes(),breaks = c(2.5, 5),show.legend = FALSE, color = "grey") +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0, 2.5, 5),skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2040-2090 (millions)")
+suppfig13c
+```
+
+## Supplementary Figure 13d 
+``` {r suppfig13d, echo = FALSE}
+temp13d <- cumulative_art_change %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp13d, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp13d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  temp13d <- bind_rows(temp13d, interpolated) 
+}
+
+temp13d <- temp13d[which(is.na(temp13d$future_value)),]
+
+suppfig13d <- temp13d %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = 0, color = "black", show.legend = FALSE) +
+  geom_contour(aes(),breaks = c(0.5, 1, 1.5), color = "grey",show.legend = FALSE) +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0,0.5, 1, 1.5), skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional AIDS deaths\n2040-2090 (millions)")
+suppfig13d
+```
+
+## Combined supplementary figure 13 
+```{r suppfig13, echo=FALSE}
+suppfig13 <- ggarrange(suppfig13a, suppfig13b, suppfig13c, suppfig13d, nrow = 2, ncol = 2, labels = "AUTO", align = "v")
+suppfig13
+ggsave(filename = "figures/suppfig13.pdf", plot = suppfig13, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig13.png", plot = suppfig13, device = "png", width = 20, units = "cm")
+```
+
+## Supplementary figure 14a 
+
+```{r supp fig14a, echo=FALSE}
+
+temp14a <- art_change_summary %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2045,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp14a, test_reduction == i)$art_coverage_2035
+  mean_incidence_2100 <- filter(temp14a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y =  mean_incidence_2100, 
+                                    xout = 
+                                      seq(min(art_change_summary$art_coverage_2035),
+                                          max(art_change_summary$art_coverage_2035),
+                                          length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2045, 
+           test_reduction = i)
+  temp14a <- bind_rows(temp14a, interpolated) 
+}
+
+temp14a <- temp14a[which(is.na(temp14a$future_value)),]
+
+suppfig14a <- temp14a %>% 
+  ggplot(aes(test_reduction, art_coverage_2035)) + 
+  with_blur(
+    geom_raster(aes(fill = log(1000*mean)), interpolate = TRUE),
+    sigma = 0
+  ) +
+  geom_contour(aes(z = 1000*mean), color = "black", binwidth = 0.5) + 
+  geom_contour(aes(z = 1000*mean), color = "black", breaks = 1, linewidth = 0.80) + 
+  geom_text_contour(aes(z = 1000*mean),skip = 0, stroke = 0.1, stroke.colour = "white",label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2("",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=10, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV incidence in 2100\n(per 1000; 15-49 years)")
+suppfig14a
+
+
+```
+
+## Supplementary figure 14b
+
+```{r suppfig14b, echo=FALSE}
+temp14b <- cumulative_art_change %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2045, 
+         scenario == "intervention") %>% 
+  arrange(desc(art_coverage_2035)) 
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp14b, test_reduction == i)$art_coverage_2035
+  elimination_year <- filter(temp14b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = elimination_year, xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2045, 
+           test_reduction = i)
+  temp14b <- bind_rows(temp14b, interpolated) 
+}
+
+temp14b <- temp14b[which(is.na(temp14b$future_value)),]
+
+temp14b[which(temp14b$median == Inf),] <- NA
+
+suppfig14b <- temp14b %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(pitc_reduction_year == 2045) %>% 
+  ggplot(aes(x = test_reduction, y = art_coverage_2035, z = median)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = median), 
+                        interpolate = TRUE)
+  ) + 
+  geom_contour(color = "black") + 
+  geom_text_contour(skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",check_overlap = TRUE,min.size = 100,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=90, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV elimination year\n")
+suppfig14b
+
+```
+
+## Supplementary figure 14c
+
+``` {r suppfig14c, echo=FALSE}
+temp14c <- cumulative_art_change %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp14c, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp14c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout =  seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp14c <- bind_rows(temp14c, interpolated) 
+}
+
+temp14c <- temp14c[which(is.na(temp14c$future_value)),]
+
+suppfig14c <- temp14c %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = c(0, 2.5),show.legend = FALSE, color = "black") + 
+  geom_contour(aes(),breaks = c(2.5, 5),show.legend = FALSE, color = "grey") +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0, 2.5, 5),skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2045-2095 (millions)")
+suppfig14c
+```
+
+## Supplementary Figure 14d 
+``` {r suppfig14d, echo = FALSE}
+temp14d <- cumulative_art_change %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp14d, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp14d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp14d <- bind_rows(temp14d, interpolated) 
+}
+
+temp14d <- temp14d[which(is.na(temp14d$future_value)),]
+
+suppfig14d <- temp14d %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = 0, color = "black", show.legend = FALSE) +
+  geom_contour(aes(),breaks = c(0.5, 1, 1.5), color = "grey",show.legend = FALSE) +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0,0.5, 1, 1.5), skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional AIDS deaths\n2045-2095 (millions)")
+suppfig14d
+```
+
+## Combined supplementary figure 14 
+```{r suppfig14, echo=FALSE}
+suppfig14 <- ggarrange(suppfig14a, suppfig14b, suppfig14c, suppfig14d, nrow = 2, ncol = 2, labels = "AUTO", align = "v")
+suppfig14
+ggsave(filename = "figures/suppfig14.pdf", plot = suppfig14, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig14.png", plot = suppfig14, device = "png", width = 20, units = "cm")
+```
+
+## Supplementary figure 15a 
+
+```{r supp fig15a, echo=FALSE}
+
+temp15a <- art_change_summary %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2050,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp15a, test_reduction == i)$art_coverage_2035
+  mean_incidence_2100 <- filter(temp15a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y =  mean_incidence_2100, 
+                                    xout = 
+                                      seq(min(art_change_summary$art_coverage_2035),
+                                          max(art_change_summary$art_coverage_2035),
+                                          length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2050, 
+           test_reduction = i)
+  temp15a <- bind_rows(temp15a, interpolated) 
+}
+
+temp15a <- temp15a[which(is.na(temp15a$future_value)),]
+
+suppfig15a <- temp15a %>% 
+  ggplot(aes(test_reduction, art_coverage_2035)) + 
+  with_blur(
+    geom_raster(aes(fill = log(1000*mean)), interpolate = TRUE),
+    sigma = 0
+  ) +
+  geom_contour(aes(z = 1000*mean), color = "black", binwidth = 0.5) + 
+  geom_contour(aes(z = 1000*mean), color = "black", breaks = 1, linewidth = 0.80) + 
+  geom_text_contour(aes(z = 1000*mean),skip = 0, stroke = 0.1, stroke.colour = "white",label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2("",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=10, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV incidence in 2100\n(per 1000; 15-49 years)")
+suppfig15a
+
+
+```
+
+## Supplementary figure 15b
+
+```{r suppfig15b, echo=FALSE}
+temp15b <- cumulative_art_change %>% 
+  mutate(art_coverage_2035 = as.numeric(art_coverage_2035),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2050, 
+         scenario == "intervention") %>% 
+  arrange(desc(art_coverage_2035)) 
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp15b, test_reduction == i)$art_coverage_2035
+  elimination_year <- filter(temp15b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = elimination_year, xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2050, 
+           test_reduction = i)
+  temp15b <- bind_rows(temp15b, interpolated) 
+}
+
+temp15b <- temp15b[which(is.na(temp15b$future_value)),]
+
+temp15b[which(temp15b$median == Inf),] <- NA
+
+suppfig15b <- temp15b %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year)) %>% 
+  filter(pitc_reduction_year == 2050) %>% 
+  ggplot(aes(x = test_reduction, y = art_coverage_2035, z = median)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = median), 
+                        interpolate = TRUE)
+  ) + 
+  geom_contour(color = "black") + 
+  geom_text_contour(skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",check_overlap = TRUE,min.size = 100,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.767), lty = "dotted") +
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  annotate(geom = "text", x=90, y=0.767, label="Baseline", parse = TRUE) + 
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("HIV elimination year\n")
+suppfig15b
+
+```
+
+## Supplementary figure 15c
+
+``` {r suppfig15c, echo=FALSE}
+temp15c <- cumulative_art_change %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp15c, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp15c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout =  seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp15c <- bind_rows(temp15c, interpolated) 
+}
+
+temp15c <- temp15c[which(is.na(temp15c$future_value)),]
+
+suppfig15c <- temp15c %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = c(0, 2.5),show.legend = FALSE, color = "black") + 
+  geom_contour(aes(),breaks = c(2.5, 5),show.legend = FALSE, color = "grey") +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0, 2.5, 5),skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2050-2100 (millions)")
+suppfig15c
+```
+
+## Supplementary Figure 15d 
+``` {r suppfig15d, echo = FALSE}
+temp15d <- cumulative_art_change %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif")
+
+for (i in seq(0, 100, 5)){
+  art_coverage_2035 <- filter(temp15d, test_reduction == i)$art_coverage_2035
+  mean <- filter(temp15d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = art_coverage_2035, 
+                                    y = mean, 
+                                    xout = seq(min(cumulative_art_change$art_coverage_2035), max(cumulative_art_change$art_coverage_2035),length.out = 1000))) %>% 
+    rename(art_coverage_2035 = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp15d <- bind_rows(temp15d, interpolated) 
+}
+
+temp15d <- temp15d[which(is.na(temp15d$future_value)),]
+
+suppfig15d <- temp15d %>% 
+  ggplot(aes(test_reduction, art_coverage_2035, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(),breaks = 0, color = "black", show.legend = FALSE) +
+  geom_contour(aes(),breaks = c(0.5, 1, 1.5), color = "grey",show.legend = FALSE) +
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, breaks = c(0,0.5, 1, 1.5), skip = 0,label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 0.768), lty = "dotted") +
+  annotate(geom = "text", x=50, y=0.768, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous(name ="ART coverage (%)",
+                     labels =(function(l) {round(l*1e2,1)}),
+                     expand = c(0,0)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional AIDS deaths\n2050-2100 (millions)")
+suppfig15d
+```
+
+## Combined supplementary figure 15 
+```{r suppfig15, echo=FALSE}
+suppfig15 <- ggarrange(suppfig15a, suppfig15b, suppfig15c, suppfig15d, nrow = 2, ncol = 2, labels = "AUTO", align = "v")
+suppfig15
+ggsave(filename = "figures/suppfig15.pdf", plot = suppfig15, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig15.png", plot = suppfig15, device = "png", width = 20, units = "cm")
+```
+
+## Supplementary figure 16a
+
+```{r suppfig16a, echo=FALSE}
+temp16a <- condom_change_summary %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2030,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp16a, test_reduction == i)$overall_condom_usage
+  mean_incidence_2100 <- filter(temp16a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean_incidence_2100, 
+                                    xout = seq(min(condom_change_summary$overall_condom_usage), max(condom_change_summary$overall_condom_usage),length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  
+  
+  temp16a <- bind_rows(temp16a, interpolated) 
+}
+temp16a <- temp16a[which(is.na(temp16a$future_value)),]
+
+suppfig16a <- temp16a %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction), 
+         log_incidence = log(1000*mean)) %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) + 
+  with_blur(geom_raster(aes(fill = as.numeric(log_incidence)), 
+                        interpolate = TRUE),sigma=0) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9)) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = 1, linewidth = 0.80) +
+  geom_text_contour(aes(z = 1000*mean),
+                    skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",
+                    breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("General HTC reduced from 2030") +
+  annotate(geom = "text", x = 15, y = 33.9, label = "Baseline")
+suppfig16a
+```
+
+## Supplementary 16b
+
+```{r suppfig16b, echo = FALSE}
+
+temp16b <- condom_change_cumulative %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2030, 
+         scenario == "intervention") %>% 
+  arrange(desc(overall_condom_usage)) 
+
+temp16b[which(temp16b$median == Inf),] <- NA
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp16b, test_reduction == i)$overall_condom_usage
+  elimination_year <- filter(temp16b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = elimination_year, seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage),length.out = 1000), 
+                                    method = "linear", na.rm = FALSE)) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  temp16b <- bind_rows(temp16b, interpolated) 
+}
+
+temp16b <- temp16b[which(is.na(temp16b$future_value)),]
+
+temp16b[which(temp16b$median == Inf),] <- NA
+
+suppfig16b <- temp16b %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) +
+  with_blur(geom_raster(aes(fill = median), interpolate = TRUE, na.rm = TRUE), sigma = 0) +
+  geom_contour(aes(z = median),color = "black") + 
+  geom_text_contour(aes(z = median), skip = 0, 
+                    stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    min.size = 100, 
+                    label.placer = label_placer_fraction())+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  annotate(geom = "text", x=90, y=33.9, label="Baseline", parse = TRUE) + 
+  ggtitle("General HTC reduced from 2030")
+suppfig16b
+```
+
+## Supplementary figure 16c
+
+```{r suppfig16c, echo=FALSE}
+
+temp16c <- condom_change_cumulative %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif", 
+         pitc_reduction_year == 2030)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp16c, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp16c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage),
+                                               max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  temp16c <- bind_rows(temp16c, interpolated) 
+}
+
+temp16c <- temp16c[which(is.na(temp16c$future_value)),]
+
+suppfig16c <- temp16c %>% 
+ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(2.5, 5, 7.5, 10),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, 
+                    stroke.colour = "white",
+                    check_overlap = TRUE, 
+                    breaks = c(0,2.5, 5, 7.5, 10),
+                    label.placer = label_placer_fraction(), skip = 0) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2030-2080 (millions)")
+suppfig16c
+
+
+```
+
+## Supplementary figure 16d
+
+```{r suppfig16d, echo = FALSE}
+
+temp16d <- condom_change_cumulative %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif", 
+         pitc_reduction_year == 2030)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp16d, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp16d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2030, 
+           test_reduction = i)
+  temp16d <- bind_rows(temp16d, interpolated) 
+}
+
+temp16d <- temp16d[which(is.na(temp16d$future_value)),]
+
+suppfig16d <- temp16d %>% 
+  ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(0.5, 1.0, 1.5, 2.0),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    breaks = c(0, 0.5, 1.0, 1.5, 2.0), skip = 0,
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  ggtitle("Additional AIDS deaths\n2030-2080 (millions)")
+suppfig16d
+
+```
+
+### Combined Supplemntary Figure 16
+
+``` {r suppfig16, echo = FALSE}
+suppfig16<- ggarrange(suppfig16a, suppfig16b, suppfig16c, suppfig16d, nrow = 2, ncol = 2, legend = "right", labels = "AUTO")
+suppfig16
+ggsave(filename = "figures/suppfig16.pdf", plot = suppfig16, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig16.png", plot = suppfig16, device = "png", width = 20, units = "cm")
+```
+
+
+## Supplementary figure 17a
+
+```{r suppfig17a, echo=FALSE}
+temp17a <- condom_change_summary %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2035,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp17a, test_reduction == i)$overall_condom_usage
+  mean_incidence_2100 <- filter(temp17a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean_incidence_2100, 
+                                    xout = seq(min(condom_change_summary$overall_condom_usage), max(condom_change_summary$overall_condom_usage),length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  
+  
+  temp17a <- bind_rows(temp17a, interpolated) 
+}
+temp17a <- temp17a[which(is.na(temp17a$future_value)),]
+
+suppfig17a <- temp17a %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction), 
+         log_incidence = log(1000*mean)) %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) + 
+  with_blur(geom_raster(aes(fill = as.numeric(log_incidence)), 
+                        interpolate = TRUE),sigma=0) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9)) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = 1, linewidth = 0.80) +
+  geom_text_contour(aes(z = 1000*mean),
+                    skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",
+                    breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("General HTC reduced from 2035") +
+  annotate(geom = "text", x = 15, y = 33.9, label = "Baseline")
+suppfig17a
+```
+
+## Supplementary 17b
+
+```{r suppfig17b, echo = FALSE}
+
+temp17b <- condom_change_cumulative %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2035, 
+         scenario == "intervention") %>% 
+  arrange(desc(overall_condom_usage)) 
+
+temp17b[which(temp17b$median == Inf),] <- NA
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp17b, test_reduction == i)$overall_condom_usage
+  elimination_year <- filter(temp17b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = elimination_year, seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage),length.out = 1000), 
+                                    method = "linear", na.rm = FALSE)) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp17b <- bind_rows(temp17b, interpolated) 
+}
+
+temp17b <- temp17b[which(is.na(temp17b$future_value)),]
+
+temp17b[which(temp17b$median == Inf),] <- NA
+
+suppfig17b <- temp17b %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) +
+  with_blur(geom_raster(aes(fill = median), interpolate = TRUE, na.rm = TRUE), sigma = 0) +
+  geom_contour(aes(z = median),color = "black") + 
+  geom_text_contour(aes(z = median), skip = 0, 
+                    stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    min.size = 100, 
+                    label.placer = label_placer_fraction())+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  annotate(geom = "text", x=90, y=33.9, label="Baseline", parse = TRUE) + 
+  ggtitle("General HTC reduced from 2035")
+suppfig17b
+```
+
+## Supplementary figure 17c
+
+```{r suppfig17c, echo=FALSE}
+
+temp17c <- condom_change_cumulative %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2035)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp17c, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp17c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage),
+                                               max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp17c <- bind_rows(temp17c, interpolated) 
+}
+
+temp17c <- temp17c[which(is.na(temp17c$future_value)),]
+
+suppfig17c <- temp17c %>% 
+ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(2.5, 5, 7.5, 10),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, 
+                    stroke.colour = "white",
+                    check_overlap = TRUE, 
+                    breaks = c(0,2.5, 5, 7.5, 10),
+                    label.placer = label_placer_fraction(), skip = 0) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2035-2085 (millions)")
+suppfig17c
+
+
+```
+
+## Supplementary figure 17d
+
+```{r suppfig17d, echo = FALSE}
+
+temp17d <- condom_change_cumulative %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2035)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp17d, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp17d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2035, 
+           test_reduction = i)
+  temp17d <- bind_rows(temp17d, interpolated) 
+}
+
+temp17d <- temp17d[which(is.na(temp17d$future_value)),]
+
+suppfig17d <- temp17d %>% 
+  ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(0.5, 1.0, 1.5, 2.0),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    breaks = c(0, 0.5, 1.0, 1.5, 2.0), skip = 0,
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  ggtitle("Additional AIDS deaths\n2035-2085 (millions)")
+suppfig17d
+
+```
+
+### Combined Supplemntary Figure 17
+
+``` {r suppfig17, echo = FALSE}
+suppfig17<- ggarrange(suppfig17a, suppfig17b, suppfig17c, suppfig17d, nrow = 2, ncol = 2, legend = "right", labels = "AUTO")
+suppfig17
+ggsave(filename = "figures/suppfig17.pdf", plot = suppfig17, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig17.png", plot = suppfig17, device = "png", width = 20, units = "cm")
+```
+
+## Supplementary figure 18a
+
+```{r suppfig18a, echo=FALSE}
+temp18a <- condom_change_summary %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2040,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp18a, test_reduction == i)$overall_condom_usage
+  mean_incidence_2100 <- filter(temp18a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean_incidence_2100, 
+                                    xout = seq(min(condom_change_summary$overall_condom_usage), max(condom_change_summary$overall_condom_usage),length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  
+  
+  temp18a <- bind_rows(temp18a, interpolated) 
+}
+temp18a <- temp18a[which(is.na(temp18a$future_value)),]
+
+suppfig18a <- temp18a %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction), 
+         log_incidence = log(1000*mean)) %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) + 
+  with_blur(geom_raster(aes(fill = as.numeric(log_incidence)), 
+                        interpolate = TRUE),sigma=0) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9)) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = 1, linewidth = 0.80) +
+  geom_text_contour(aes(z = 1000*mean),
+                    skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",
+                    breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("General HTC reduced from 2040") +
+  annotate(geom = "text", x = 15, y = 33.9, label = "Baseline")
+suppfig18a
+```
+
+## Supplementary 18b
+
+```{r suppfig18b, echo = FALSE}
+
+temp18b <- condom_change_cumulative %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2040, 
+         scenario == "intervention") %>% 
+  arrange(desc(overall_condom_usage)) 
+
+temp18b[which(temp18b$median == Inf),] <- NA
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp18b, test_reduction == i)$overall_condom_usage
+  elimination_year <- filter(temp18b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = elimination_year, seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage),length.out = 1000), 
+                                    method = "linear", na.rm = FALSE)) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  temp18b <- bind_rows(temp18b, interpolated) 
+}
+
+temp18b <- temp18b[which(is.na(temp18b$future_value)),]
+
+temp18b[which(temp18b$median == Inf),] <- NA
+
+suppfig18b <- temp18b %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) +
+  with_blur(geom_raster(aes(fill = median), interpolate = TRUE, na.rm = TRUE), sigma = 0) +
+  geom_contour(aes(z = median),color = "black") + 
+  geom_text_contour(aes(z = median), skip = 0, 
+                    stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    min.size = 100, 
+                    label.placer = label_placer_fraction())+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  annotate(geom = "text", x=90, y=33.9, label="Baseline", parse = TRUE) + 
+  ggtitle("General HTC reduced from 2040")
+suppfig18b
+```
+
+## Supplementary figure 18c
+
+```{r suppfig18c, echo=FALSE}
+
+temp18c <- condom_change_cumulative %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2040)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp18c, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp18c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage),
+                                               max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  temp18c <- bind_rows(temp18c, interpolated) 
+}
+
+temp18c <- temp18c[which(is.na(temp18c$future_value)),]
+
+suppfig18c <- temp18c %>% 
+ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(2.5, 5, 7.5, 10),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, 
+                    stroke.colour = "white",
+                    check_overlap = TRUE, 
+                    breaks = c(0,2.5, 5, 7.5, 10),
+                    label.placer = label_placer_fraction(), skip = 0) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2040-2090 (millions)")
+suppfig18c
+
+
+```
+
+## Supplementary figure 18d
+
+```{r suppfig18d, echo = FALSE}
+
+temp18d <- condom_change_cumulative %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2040)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp18d, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp18d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2040, 
+           test_reduction = i)
+  temp18d <- bind_rows(temp18d, interpolated) 
+}
+
+temp18d <- temp18d[which(is.na(temp18d$future_value)),]
+
+suppfig18d <- temp18d %>% 
+  ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(0.5, 1.0, 1.5, 2.0),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    breaks = c(0, 0.5, 1.0, 1.5, 2.0), skip = 0,
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  ggtitle("Additional AIDS deaths\n2040-2090 (millions)")
+suppfig18d
+
+```
+
+### Combined Supplemntary Figure 18
+
+``` {r suppfig18, echo = FALSE}
+suppfig18<- ggarrange(suppfig18a, suppfig18b, suppfig18c, suppfig18d, nrow = 2, ncol = 2, legend = "right", labels = "AUTO")
+suppfig18
+ggsave(filename = "figures/suppfig18.pdf", plot = suppfig18, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig18.png", plot = suppfig18, device = "png", width = 20, units = "cm")
+```
+
+
+## Supplementary figure 19a
+
+```{r suppfig19a, echo=FALSE}
+temp19a <- condom_change_summary %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2045,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp19a, test_reduction == i)$overall_condom_usage
+  mean_incidence_2100 <- filter(temp19a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean_incidence_2100, 
+                                    xout = seq(min(condom_change_summary$overall_condom_usage), max(condom_change_summary$overall_condom_usage),length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2045, 
+           test_reduction = i)
+  
+  
+  temp19a <- bind_rows(temp19a, interpolated) 
+}
+temp19a <- temp19a[which(is.na(temp19a$future_value)),]
+
+suppfig19a <- temp19a %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction), 
+         log_incidence = log(1000*mean)) %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) + 
+  with_blur(geom_raster(aes(fill = as.numeric(log_incidence)), 
+                        interpolate = TRUE),sigma=0) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9)) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = 1, linewidth = 0.80) +
+  geom_text_contour(aes(z = 1000*mean),
+                    skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",
+                    breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("General HTC reduced from 2045") +
+  annotate(geom = "text", x = 15, y = 33.9, label = "Baseline")
+suppfig19a
+```
+
+## Supplementary 19b
+
+```{r suppfig19b, echo = FALSE}
+
+temp19b <- condom_change_cumulative %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2045, 
+         scenario == "intervention") %>% 
+  arrange(desc(overall_condom_usage)) 
+
+temp19b[which(temp19b$median == Inf),] <- NA
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp19b, test_reduction == i)$overall_condom_usage
+  elimination_year <- filter(temp19b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = elimination_year, seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage),length.out = 1000), 
+                                    method = "linear", na.rm = FALSE)) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2045, 
+           test_reduction = i)
+  temp19b <- bind_rows(temp19b, interpolated) 
+}
+
+temp19b <- temp19b[which(is.na(temp19b$future_value)),]
+
+temp19b[which(temp19b$median == Inf),] <- NA
+
+suppfig19b <- temp19b %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) +
+  with_blur(geom_raster(aes(fill = median), interpolate = TRUE, na.rm = TRUE), sigma = 0) +
+  geom_contour(aes(z = median),color = "black") + 
+  geom_text_contour(aes(z = median), skip = 0, 
+                    stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    min.size = 20, 
+                    label.placer = label_placer_fraction())+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  annotate(geom = "text", x=90, y=33.9, label="Baseline", parse = TRUE) + 
+  ggtitle("General HTC reduced from 2045")
+suppfig19b
+```
+
+## Supplementary figure 19c
+
+```{r suppfig19c, echo=FALSE}
+
+temp19c <- condom_change_cumulative %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2045)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp19c, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp19c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage),
+                                               max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2045, 
+           test_reduction = i)
+  temp19c <- bind_rows(temp19c, interpolated) 
+}
+
+temp19c <- temp19c[which(is.na(temp19c$future_value)),]
+
+suppfig19c <- temp19c %>% 
+ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(2.5, 5, 7.5, 10),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, 
+                    stroke.colour = "white",
+                    check_overlap = TRUE, 
+                    breaks = c(0,2.5, 5, 7.5, 10),
+                    label.placer = label_placer_fraction(), skip = 0) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2045-2095 (millions)")
+suppfig19c
+
+
+```
+
+## Supplementary figure 19d
+
+```{r suppfig19d, echo = FALSE}
+
+temp19d <- condom_change_cumulative %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2045)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp19d, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp19d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2045, 
+           test_reduction = i)
+  temp19d <- bind_rows(temp19d, interpolated) 
+}
+
+temp19d <- temp19d[which(is.na(temp19d$future_value)),]
+
+suppfig19d <- temp19d %>% 
+  ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(0.5, 1.0, 1.5, 2.0),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    breaks = c(0, 0.5, 1.0, 1.5, 2.0), skip = 0,
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  ggtitle("Additional AIDS deaths\n2045-2095 (millions)")
+suppfig19d
+
+```
+
+### Combined Supplemntary Figure 19
+
+``` {r suppfig19, echo = FALSE}
+suppfig19<- ggarrange(suppfig19a, suppfig19b, suppfig19c, suppfig19d, nrow = 2, ncol = 2, legend = "right", labels = "AUTO")
+suppfig19
+ggsave(filename = "figures/suppfig19.pdf", plot = suppfig19, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig19.png", plot = suppfig19, device = "png", width = 20, units = "cm")
+```
+
+## Supplementary figure 20a
+
+```{r suppfig20a, echo=FALSE}
+temp20a <- condom_change_summary %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2050,
+         year == 2100, 
+         scenario == "intervention", 
+         indicator == "HIVinc15to49")
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp20a, test_reduction == i)$overall_condom_usage
+  mean_incidence_2100 <- filter(temp20a, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean_incidence_2100, 
+                                    xout = seq(min(condom_change_summary$overall_condom_usage), max(condom_change_summary$overall_condom_usage),length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2050, 
+           test_reduction = i)
+  
+  
+  temp20a <- bind_rows(temp20a, interpolated) 
+}
+temp20a <- temp20a[which(is.na(temp20a$future_value)),]
+
+suppfig20a <- temp20a %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction), 
+         log_incidence = log(1000*mean)) %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) + 
+  with_blur(geom_raster(aes(fill = as.numeric(log_incidence)), 
+                        interpolate = TRUE),sigma=0) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9)) + 
+  geom_contour(aes(z = 1000*mean), 
+               color = "black", breaks = 1, linewidth = 0.80) +
+  geom_text_contour(aes(z = 1000*mean),
+                    skip = 0, stroke = 0.1, 
+                    stroke.colour = "white",
+                    breaks = c(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red",
+                       midpoint = 0,
+                       labels = (function(l) {round(exp(l),2)})
+  ) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("General HTC reduced from 2050") +
+  annotate(geom = "text", x = 15, y = 33.9, label = "Baseline")
+suppfig20a
+```
+
+## Supplementary 20b
+
+```{r suppfig20b, echo = FALSE}
+
+temp20b <- condom_change_cumulative %>% 
+  mutate(overall_condom_usage = as.numeric(overall_condom_usage),
+         test_reduction = as.numeric(test_reduction)) %>% 
+  filter(indicator == "elimination_year", 
+         pitc_reduction_year == 2050, 
+         scenario == "intervention") %>% 
+  arrange(desc(overall_condom_usage)) 
+
+temp20b[which(temp20b$median == Inf),] <- NA
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp20b, test_reduction == i)$overall_condom_usage
+  elimination_year <- filter(temp20b, test_reduction == i)$median
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = elimination_year, seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage),length.out = 1000), 
+                                    method = "linear", na.rm = FALSE)) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(median = y) %>% 
+    mutate(pitc_reduction_year = 2050, 
+           test_reduction = i)
+  temp20b <- bind_rows(temp20b, interpolated) 
+}
+
+temp20b <- temp20b[which(is.na(temp20b$future_value)),]
+
+temp20b[which(temp20b$median == Inf),] <- NA
+
+suppfig20b <- temp20b %>% 
+  ggplot(aes(x = test_reduction, y = overall_condom_usage)) +
+  with_blur(geom_raster(aes(fill = median), interpolate = TRUE, na.rm = TRUE), sigma = 0) +
+  geom_contour(aes(z = median),color = "black") + 
+  geom_text_contour(aes(z = median), skip = 0, 
+                    stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    min.size = 20, 
+                    label.placer = label_placer_fraction())+
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 2055) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted")+
+  annotate(geom = "text", x=90, y=33.9, label="Baseline", parse = TRUE) + 
+  ggtitle("General HTC reduced from 2050")
+suppfig20b
+```
+
+## Supplementary figure 20c
+
+```{r suppfig20c, echo=FALSE}
+
+temp20c <- condom_change_cumulative %>% 
+  filter(indicator == "NewAdultHIV", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2050)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp20c, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp20c, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage),
+                                               max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2050, 
+           test_reduction = i)
+  temp20c <- bind_rows(temp20c, interpolated) 
+}
+
+temp20c <- temp20c[which(is.na(temp20c$future_value)),]
+
+suppfig20c <- temp20c %>% 
+ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(2.5, 5, 7.5, 10),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, 
+                    stroke.colour = "white",
+                    check_overlap = TRUE, 
+                    breaks = c(0,2.5, 5, 7.5, 10),
+                    label.placer = label_placer_fraction(), skip = 0) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) + 
+  ggtitle("Additional HIV infections\n2050-2100 (millions)")
+suppfig20c
+
+```
+
+## Supplementary figure 20d
+
+```{r suppfig20d, echo = FALSE}
+
+temp20d <- condom_change_cumulative %>% 
+  filter(indicator == "TotalAIDSdeathsadult", 
+         scenario == "absolute_dif",
+         pitc_reduction_year == 2050)
+
+for (i in seq(0, 100, 5)){
+  overall_condom_usage <- filter(temp20d, test_reduction == i)$overall_condom_usage
+  mean <- filter(temp20d, test_reduction == i)$mean
+  interpolated <- data.frame(approx(x = overall_condom_usage, 
+                                    y = mean, 
+                                    xout = seq(min(condom_change_cumulative$overall_condom_usage), max(condom_change_cumulative$overall_condom_usage), length.out = 1000))) %>% 
+    rename(overall_condom_usage = x) %>% 
+    rename(mean = y) %>% 
+    mutate(pitc_reduction_year = 2050, 
+           test_reduction = i)
+  temp20d <- bind_rows(temp20d, interpolated) 
+}
+
+temp20d <- temp20d[which(is.na(temp20d$future_value)),]
+
+suppfig20d <- temp20d %>% 
+  ggplot(aes(test_reduction, overall_condom_usage, z = mean/10**6)) + 
+  with_blur(sigma = 0,
+            geom_raster(aes(fill = mean/10**6), interpolate = TRUE)) +
+  geom_contour(aes(), color = "black",breaks = 0,show.legend = FALSE) + 
+  geom_contour(aes(), color = "grey",breaks = c(0.5, 1.0, 1.5, 2.0),show.legend = FALSE) + 
+  geom_text_contour(stroke = 0.1, stroke.colour = "white",check_overlap = TRUE, 
+                    breaks = c(0, 0.5, 1.0, 1.5, 2.0), skip = 0,
+                    label.placer = label_placer_fraction()) +
+  geom_hline(aes(yintercept = 33.9), lty = "dotted") +
+  annotate(geom = "text", x=50, y=33.9, label="Baseline", parse = TRUE) + 
+  scale_fill_gradient2(" ",
+                       low = "blue",
+                       mid = "lightyellow",
+                       high = "red", 
+                       midpoint = 0) +
+  scale_y_continuous("Overall condom usage (%)", 
+                     trans = "identity",
+                     expand = c(0,0), 
+                     breaks = seq(15, 60 ,5), 
+                     labels = seq(15, 60 ,5)) +
+  scale_x_continuous("General HTC reduction (%)", expand = c(0,0)) + theme_classic() +
+  theme(axis.text = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+        legend.margin=margin(0,0,0,0),
+        legend.box.spacing = unit(5, "pt"),
+        aspect.ratio=1) +
+  ggtitle("Additional AIDS deaths\n2050-2100 (millions)")
+suppfig20d
+
+```
+
+### Combined Supplemntary Figure 20
+
+``` {r suppfig20, echo = FALSE}
+suppfig20<- ggarrange(suppfig20a, suppfig20b, suppfig20c, suppfig20d, nrow = 2, ncol = 2, legend = "right", labels = "AUTO")
+suppfig20
+ggsave(filename = "figures/suppfig20.pdf", plot = suppfig20, device = "pdf", width = 20, units = "cm")
+ggsave(filename = "figures/suppfig20.png", plot = suppfig20, device = "png", width = 20, units = "cm")
+```
+
+### HIV incidence in 2100 by testing reduction year - condom change
+
+```{r suppfig21, echo = FALSE}
+
+suppfig21<- ggarrange(fig4a, suppfig16a, suppfig17a, suppfig18a, suppfig19a, suppfig20a, nrow = 3, ncol = 2, legend = "right", labels = "AUTO", common.legend = TRUE) 
+suppfig21 <- annotate_figure(suppfig21, top = text_grob("HIV incidence in 2100 (per 1000; 15-49 years)", 
+               color = "black", face = "bold", size = 15))
+ggsave(filename = "figures/suppfig21.pdf", plot = suppfig21, device = "pdf", width = 20, height = 29, units = "cm")
+ggsave(filename = "figures/suppfig21.png", plot = suppfig21, device = "png", width = 20, height = 29, units = "cm")
+
+```
+
+### Elimination year by testing reduction year - condom change
+
+```{r suppfig22, echo = FALSE}
+
+suppfig22<- ggarrange(fig4b, suppfig16b, suppfig17b, suppfig18b, suppfig19b, suppfig20b, nrow = 3, ncol = 2, legend = "right", labels = "AUTO", common.legend = TRUE) 
+suppfig22 <- annotate_figure(suppfig22, top = text_grob("HIV elimination year", 
+               color = "black", face = "bold", size = 15))
+suppfig22
+ggsave(filename = "figures/suppfig22.pdf", plot = suppfig22, device = "pdf", width = 20, height = 29, units = "cm")
+ggsave(filename = "figures/suppfig22.png", plot = suppfig22, device = "png", width = 20, height = 29, units = "cm")
+
+```
+
+### Additional infections by testing reduction year - condom change
+
+```{r suppfig23, echo = FALSE}
+
+suppfig23<- ggarrange(fig4c, suppfig16c, suppfig17c, suppfig18c, suppfig19c, suppfig20c, nrow = 3, ncol = 2, legend = "right", labels = "AUTO", common.legend = TRUE) 
+suppfig23 <- annotate_figure(suppfig23, top = text_grob("Additional HIV infections (millions)", 
+               color = "black", face = "bold", size = 15))
+suppfig23
+ggsave(filename = "figures/suppfig23.pdf", plot = suppfig23, device = "pdf", width = 20, height = 29, units = "cm")
+ggsave(filename = "figures/suppfig23.png", plot = suppfig23, device = "png", width = 20, height = 29, units = "cm")
+
+```
+
+### Additional infections by testing reduction year - condom change
+
+```{r suppfig24, echo = FALSE}
+
+suppfig24<- ggarrange(fig4d, suppfig16d, suppfig17d, suppfig18d, suppfig19d, suppfig20d, nrow = 3, ncol = 2, legend = "right", labels = "AUTO", common.legend = TRUE) 
+suppfig24 <- annotate_figure(suppfig24, top = text_grob("Additional AIDS deaths (millions)", 
+               color = "black", face = "bold", size = 15))
+suppfig24
+ggsave(filename = "figures/suppfig24.pdf", plot = suppfig24, device = "pdf", width = 20, height = 29, units = "cm")
+ggsave(filename = "figures/suppfig24.png", plot = suppfig24, device = "png", width = 20, height = 29, units = "cm")
+
+```
 
 # Results in text
 

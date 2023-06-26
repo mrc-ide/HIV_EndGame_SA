@@ -3203,3 +3203,6 @@ orderly/thembisa_orderly/src/thembisa/workers/*
 results/*
 orderly/thembisa_orderly/bundles/*
 
+results/condom_reduction_cumulative.csv
+results/condom_reduction_summary.csv
+results/test_reduction_only_cumulative.csv

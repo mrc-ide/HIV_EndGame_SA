@@ -1,5 +1,4 @@
-source("R/modify_rollout_orderly.R")
-source("R/read_and_run_orderly.R")
+
 run_on_cluster <- function(pitc_reduction_years, 
                            pitc_reduction_percentage,
                            condom_usage_reduction,
@@ -27,7 +26,9 @@ run_on_cluster <- function(pitc_reduction_years,
                     "SWsexActs", "TotProtSexActs", "SWsexActsProt", "HIVinc15to49", 
                     "Prev15to49", "ARTcoverageDiagM", "ARTcoverageDiagF", "MalesOver15", 
                     "FemalesOver15", "TotHIV15", "ARTcoverageAdult", 
-                    "VLsuppressed15", "VLunsuppressed15")
+                    "VLsuppressed15", "VLunsuppressed15", "NewDiagnosesPregnancy",
+                    "RediagnosesPregnancy", "TotANCtests", "HIVtestsPos", 
+                    "Number1stHIVtestsPos", "NumberHIVtestsPos", "TotalDiagnosesPregnancy", "ANCtestPos")
   
   # create empty folder for results
   

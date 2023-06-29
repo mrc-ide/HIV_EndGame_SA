@@ -1025,7 +1025,7 @@ double RandPrior[MCMCdim]; // Random numbers used to sample from prior in curren
 double Cholesky1[MCMCdim][MCMCdim];
 double Covariance[MCMCdim][MCMCdim]; // The covariance matrix for the MCMC parameters
 const int InitSample = 2;
-const int ResampleSize = 2;
+const int ResampleSize = 10;
 int SampleID[ResampleSize];
 int CurrSim;
 double temp[ResampleSize][41]; // Previously local to the SampleInput function in OutputArray class
@@ -1602,6 +1602,8 @@ PostOutputArray NewHIVmothersBF(116);
 PostOutputArray NewDiagnosesPregnancy(116);
 PostOutputArray RediagnosesPregnancy(116);
 PostOutputArray TotANCtests(116);
+PostOutputArray TotalDiagnosesPregnancy(116);
+PostOutputArray ANCtestPos(116);
 PostOutputArray VertTransmKnownPos(116);
 PostOutputArray MTCTrateAtBirth(116);
 PostOutputArray MTCTrateBirthDiag(116);
@@ -1882,6 +1884,7 @@ PostOutputArray TotalHIVtests25to49F(116);
 PostOutputArray TotalHIVtests50plusM(116);
 PostOutputArray TotalHIVtests50plusF(116);
 PostOutputArray HIVtestsPos(116);
+PostOutputArray NumberHIVtestsPos(116);
 PostOutputArray HIVtestsPosU15(116);
 PostOutputArray HIVtestsPos18mo(116);
 PostOutputArray HIVtestsPos19to59mo(116);

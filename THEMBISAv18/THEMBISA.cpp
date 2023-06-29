@@ -6507,6 +6507,10 @@ void GetBirthsByHIV()
     if (FixedUncertainty == 1){
         TotANCtests.out[CurrSim - 1][CurrYear - StartYear] += (NegMothers * (VCTuptake * (1.0 + RescreenLate) + (1.0 - VCTuptake) * RescreenLate * UntestedRescreen) + PosMothers * (VCTuptake * Sensitivity + (1.0 - VCTuptake) * RescreenLate * UntestedRescreen + VCTuptake * (1 - Sensitivity) * RescreenLate)) / 12.0;
     }
+	if (FixedUncertainty == 1){
+		TotalDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] = NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] + RediagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear];
+		ANCtestPos.out[CurrSim - 1][CurrYear - StartYear] = TotalDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] / TotANCtests.out[CurrSim - 1][CurrYear - StartYear]; 
+	}
 }
 
 void GetPrevPregnant()
@@ -12897,6 +12901,8 @@ void ResultsAtEndOfYr()
 		if (CurrYear > 1990){
 			HIVtestsPos.out[CurrSim - 1][iy] = (NewlyTestedPos[0] + NewlyTestedPos[1] + (NewlyTestedNeg[0] +
 				NewlyTestedNeg[1]) * (1.0 - RapidDiagSp)) / TotalHIVtests.out[CurrSim - 1][iy];
+			NumberHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTestedPos[0] + NewlyTestedPos[1] + (NewlyTestedNeg[0] +
+				NewlyTestedNeg[1]) * (1.0 - RapidDiagSp));
 		}
 		FirstHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) /
 			(NewlyTestedPos[0] + NewlyTestedPos[1]);
@@ -16490,6 +16496,8 @@ void RunSample()
   NewDiagnosesPregnancy.RecordSample("NewDiagnosesPregnancy.txt");
   RediagnosesPregnancy.RecordSample("RediagnosesPregnancy.txt");
   TotANCtests.RecordSample("TotANCtests.txt");
+  TotalDiagnosesPregnancy.RecordSample("TotalDiagnosesPregnancy.txt");
+  ANCtestPos.RecordSample("ANCtestPos.txt");
 
 	// Write mortality outputs to text files
 	/*Deaths0M.RecordSample("Deaths0M.txt");
@@ -16613,8 +16621,9 @@ void RunSample()
 	AdultsEverTested.RecordSample("AdultsEverTested.txt");*/
 	//TestingBias.RecordSample("TestingBias.txt");
 	TotalHIVtests.RecordSample("TotalHIVtests.txt");
-	/*HIVtestsPos.RecordSample("HIVtestsPos.txt");
-	TotalHIVtestsU15.RecordSample("TotalHIVtestsU15.txt");
+	HIVtestsPos.RecordSample("HIVtestsPos.txt");
+	NumberHIVtestsPos.RecordSample("NumberHIVtestsPos.txt");
+	/*TotalHIVtestsU15.RecordSample("TotalHIVtestsU15.txt");
 	HIVtestsPosU15.RecordSample("HIVtestsPosU15.txt");
 	FalseNegPropn.RecordSample("FalseNegPropn.txt");*/
 	// FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
@@ -16668,11 +16677,11 @@ void RunSample()
 	TotBirths.RecordSample("TotBirths.txt");
 	MalesOver15.RecordSample("MalesOver15.txt");
 	FemalesOver15.RecordSample("FemalesOver15.txt");
-	MarriedM17to49.RecordSample("MarriedM17to49.txt");
+	/*MarriedM17to49.RecordSample("MarriedM17to49.txt");
 	MarriedF17to49.RecordSample("MarriedF17to49.txt");
 	MarriedM50.RecordSample("MarriedM50.txt");
 	MarriedF50.RecordSample("MarriedF50.txt");
-	/*TotInfants.RecordSample("TotInfants.txt");
+	TotInfants.RecordSample("TotInfants.txt");
 	Children1to2.RecordSample("Children1to2.txt");
 	Children3to5.RecordSample("Children3to5.txt");
 	Children6to13.RecordSample("Children6to13.txt");

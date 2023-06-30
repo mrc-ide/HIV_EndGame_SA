@@ -28,7 +28,10 @@ run_on_cluster <- function(pitc_reduction_years,
                     "FemalesOver15", "TotHIV15", "ARTcoverageAdult", 
                     "VLsuppressed15", "VLunsuppressed15", "NewDiagnosesPregnancy",
                     "RediagnosesPregnancy", "TotANCtests", "HIVtestsPos", 
-                    "Number1stHIVtestsPos", "NumberHIVtestsPos", "TotalDiagnosesPregnancy", "ANCtestPos")
+                    "Number1stHIVtestsPos", "NumberHIVtestsPos", "TotalDiagnosesPregnancy", "ANCtestPos",
+                    "HIVPosTestAnnualChange", "AdultTestPosAnnualChange", "TotalDiagPregAnnualChange", 
+                    "NewDiagPregAnnualChange", "TestPosANCAnnualChange" 
+                    )
   
   # create empty folder for results
   
@@ -190,44 +193,44 @@ run_on_cluster <- function(pitc_reduction_years,
 
   write_csv(summary, paste0("results/", summary_name, ".csv"))
 
-  # cumulative values
-  cumulative_years <- cumulative_years
-  cumulative_values <- calc_all_cumulatives(pitc_reduction_years, cumulative_years, df = df)
-
-  # calculate cumulative percent change from baseline
-
-  cumulative_values <- cumulative_values %>%
-    pivot_wider(names_from = scenario, values_from = cumulative) %>%
-    mutate(percent_change = ((intervention - baseline)/baseline)*100) %>%
-    mutate(absolute_dif = intervention - baseline) %>%
-    pivot_longer(-(indicator:test_reduction), names_to = "scenario")
-
-  # Plotting cumulative HIV infections over 40 year
-  cumulative_summary <- cumulative_values %>%
-    group_by(indicator, pitc_reduction_year, test_reduction, scenario) %>%
-    summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
-              lower_CI = quantile(value, probs = 0.025))
-  
-  cumulative_summary <- cumulative_summary %>% mutate(future_variability = "test_reduction_only", future_value = 0)
-  if (condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase & !art_coverage_decrease){
-    cumulative_summary$future_variability <- "condom_reduction"
-    cumulative_summary$future_value <- condom_usage_decrease
-  }
-  if (condom_usage_promotion & !condom_usage_reduction & !art_coverage_increase & !art_coverage_decrease){
-    cumulative_summary$future_variability <- "condom_promotion"
-    cumulative_summary$future_value <- condom_usage_increase
-  }
-  if (art_coverage_increase & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_decrease){
-    cumulative_summary$future_variability <-  "art_improvement"
-    cumulative_summary$future_value <- art_interrupt_rate_decrease
-  }
-  if (art_coverage_decrease & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase){
-    cumulative_summary$future_variability <- "art_deterioration"
-    cumulative_summary$future_value <- art_interrupt_rate_increase
-  }
-  
-
-  write_csv(cumulative_summary, paste0("results/cumulative_", summary_name, ".csv"))
+  # # cumulative values
+  # cumulative_years <- cumulative_years
+  # cumulative_values <- calc_all_cumulatives(pitc_reduction_years, cumulative_years, df = df)
+  # 
+  # # calculate cumulative percent change from baseline
+  # 
+  # cumulative_values <- cumulative_values %>%
+  #   pivot_wider(names_from = scenario, values_from = cumulative) %>%
+  #   mutate(percent_change = ((intervention - baseline)/baseline)*100) %>%
+  #   mutate(absolute_dif = intervention - baseline) %>%
+  #   pivot_longer(-(indicator:test_reduction), names_to = "scenario")
+  # 
+  # # Plotting cumulative HIV infections over 40 year
+  # cumulative_summary <- cumulative_values %>%
+  #   group_by(indicator, pitc_reduction_year, test_reduction, scenario) %>%
+  #   summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975),
+  #             lower_CI = quantile(value, probs = 0.025))
+  # 
+  # cumulative_summary <- cumulative_summary %>% mutate(future_variability = "test_reduction_only", future_value = 0)
+  # if (condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase & !art_coverage_decrease){
+  #   cumulative_summary$future_variability <- "condom_reduction"
+  #   cumulative_summary$future_value <- condom_usage_decrease
+  # }
+  # if (condom_usage_promotion & !condom_usage_reduction & !art_coverage_increase & !art_coverage_decrease){
+  #   cumulative_summary$future_variability <- "condom_promotion"
+  #   cumulative_summary$future_value <- condom_usage_increase
+  # }
+  # if (art_coverage_increase & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_decrease){
+  #   cumulative_summary$future_variability <-  "art_improvement"
+  #   cumulative_summary$future_value <- art_interrupt_rate_decrease
+  # }
+  # if (art_coverage_decrease & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase){
+  #   cumulative_summary$future_variability <- "art_deterioration"
+  #   cumulative_summary$future_value <- art_interrupt_rate_increase
+  # }
+  # 
+  # 
+  # write_csv(cumulative_summary, paste0("results/cumulative_", summary_name, ".csv"))
 }
 
 

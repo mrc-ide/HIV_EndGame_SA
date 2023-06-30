@@ -6510,6 +6510,9 @@ void GetBirthsByHIV()
 	if (FixedUncertainty == 1){
 		TotalDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] = NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] + RediagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear];
 		ANCtestPos.out[CurrSim - 1][CurrYear - StartYear] = TotalDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] / TotANCtests.out[CurrSim - 1][CurrYear - StartYear]; 
+		TotalDiagPregAnnualChange.out[CurrSim - 1][CurrYear - StartYear] = (TotalDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] - TotalDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear-1]);
+		NewDiagPregAnnualChange.out[CurrSim - 1][CurrYear - StartYear] = (NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear] - NewDiagnosesPregnancy.out[CurrSim - 1][CurrYear - StartYear-1]);
+		TestPosANCAnnualChange.out[CurrSim - 1][CurrYear - StartYear] = (ANCtestPos.out[CurrSim - 1][CurrYear - StartYear] - ANCtestPos.out[CurrSim - 1][CurrYear - StartYear-1]);
 	}
 }
 
@@ -12904,9 +12907,16 @@ void ResultsAtEndOfYr()
 			NumberHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTestedPos[0] + NewlyTestedPos[1] + (NewlyTestedNeg[0] +
 				NewlyTestedNeg[1]) * (1.0 - RapidDiagSp));
 		}
+		if (CurrYear > 1991){
+			HIVPosTestAnnualChange.out[CurrSim - 1][iy] = (NumberHIVtestsPos.out[CurrSim - 1][iy] - NumberHIVtestsPos.out[CurrSim - 1][iy-1]);
+			AdultTestPosAnnualChange.out[CurrSim - 1][iy] = (HIVtestsPos.out[CurrSim - 1][iy] - HIVtestsPos.out[CurrSim - 1][iy-1]);
+		}
 		FirstHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) /
 			(NewlyTestedPos[0] + NewlyTestedPos[1]);
         Number1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]);
+		if (CurrYear > 1985){
+			Adult1stPosAnnualChange.out[CurrSim - 1][iy] = (Number1stHIVtestsPos.out[CurrSim - 1][iy] - Number1stHIVtestsPos.out[CurrSim - 1][iy-1]);
+		}
         Prop1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) / (NewlyTestedNeg[0] + NewlyTestedNeg[1] +
         NewlyTestedPos[0] + NewlyTestedPos[1]);
 		TotalHIVtestsU15.out[CurrSim - 1][iy] = NewlyTestedNeg[2] + NewlyTestedPos[2];
@@ -16498,6 +16508,9 @@ void RunSample()
   TotANCtests.RecordSample("TotANCtests.txt");
   TotalDiagnosesPregnancy.RecordSample("TotalDiagnosesPregnancy.txt");
   ANCtestPos.RecordSample("ANCtestPos.txt");
+  TotalDiagPregAnnualChange.RecordSample("TotalDiagPregAnnualChange.txt");
+  NewDiagPregAnnualChange.RecordSample("NewDiagPregAnnualChange.txt");
+  TestPosANCAnnualChange.RecordSample("TestPosANCAnnualChange.txt");
 
 	// Write mortality outputs to text files
 	/*Deaths0M.RecordSample("Deaths0M.txt");
@@ -16623,12 +16636,15 @@ void RunSample()
 	TotalHIVtests.RecordSample("TotalHIVtests.txt");
 	HIVtestsPos.RecordSample("HIVtestsPos.txt");
 	NumberHIVtestsPos.RecordSample("NumberHIVtestsPos.txt");
+	HIVPosTestAnnualChange.RecordSample("HIVPosTestAnnualChange.txt");
+	AdultTestPosAnnualChange.RecordSample("AdultTestPosAnnualChange.txt");
 	/*TotalHIVtestsU15.RecordSample("TotalHIVtestsU15.txt");
 	HIVtestsPosU15.RecordSample("HIVtestsPosU15.txt");
 	FalseNegPropn.RecordSample("FalseNegPropn.txt");*/
 	// FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
     Number1stHIVtestsPos.RecordSample("Number1stHIVtestsPos.txt");
     Prop1stHIVtestsPos.RecordSample("Prop1stHIVtestsPos.txt");
+	Adult1stPosAnnualChange.RecordSample("Adult1stPosAnnualChange.txt");
 	/*TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
 	TotSTestTaxi.RecordSample("TotSTestTaxi.txt");
 	TotSTestANC.RecordSample("TotSTestANC.txt");

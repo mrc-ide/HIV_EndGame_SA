@@ -101,11 +101,11 @@ filepaths <- paste0("THEMBISAv18/results/condom_reduction_", condom_usage_decrea
 temp <- lapply(filepaths, read.csv)
 names(temp) <- condom_usage_decrease
 condom_reduction <- bind_rows(temp, .id = "condom_usage_decrease")
-
-filepaths <- paste0("THEMBISAv18/results/cumulative_condom_reduction_", condom_usage_decrease, ".csv")
-temp <- lapply(filepaths, read.csv)
-names(temp) <- condom_usage_decrease
-cumulative_condom_reduction <- bind_rows(temp, .id = "condom_usage_decrease")
+# 
+# filepaths <- paste0("THEMBISAv18/results/cumulative_condom_reduction_", condom_usage_decrease, ".csv")
+# temp <- lapply(filepaths, read.csv)
+# names(temp) <- condom_usage_decrease
+# cumulative_condom_reduction <- bind_rows(temp, .id = "condom_usage_decrease")
 
 ```
 
@@ -125,12 +125,12 @@ condom_reduction <- condom_reduction %>%
                                           future_value == unique_future_values[4] ~ condom_usage_reduction_labels[4],
                                           future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5]))
 
-cumulative_condom_reduction <- cumulative_condom_reduction %>% 
-  mutate(overall_condom_usage = case_when(future_value == unique_future_values[1] ~ condom_usage_reduction_labels[1],
-                                          future_value == unique_future_values[2] ~ condom_usage_reduction_labels[2],
-                                          future_value == unique_future_values[3] ~ condom_usage_reduction_labels[3],
-                                          future_value == unique_future_values[4] ~ condom_usage_reduction_labels[4],
-                                          future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5]))
+# cumulative_condom_reduction <- cumulative_condom_reduction %>% 
+#   mutate(overall_condom_usage = case_when(future_value == unique_future_values[1] ~ condom_usage_reduction_labels[1],
+#                                           future_value == unique_future_values[2] ~ condom_usage_reduction_labels[2],
+#                                           future_value == unique_future_values[3] ~ condom_usage_reduction_labels[3],
+#                                           future_value == unique_future_values[4] ~ condom_usage_reduction_labels[4],
+#                                           future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5]))
 ```
 
 
@@ -141,14 +141,13 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "HIVinc15to49",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+         year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
-  geom_hline(aes(yintercept = 0.001), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + 
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -168,14 +167,14 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "NewAdultHIV",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+          year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) +  
   geom_hline(aes(yintercept = 0.001), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -186,7 +185,7 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
         legend.title = element_text(size = 11)) +
   scale_y_continuous("New HIV infections", labels =(function(l) {round(l/1e3,1)}), expand = c(0, 0)) +
   scale_fill_manual(name = "Condom\nusage\nin 2035", breaks = c("0", "7", "14", "21", "28"), values = c("0" = "#e41a1c", "7" = "#377eb8", "14" = "#4daf4a", "21" = "#984ea3",  "28" = "#ff7f00"), labels= c("34.1% (Baseline)", "23.3%", "14.2%", "7.2%", "3.0%"), aesthetics = c("colour", "fill")) +
-  ggtitle("New HIV infecitons \n(thousands; 15+ years)") #+ facet_wrap(~test_reduction)
+  ggtitle("New HIV infections \n(thousands; 15+ years)") #+ facet_wrap(~test_reduction)
 ggsave(filename = "surveillance_figures/new_infections.png", device = "png", width = 20, units = "cm")
 ```
 ## Number of positive tests
@@ -195,13 +194,13 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "NumberHIVtestsPos",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+          year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) +  
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -222,13 +221,13 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "Number1stHIVtestsPos",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+          year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) +  
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -248,13 +247,13 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "HIVtestsPos",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+          year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) +  
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -274,13 +273,13 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "TotalDiagnosesPregnancy",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+          year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) +  
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -302,13 +301,13 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "NewDiagnosesPregnancy",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+          year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) +  
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -329,13 +328,13 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "ANCtestPos",
-         year >= 2019,
-         year <= 2045, 
+         year >= 2024,
+          year <= 2035, 
          test_reduction %in% c(0)) %>% 
   ggplot(aes(year, mean, group = condom_usage_decrease, fill = condom_usage_decrease)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = condom_usage_decrease), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = condom_usage_decrease), show.legend = T) + geom_vline(aes(xintercept = 2035), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
+  geom_line(aes(colour = condom_usage_decrease), show.legend = T) +  
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -349,7 +348,34 @@ condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decre
   ggtitle("HIV test positivity at ANC (%) \n(pregnant women; 15+ years)") 
 ggsave(filename = "surveillance_figures/test_positivity_ANC.png", device = "png", width = 20, units = "cm")
 ```
-
+# Annual change from previous year
+``` {r inc_plot, echo=TRUE}
+condom_reduction %>% mutate(condom_usage_decrease = as.factor(condom_usage_decrease)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("TotalDiagPregAnnualChange", 
+                    "NewDiagPregAnnualChange"),
+         year >= 2024,
+         year <= 2035, 
+         test_reduction %in% c(0),
+         overall_condom_usage%in% c(3, 34.1)
+         ) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = T) + 
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2024,2036,2)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Change from previous year", expand = c(0, 0)) +
+  ggtitle("") + facet_wrap(~overall_condom_usage, scales = "free_y")
+ggsave(filename = "surveillance_figures/incidence.png", device = "png", width = 20, units = "cm")
+```
 
 
 ## Percentage change from 2025 to 2035

@@ -685,5 +685,5 @@ condom_reduction %>%
         aspect.ratio=1, 
         legend.title = element_text(size = 11),
         plot.margin = margin(0,0,0,0)) + ggtitle("Percentage change from 2024 to 2034\nrelative to 2024")
-
+ggsave(filename = "pct_chg.png", device = "png")
 ```

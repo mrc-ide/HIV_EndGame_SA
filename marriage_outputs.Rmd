@@ -1,0 +1,373 @@
+---
+title: "surveillance_outputs"
+output: html_document
+date: "2023-06-26"
+---
+Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(metR)
+library(ggpubr)
+library(ggfx)
+
+```
+
+Sources 
+```{r sources, include=FALSE}
+
+source("orderly/thembisa_orderly/src/thembisa/R/read_and_run_orderly.R")
+source("orderly/thembisa_orderly/src/thembisa/R/support_modify_inputs_orderly.R")
+source("orderly/thembisa_orderly/src/thembisa/R/modify_rollout_orderly.R")
+source("orderly/thembisa_orderly/src/thembisa/R/cluster_function_orderly.R")
+
+```
+
+# Extreme condom usage reduction
+## Set conditions
+```{r set_conditions, include=FALSE}
+
+pitc_reduction_years <- 2025
+pitc_reduction_percentage <- 100
+condom_usage_reduction <- FALSE
+condom_usage_decrease <- 0
+condom_decr_start <- 2025
+condom_usage_promotion <- FALSE 
+condom_usage_increase <- 0
+condom_incr_start <- 2025
+art_coverage_increase <- FALSE
+art_interrupt_rate_decrease <- 0
+art_incr_start <- 2025
+summary_name <- "marriage_rates_adjusted_2005"
+cumulative_years <- 10
+art_coverage_decrease <- FALSE
+art_interrupt_rate_increase <- 0
+art_decr_start <- 2025
+
+pars <- expand_grid(pitc_reduction_years, 
+                    pitc_reduction_percentage, 
+                    condom_usage_reduction,
+                    condom_usage_decrease,
+                    condom_decr_start,
+                    condom_usage_promotion,
+                    condom_incr_start,
+                    condom_usage_increase,
+                    art_coverage_increase,
+                    art_interrupt_rate_decrease,
+                    art_incr_start,
+                    art_coverage_decrease,
+                    art_interrupt_rate_increase,
+                    art_decr_start,
+                    cumulative_years,
+                    summary_name)
+
+
+```
+
+## Run scenario - condom reduction
+
+```{r condom_reduction, include=FALSE}
+setwd("~/Documents/HIV_EndGame_SA/THEMBISAv18")
+system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
+for (i in 1:nrow(pars)){
+  run_on_cluster(pitc_reduction_years = pars$pitc_reduction_years[i],
+                 pitc_reduction_percentage = 100,
+                 condom_usage_reduction = pars$condom_usage_reduction[i],
+                 condom_usage_decrease = pars$condom_usage_decrease[i],
+                 condom_decr_start = pars$condom_decr_start[i],
+                 condom_usage_promotion = pars$condom_usage_promotion[i],
+                 condom_usage_increase = pars$condom_usage_increase[i],
+                 condom_incr_start = pars$condom_incr_start[i],
+                 art_coverage_increase = pars$art_coverage_increase[i],
+                 art_interrupt_rate_decrease = pars$art_interrupt_rate_decrease[i],
+                 art_incr_start = pars$art_incr_start[i],
+                 art_coverage_decrease = pars$art_coverage_decrease[i],
+                 art_interrupt_rate_increase = pars$art_interrupt_rate_increase[i],
+                 art_decr_start = pars$art_decr_start[i],
+                 cumulative_years = pars$cumulative_years[i],
+                 summary_name = pars$summary_name[i])}
+```
+
+## Read data 
+
+```{r read_data, include=FALSE}
+
+marriage_rates_baseline <- read_csv("THEMBISAv18/results/marriage_rates_baseline.csv")
+marriage_rates_adjusted <- read_csv("THEMBISAv18/results/marriage_rates_adjusted_2025.csv")
+marriage_rates_adjusted_2005 <- read_csv("THEMBISAv18/results/marriage_rates_adjusted_2005.csv")
+
+temp <- list(marriage_rates_baseline, marriage_rates_adjusted, marriage_rates_adjusted_2005)
+names(temp) <- c("unedited", "adj_2025", "adj_2005")
+marriage_rates_combined <- bind_rows(temp, .id = "marriage_scenario")
+
+
+```
+
+
+# Plots
+## Married adults
+``` {r married_adults, echo=TRUE}
+fig1 <- marriage_rates_combined %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("MarriedM17to49", "MarriedF17to49"),
+         test_reduction %in% c(0)) %>% 
+  ggplot(aes(year, mean, group = marriage_scenario, fill = marriage_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = marriage_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = marriage_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11), 
+        strip.text = element_text(size = 11)) +
+  scale_y_continuous("Married adults (millions)", labels =(function(l) {round(l/1e6,1)}), expand = c(0, 0)) +
+  ggtitle("Married adults\nbaseline vs adjusted in 2025 vs 2005") + facet_wrap(~indicator, labeller = as_labeller(c("MarriedF17to49" = "Females (15-49 yrs)", "MarriedM17to49" = "Males (15-49 yrs)"))) + 
+  scale_fill_discrete("Scenario" , labels = c("Adjusted in 2005", "Adjusted in 2025", "Baseline")) + 
+  scale_color_discrete("Scenario" , labels = c("Adjusted in 2005", "Adjusted in 2025", "Baseline"))
+
+```
+
+## Married adults
+``` {r marriage_props, echo=TRUE}
+fig2 <- marriage_rates_combined %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("prop_married_m", "prop_married_f"),
+         test_reduction %in% c(0)) %>%
+  ggplot(aes(year, mean, group = marriage_scenario, fill = marriage_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = marriage_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = marriage_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Married proportion of adults", expand = c(0, 0)) +
+  ggtitle("Married proportion\nbaseline vs adjusted in 2025 vs 2005") + facet_wrap(~indicator, labeller = as_labeller(c("prop_married_f" = "Females (15-49 yrs)", "prop_married_m" = "Males (15-49 yrs)"))) + 
+  scale_fill_discrete("Scenario" , labels = c("Adjusted in 2005", "Adjusted in 2025", "Baseline")) + 
+  scale_color_discrete("Scenario" , labels = c("Adjusted in 2005", "Adjusted in 2025", "Baseline"))
+
+```
+
+# Plots
+## Married adults
+``` {r married_adults_adj, echo=TRUE}
+fig3 <- marriage_rates_adjusted %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("MarriedF17to49", "MarriedM17to49"),
+         test_reduction %in% c(0)) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Married adults (millions)", labels =(function(l) {round(l/1e6,1)}), expand = c(0, 0)) +
+  ggtitle("Married adults - adjusted in 2025")
+
+```
+
+## Married adults
+``` {r marriage_prop_adj, echo=TRUE}
+fig4 <- marriage_rates_adjusted %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("prop_married_m", "prop_married_f"),
+         test_reduction %in% c(0)) %>%
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Married proportion of adults", expand = c(0, 0)) +
+  ggtitle("Married proportion of adults - adjusted in 2025")
+
+```
+
+# Plots
+## Married adults
+``` {r married_adults_adj2, echo=TRUE}
+fig3b <- marriage_rates_adjusted_2005 %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("MarriedF17to49", "MarriedM17to49"),
+         test_reduction %in% c(0)) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Married adults (millions)", labels =(function(l) {round(l/1e6,1)}), expand = c(0, 0)) +
+  ggtitle("Married adults - adjusted in 2005")
+
+```
+
+## Married adults
+``` {r marriage_prop_adj2, echo=TRUE}
+fig4b <- marriage_rates_adjusted_2005 %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("prop_married_m", "prop_married_f"),
+         test_reduction %in% c(0)) %>%
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Married proportion of adults", expand = c(0, 0)) +
+  ggtitle("Married proportion of adults - adjusted in 2005")
+
+```
+
+Combined figs 1 - 4
+
+```{r figs combined}
+
+combo_fig <- ggarrange(fig1, fig2, fig3, fig4, fig3b, fig4b, nrow = 3, ncol = 2)
+ggsave(filename = "comparing_marriage.png", device = "png", width = 25, height = 20, units  = "cm")
+```
+## condom usage
+``` {r condom_usage_baseline, echo=TRUE}
+fig5 <- marriage_rates_baseline %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("CondomUsage"),
+         test_reduction %in% c(0)) %>%
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Protected sex acts (%)", expand = c(0, 0)) +
+  ggtitle("Percentage of protected sex acts - baseline")
+```
+
+## condom usage
+``` {r condom_usage_adj, echo=TRUE}
+fig6 <- marriage_rates_adjusted %>% 
+  filter(scenario == "baseline", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("CondomUsage"),
+         test_reduction %in% c(0)) %>%
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Protected sex acts (%)", expand = c(0, 0)) +
+  ggtitle("Percentage of protected sex acts - adjusted")
+
+```
+
+
+## Incidence - adjusted
+
+```{r inc_adj}
+temp <- list(marriage_rates_baseline, marriage_rates_adjusted, marriage_rates_adjusted_2005)
+names(temp) <- c("unedited", "adj_2025", "adj_2005")
+marriage_rates_combined <- bind_rows(temp, .id = "marriage_scenario")
+
+fig7 <- marriage_rates_combined %>% filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "HIVinc15to49", 
+         year >= 2025,
+         test_reduction %in% c(0)) %>% 
+  ggplot(aes(year, mean, group = marriage_scenario, fill = marriage_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = marriage_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = marriage_scenario), show.legend = T) +
+  geom_hline(aes(yintercept = 0.001), lty = "dotted") +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("HIV incidence", labels =(function(l) {round(l*1e3,1)}), expand = c(0, 0), breaks = seq(0, 1, 0.001)) +
+  ggtitle("HIV incidence\n(per 1000; 15-49 years)")
+
+```
+
+```{r}
+fig8 <- marriage_rates_baseline %>%
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "HIVinc15to49", 
+         test_reduction %in% c(0),
+         year >= 2025) %>% 
+  ggplot(aes(year, mean, group = indicator, fill = indicator)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = indicator), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = indicator), show.legend = F) +
+  geom_hline(aes(yintercept = 0.001), lty = "dotted") +
+  scale_x_continuous("", expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("HIV incidence", labels =(function(l) {round(l*1e3,1)}), expand = c(0, 0), breaks = seq(0, 1, 0.001)) +
+  ggtitle("HIV incidence - baseline \n(per 1000; 15-49 years)") 
+
+combo_fig2 <- ggarrange(fig7, fig8)
+```

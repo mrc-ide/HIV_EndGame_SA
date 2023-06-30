@@ -4974,7 +4974,7 @@ double GetMarriedPropnAtStart(int Sex, int Age)
 		if (ia < MarriageMin[Sex] - 15){ PropnNeverMarried[ia] = 1.0; }
 		else{
 			PropnNeverMarried[ia] = 1.0 / (1.0 + pow((15.0 + ia - MarriageMin[Sex]) *
-				exp(-MarriageConstant[Sex] + MarriageTrend[Sex] * Age), 1.0 / MarriageShape[Sex]));
+				exp(-MarriageConstant[Sex] + MarriageTrend[Sex] * std::min(Age, 1995-1985-iy)), 1.0 / MarriageShape[Sex]));
 		}
 	}
 
@@ -11890,9 +11890,9 @@ void CalcCurrMarriageRates()
 			if (ia < MarriageMin[ig] - 15){ MarriageRate[ia][ig] = 0.0; }
 			else{
 				PropnNeverMarried[ia] = 1.0 / (1.0 + pow((15.0 + ia - MarriageMin[ig]) *
-					exp(-MarriageConstant[ig] - MarriageTrend[ig] * iy), 1.0 / MarriageShape[ig]));
+					exp(-MarriageConstant[ig] - MarriageTrend[ig] * std::min(iy, 1995-1985-ia)), 1.0 / MarriageShape[ig]));
 				PropnNeverMarried[ia + 1] = 1.0 / (1.0 + pow((15.0 + (ia + 1.0) - MarriageMin[ig]) *
-					exp(-MarriageConstant[ig] - MarriageTrend[ig] * iy), 1.0 / MarriageShape[ig]));
+					exp(-MarriageConstant[ig] - MarriageTrend[ig] * std::min(iy, 1995-1985-ia)), 1.0 / MarriageShape[ig]));
 				MarriageRate[ia][ig] = 1.0 - PropnNeverMarried[ia + 1] / PropnNeverMarried[ia];
 			}
 		}
@@ -16677,11 +16677,11 @@ void RunSample()
 	TotBirths.RecordSample("TotBirths.txt");
 	MalesOver15.RecordSample("MalesOver15.txt");
 	FemalesOver15.RecordSample("FemalesOver15.txt");
-	/*MarriedM17to49.RecordSample("MarriedM17to49.txt");
+	MarriedM17to49.RecordSample("MarriedM17to49.txt");
 	MarriedF17to49.RecordSample("MarriedF17to49.txt");
 	MarriedM50.RecordSample("MarriedM50.txt");
 	MarriedF50.RecordSample("MarriedF50.txt");
-	TotInfants.RecordSample("TotInfants.txt");
+	/*TotInfants.RecordSample("TotInfants.txt");
 	Children1to2.RecordSample("Children1to2.txt");
 	Children3to5.RecordSample("Children3to5.txt");
 	Children6to13.RecordSample("Children6to13.txt");

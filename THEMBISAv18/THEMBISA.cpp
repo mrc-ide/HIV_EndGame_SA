@@ -9290,6 +9290,27 @@ void ResultsAtStartOfYr()
 	for(ia=0; ia<15; ia++){
 		Temp1 += TotalART[ia][0] + TotalART[ia][1];}
 	TotalARTunder15.out[CurrSim-1][iy] = Temp1;
+	
+	Temp1 = 0.0;
+	for(ia=1; ia<3; ia++){
+		Temp1 += TotalART[ia][0] + TotalART[ia][1];}
+	TotalART1to2.out[CurrSim-1][iy] = Temp1;
+	
+	Temp1 = 0.0;
+	for(ia=3; ia<6; ia++){
+		Temp1 += TotalART[ia][0] + TotalART[ia][1];}
+	TotalART3to5.out[CurrSim-1][iy] = Temp1;
+	
+	Temp1 = 0.0;
+	for(ia=6; ia<10; ia++){
+		Temp1 += TotalART[ia][0] + TotalART[ia][1];}
+	TotalART6to9.out[CurrSim-1][iy] = Temp1;
+	
+	Temp1 = 0.0;
+	for(ia=10; ia<15; ia++){
+		Temp1 += TotalART[ia][0] + TotalART[ia][1];}
+	TotalART10to14.out[CurrSim-1][iy] = Temp1;
+
 	if (FixedUncertainty == 1 || CalibARTcoverage == 1 || CalibARTtotals == 1){
 		ARTcoverageU15.out[CurrSim - 1][iy] = Temp1 / TotPaedHIV.out[CurrSim - 1][iy];
 		Temp1 = 0.0;
@@ -12880,11 +12901,22 @@ void ResultsAtEndOfYr()
 		TotNewNeed15F.out[CurrSim - 1][iy] = NewElig350[1];
 
 		// Additional ART outputs for Investment Case
+		StartingART0.out[CurrSim - 1][iy] = PaedNewARTbyAge[0];
+		StartingART1.out[CurrSim - 1][iy] = PaedNewARTbyAge[1];
+		StartingART2to4.out[CurrSim - 1][iy] = PaedNewARTbyAge[2] + PaedNewARTbyAge[3] + PaedNewARTbyAge[4];
 		StartingART1to2.out[CurrSim - 1][iy] = PaedNewARTbyAge[1] + PaedNewARTbyAge[2];
 		StartingART3to5.out[CurrSim - 1][iy] = PaedNewARTbyAge[3] + PaedNewARTbyAge[4] + PaedNewARTbyAge[5];
 		StartingART6to13.out[CurrSim - 1][iy] = 0.0;
 		for (ia = 6; ia < 14; ia++){
 			StartingART6to13.out[CurrSim - 1][iy] += PaedNewARTbyAge[ia];
+		}
+		StartingART6to9.out[CurrSim - 1][iy] = 0.0;
+		for (ia = 6; ia < 10; ia++){
+			StartingART6to9.out[CurrSim - 1][iy] += PaedNewARTbyAge[ia];
+		}
+		StartingART10to14.out[CurrSim - 1][iy] = 0.0;
+		for (ia = 10; ia < 15; ia++){
+			StartingART10to14.out[CurrSim - 1][iy] += PaedNewARTbyAge[ia];
 		}
 		TotNewNeed500M.out[CurrSim - 1][iy] = NewElig500[0];
 		TotNewNeed500F.out[CurrSim - 1][iy] = NewElig500[1];
@@ -12900,6 +12932,8 @@ void ResultsAtEndOfYr()
 		}
 		FirstHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) /
 			(NewlyTestedPos[0] + NewlyTestedPos[1]);
+		AdultHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTestedPos[0] + NewlyTestedPos[1]);
+		AdultHIVtestsNeg.out[CurrSim - 1][iy] = (NewlyTestedNeg[0] + NewlyTestedNeg[1]);
         Number1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]);
         Prop1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) / (NewlyTestedNeg[0] + NewlyTestedNeg[1] +
         NewlyTestedPos[0] + NewlyTestedPos[1]);
@@ -16547,11 +16581,16 @@ void RunSample()
 	/*AdultsUnder200.RecordSample("AdultsUnder200.txt");
 	Adults200to349.RecordSample("Adults200to349.txt");
 	Adults350to499.RecordSample("Adults350to499.txt");
-	AdultsOver500.RecordSample("AdultsOver500.txt");
+	AdultsOver500.RecordSample("AdultsOver500.txt");*/
 	StartingART0.RecordSample("StartingART0.txt");
 	StartingART1.RecordSample("StartingART1.txt");
+	StartingART1to2.RecordSample("StartingART1to2.txt");
 	StartingART2to4.RecordSample("StartingART2to4.txt");
+	StartingART3to5.RecordSample("StartingART3to5.txt");
+	StartingART6to13.RecordSample("StartingART6to13.txt");
+	StartingART6to9.RecordSample("StartingART6to9.txt");
 	StartingART5to14.RecordSample("StartingART5to14.txt");
+	StartingART10to14.RecordSample("StartingART10to14.txt");
 	StartingART15to24M.RecordSample("StartingART15to24M.txt");
 	StartingART25to34M.RecordSample("StartingART25to34M.txt");
 	StartingART35to44M.RecordSample("StartingART35to44M.txt");
@@ -16559,7 +16598,9 @@ void RunSample()
 	StartingART15to24F.RecordSample("StartingART15to24F.txt");
 	StartingART25to34F.RecordSample("StartingART25to34F.txt");
 	StartingART35to44F.RecordSample("StartingART35to44F.txt");
-	StartingART45F.RecordSample("StartingART45F.txt");*/
+	StartingART45F.RecordSample("StartingART45F.txt");
+	StartingART_M15.RecordSample("StartingART_M15.txt");
+	StartingART_F15.RecordSample("StartingART_F15.txt");
 	StartingARTtot.RecordSample("StartingARTtot.txt");
 	ARTcoverageAdult.RecordSample("ARTcoverageAdult.txt");
 	ARTcoverageDiag.RecordSample("ARTcoverageDiag.txt");
@@ -16572,6 +16613,13 @@ void RunSample()
 	NewARTover500.RecordSample("NewARTover500.txt");*/
 	TotalART15F.RecordSample("TotalART15F.txt");
 	TotalART15M.RecordSample("TotalART15M.txt");
+	TotalART15F2L.RecordSample("TotalART15F2L.txt");
+	TotalART15M2L.RecordSample("TotalART15M2L.txt");
+	TotalART1to2.RecordSample("TotalART1to2.txt");
+	TotalART3to5.RecordSample("TotalART3to5.txt");
+	TotalART6to9.RecordSample("TotalART6to9.txt");
+	TotalART10to14.RecordSample("TotalART10to14.txt");
+
 	/*TotalARTunder15.RecordSample("TotalARTunder15.txt");
 	TotUnmet15F.RecordSample("TotUnmet15F.txt");
 	TotUnmet15M.RecordSample("TotUnmet15M.txt");
@@ -16590,6 +16638,7 @@ void RunSample()
 	AgeDbnOnART_F.RecordSample("AgeDbnOnART_F.txt");*/
 	AdultARTinterrupters.RecordSample("AdultARTinterrupters.txt");
 	AdultInterruptPropn.RecordSample("AdultInterruptPropn.txt");
+	
 
 	// Write other outputs to text files
 	TotPop.RecordSample("TotPop.txt");
@@ -16620,6 +16669,8 @@ void RunSample()
 	// FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
     Number1stHIVtestsPos.RecordSample("Number1stHIVtestsPos.txt");
     Prop1stHIVtestsPos.RecordSample("Prop1stHIVtestsPos.txt");
+	AdultHIVtestsPos.RecordSample("AdultHIVtestsPos.txt");
+	AdultHIVtestsNeg.RecordSample("AdultHIVtestsNeg.txt");
 	/*TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
 	TotSTestTaxi.RecordSample("TotSTestTaxi.txt");
 	TotSTestANC.RecordSample("TotSTestANC.txt");
@@ -16693,7 +16744,7 @@ void RunSample()
 	StartingART6to13.RecordSample("StartingART6to13.txt");
 	TotLateUnder15.RecordSample("TotLateUnder15.txt");
 	TotEarlyInfants.RecordSample("TotEarlyInfants.txt");
-	TotEarly1to4.RecordSample("TotEarly1to4.txt");
+	TotEarly1to4.RecordSample("TotEarly1to4.txt");*/
 	PreARTunder200M.RecordSample("PreARTunder200M.txt");
 	PreART200to349M.RecordSample("PreART200to349M.txt");
 	PreART350to499M.RecordSample("PreART350to499M.txt");
@@ -16702,7 +16753,7 @@ void RunSample()
 	PreART200to349F.RecordSample("PreART200to349F.txt");
 	PreART350to499F.RecordSample("PreART350to499F.txt");
 	PreARTover500F.RecordSample("PreARTover500F.txt");
-	DiscontinuedART_M.RecordSample("DiscontinuedART_M.txt");
+	/*DiscontinuedART_M.RecordSample("DiscontinuedART_M.txt");
 	DiscontinuedART_F.RecordSample("DiscontinuedART_F.txt");
 	TotNewNeed500M.RecordSample("TotNewNeed500M.txt");
 	TotNewNeed500F.RecordSample("TotNewNeed500F.txt");*/
@@ -16734,8 +16785,8 @@ void RunSample()
 	AdolescOnPrEP.RecordSample("AdolescOnPrEP.txt");
 	FSWonART.RecordSample("FSWonART.txt");*/
 	//DiscordantARTelig.RecordSample("DiscordantARTelig.txt");
-	//DiscordantPrEPelig.RecordSample("DiscordantPrEPelig.txt");
-	/*OnARTover500.RecordSample("OnARTover500.txt");
+	//DiscordantPrEPelig.RecordSample("DiscordantPrEPelig.txt");*/
+	OnARTover500.RecordSample("OnARTover500.txt");
 	OnART350to499.RecordSample("OnART350to499.txt");
 	OnART200to349.RecordSample("OnART200to349.txt");
 	OnARTunder200.RecordSample("OnARTunder200.txt");
@@ -16743,11 +16794,11 @@ void RunSample()
 	DiscART350to499.RecordSample("DiscART350to499.txt");
 	DiscART200to349.RecordSample("DiscART200to349.txt");
 	DiscARTunder200.RecordSample("DiscARTunder200.txt");
-	AdolRegTests.RecordSample("AdolRegTests.txt");
+	/*AdolRegTests.RecordSample("AdolRegTests.txt");
 	ChildrenOnExtNVP.RecordSample("ChildrenOnExtNVP.txt");
-	TotBirthDiagnosed.RecordSample("TotBirthDiagnosed.txt");
+	TotBirthDiagnosed.RecordSample("TotBirthDiagnosed.txt");*/
 
-	GetSummaryOutputs("SummaryOutput.txt");
+	/*GetSummaryOutputs("SummaryOutput.txt");
 	GetAddedOutputs("AddnalOutput.txt");
 	GetOutputsByAge("OutputByAge.txt");*/
 }

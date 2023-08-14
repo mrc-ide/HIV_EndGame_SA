@@ -27,7 +27,16 @@ run_on_cluster <- function(pitc_reduction_years,
                     "SWsexActs", "TotProtSexActs", "SWsexActsProt", "HIVinc15to49", 
                     "Prev15to49", "ARTcoverageDiagM", "ARTcoverageDiagF", "MalesOver15", 
                     "FemalesOver15", "TotHIV15", "ARTcoverageAdult", 
-                    "VLsuppressed15", "VLunsuppressed15")
+                    "VLsuppressed15", "VLunsuppressed15", "TotalART15F", "TotalART15M",
+                    "TotalART15M2L", "TotalART15F2L", "AdultHIVtestsPos", "AdultHIVtestsNeg",
+                    "TotANCtests", "NewDiagnosesPregnancy", "RediagnosesPregnancy",
+                    "PreARTunder200M", "PreART200to349M", "PreART350to499M", "PreARTover500M",
+                    "PreARTunder200F", "PreART200to349F", "PreART350to499F", "PreARTover500F",
+                    "OnARTover500", "OnART350to499", "OnART200to349", "OnARTunder200",
+                    "DiscARTover500", "DiscART350to499", "DiscART200to349", "DiscARTunder200", 
+                    "StartingART0", "StartingART1","StartingART1to2", "StartingART3to5", 
+                    "StartingART6to9", "StartingART10to14", "TotalART1to2", "TotalART3to5", 
+                    "TotalART6to9", "TotalART10to14", "StartingART_M15", "StartingART_F15")
   
   # create empty folder for results
   
@@ -148,6 +157,46 @@ run_on_cluster <- function(pitc_reduction_years,
     mutate(TotalAIDSdeathsadult = AIDSdeathsAdultF + AIDSdeathsAdultM) %>%
     mutate(TestsPerAdult = TotalHIVtests / (MalesOver15 + FemalesOver15))%>%
     mutate(AIDS_Mortality = TotalAIDSdeathsadult / (TotHIV15)) %>% 
+    mutate(TotalAdultsOnART = TotalART15F + TotalART15M) %>% 
+    mutate(StartingART_15 = StartingART_M15 + StartingART_F15) %>%
+    mutate(Total2LAdultsOnART= TotalART15M2L + TotalART15F2L) %>% 
+    mutate(Adult_1st_line_FU = TotalAdultsOnART - Total2LAdultsOnART - StartingART_15) %>% 
+    mutate(ANCtestPos = RediagnosesPregnancy + NewDiagnosesPregnancy) %>% 
+    mutate(ANCtestNeg = TotANCtests - ANCtestPos) %>% 
+    mutate(FollowUpART1to2 = TotalART1to2 - StartingART1to2) %>% 
+    mutate(FollowUpART3to5 = TotalART3to5 - StartingART3to5) %>% 
+    mutate(FollowUpART6to9 = TotalART6to9 - StartingART6to9) %>% 
+    mutate(FollowUpART10to14 = TotalART10to14 - StartingART10to14) %>% 
+    pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
+  
+  df <- df %>%
+    pivot_wider(names_from = indicator) %>%
+    mutate(cost_art_adults_1st_line_1st_yr = StartingART_15 * 272.032122700937) %>% 
+    mutate(cost_art_adults_1st_line_fu = Adult_1st_line_FU * 170.751611736494) %>% 
+    mutate(cost_art_adults_2nd_line = Total2LAdultsOnART * 299.8747935152) %>% 
+    mutate(cost_art_neonates = StartingART0 * 91.2391745089155) %>% 
+    mutate(cost_art_kids_under_1 = StartingART1 * 285.916170708839) %>% 
+    mutate(cost_art_kids_1to2 = StartingART1to2 * 381.539892940659) %>% 
+    mutate(cost_art_kids_1to2_fu = FollowUpART1to2 * 311.447129366554) %>% 
+    mutate(cost_art_kids_3to5 = StartingART3to5 * 441.97810423809) %>% 
+    mutate(cost_art_kids_3to5_fu = FollowUpART3to5 * 371.885340663985) %>% 
+    mutate(cost_art_kids_6to9 = StartingART6to9 * 327.476567703383) %>% 
+    mutate(cost_art_kids_6to9_fu = FollowUpART6to9 * 257.383804129278) %>% 
+    mutate(cost_art_kids_10to14 = StartingART10to14 * 263.072779455781) %>% 
+    mutate(cost_art_kids_10to14_fu = FollowUpART10to14 * 192.980015881676) %>%
+    mutate(cost_general_hts_neg = AdultHIVtestsNeg * 3.62338764573665) %>% 
+    mutate(cost_general_hts_pos = AdultHIVtestsPos * 5.19545019977912) %>% 
+    mutate(cost_anc_test_neg = ANCtestNeg * 3.16302881313226) %>% 
+    mutate(cost_anc_test_pos = ANCtestPos * 4.71561496557645) %>% 
+    mutate(cost_palliative_care = TotalAIDSdeathsadult * 65.4212024937027) %>% 
+    mutate(cost_inpatient_art_under200 = (OnARTunder200) * 143.873528311221) %>%
+    mutate(cost_inpatient_art_200to349 = (OnART200to349) * 114.842307330179) %>%
+    mutate(cost_inpatient_art_350to499 = (OnART350to499) * 58.9468211552511) %>%
+    mutate(cost_inpatient_art_over500 = (OnARTover500) * 52.3534341243446) %>%
+    mutate(cost_inpatient_pre_art_under200 = (PreARTunder200M + PreARTunder200F + DiscARTunder200) * 117.209722401119) %>%
+    mutate(cost_inpatient_pre_art_200to349 = (PreART200to349M + PreART200to349F + DiscART200to349) * 68.4427860509122) %>%
+    mutate(cost_inpatient_pre_art_350to499 = (PreART350to499M + PreART350to499F + DiscART350to499) * 55.9435601208129) %>%
+    mutate(cost_inpatient_pre_art_over500 = (PreARTover500M + PreARTover500F + DiscARTover500) * 27.1998757594983) %>%
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
   
   

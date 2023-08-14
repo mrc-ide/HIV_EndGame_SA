@@ -5,12 +5,14 @@ library(readr)
 library(ggplot2)
 library(gridExtra)
 
+setwd("~/Documents/HIV_EndGame_SA/orderly/thembisa_orderly/src/thembisa")
 source("R/cluster_function_orderly.R")
-system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa.exe -O2")
-system("./thembisa.exe")
+setwd("~/Documents/HIV_EndGame_SA/THEMBISAv18")
+system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
+system("./thembisa")
 
-run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5), 
-               pitc_reduction_percentage = seq(0, 100, 5),
+run_on_cluster(pitc_reduction_years = 2025, 
+               pitc_reduction_percentage = c(100),
                condom_usage_reduction = FALSE,
                condom_usage_decrease = 0,
                condom_decr_start = 2025,
@@ -24,10 +26,277 @@ run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5),
                art_interrupt_rate_increase = 0,
                art_decr_start = 2025,
                cumulative_years = 50,
-               summary_name = "test_reduction_only_summary" 
+               summary_name = "plwh_on_art_red_100" 
 )
 
-test_reduction_only <- read_csv("THEMBISAv18/results/test_reduction_only_summary.csv")
+plwh_on_art_25_htc_red <- read_csv("results/plwh_on_art_25_htc_red.csv")
+plwh_on_art_0_25_100_htc_red <- read_csv("results/plwh_on_art_0_25_100_htc_red.csv")
+plwh_on_art_0_25_100_htc_red <- bind_rows(plwh_on_art_0_25_100_htc_red, plwh_on_art_25_htc_red)
+write_csv(plwh_on_art_0_25_100_htc_red, "THEMBISAv18/results/plwh_on_art.csv")
+
+plwh_cumulative <- read_csv("results/cumulative_plwh_on_art_red.csv")
+plwh_summary <- read_csv("results/plwh_on_art_red.csv")
+
+setwd("~/Documents/HIV_EndGame_SA")
+write_csv(plwh_summary,"results/cost_analysis.csv")
+setwd("~/Documents/HIV_EndGame_SA/THEMBISAv18")
+
+costs_only <- plwh_summary %>% 
+  filter(year >= 2025, 
+         year <= 2100, 
+         scenario == "intervention", 
+         grepl("cost_", indicator)) %>% 
+  select(year, indicator, test_reduction, mean, lower_CI, upper_CI)
+
+costs_only <- costs_only %>% 
+  mutate(indicator = sub("^cost_", "", costs_only$indicator))%>% 
+  rename("cost" = "indicator")
+
+select_cost_indicators <- plwh_summary %>% 
+  filter(year >= 2025,
+         year <= 2100, 
+         scenario == "intervention") %>% 
+  select(year, indicator, test_reduction, mean) %>% 
+  filter(indicator %in% c("ANCtestNeg", "ANCtestPos", "StartingART_15",
+                          "Adult_1st_line_FU", "Total2LAdultsOnART",
+                          "StartingART10to14", "FollowUpART10to14", 
+                          "StartingART1to2", "FollowUpART1to2", 
+                          "StartingART3to5", "FollowUpART3to5",
+                          "StartingART6to9", "FollowUpART6to9",
+                          "StartingART1", "StartingART0", "AdultHIVtestsNeg",
+                          "AdultHIVtestsPos", "OnART200to349", "OnART350to499",
+                          "OnARTover500", "OnARTunder200", 
+                          "PreART200to349M", "PreART200to349F", "DiscART200to349",
+                          "PreART350to499M", "PreART350to499F", "DiscART350to499",
+                          "PreARTover500M", "PreARTover500F", "DiscARTover500",
+                          "PreARTunder200M","PreARTunder200F", "DiscARTunder200",
+                          "TotalAIDSdeathsadult"
+                          )) %>% 
+  pivot_wider(names_from = indicator , values_from = mean) %>%
+  mutate(PreART200to349 = PreART200to349M + PreART200to349F + DiscART200to349,
+         PreART350to499 = PreART350to499M + PreART350to499F + DiscART350to499,
+         PreARTover500 = PreARTover500M + PreARTover500F + DiscARTover500,
+         PreARTunder200 = PreARTunder200M + PreARTunder200F + DiscARTunder200) %>% 
+  select(-c(PreART200to349M, PreART200to349F, DiscART200to349, 
+            PreART350to499M, PreART350to499F, DiscART350to499,
+            PreARTover500M, PreARTover500F, DiscARTover500,
+            PreARTunder200M, PreARTunder200F, DiscARTunder200)) %>% 
+  pivot_longer(-(year:test_reduction), names_to = "indicator", values_to = "mean")
+  
+select_cost_indicators <- select_cost_indicators %>% 
+  mutate(indicator = factor(indicator, 
+                            levels = c("ANCtestNeg", "ANCtestPos", "StartingART_15",
+                                       "Adult_1st_line_FU", "Total2LAdultsOnART",
+                                       "StartingART10to14", "FollowUpART10to14", 
+                                       "StartingART1to2", "FollowUpART1to2", 
+                                       "StartingART3to5", "FollowUpART3to5",
+                                       "StartingART6to9", "FollowUpART6to9",
+                                       "StartingART1", "StartingART0", "AdultHIVtestsNeg",
+                                       "AdultHIVtestsPos", "OnART200to349", "OnART350to499",
+                                       "OnARTover500", "OnARTunder200", 
+                                       "PreART200to349","PreART350to499",
+                                       "PreARTover500", "PreARTunder200",
+                                       "TotalAIDSdeathsadult"),
+                            labels = c("ANCtestNeg", "ANCtestPos", "StartingART_15",
+                                       "Adult_1st_line_FU", "Total2LAdultsOnART",
+                                       "StartingART10to14", "FollowUpART10to14", 
+                                       "StartingART1to2", "FollowUpART1to2", 
+                                       "StartingART3to5", "FollowUpART3to5",
+                                       "StartingART6to9", "FollowUpART6to9",
+                                       "StartingART1", "StartingART0", "AdultHIVtestsNeg",
+                                       "AdultHIVtestsPos", "OnART200to349", "OnART350to499",
+                                       "OnARTover500", "OnARTunder200", 
+                                       "PreART200to349","PreART350to499",
+                                       "PreARTover500","PreARTunder200", 
+                                       "TotalAIDSdeathsadult"))) %>% 
+  arrange(indicator)
+costs_only <- costs_only %>% mutate(cost = as.factor(cost)) %>% arrange(cost)
+select_cost_indicators <- select_cost_indicators %>% rename(mean_value = mean)
+costs_only <- costs_only %>% select(-c(year, test_reduction, lower_CI, upper_CI)) %>% 
+  rename(mean_cost = mean)
+combined_units_costs <- cbind(select_cost_indicators, costs_only)
+
+write_csv(combined_units_costs, "results/hts_reduction_costs.csv")
+install.packages("writexl")
+library(writexl)
+write_xlsx(combined_units_costs, "results/hts_reduction_costs.xlsx")
+
+plwh_summary %>% 
+  arrange(test_reduction) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "TotalAdultsOnART",
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_blank(), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Adults on ART (millions)", labels =(function(l) {paste(round(l/1e6,1), "million")}),expand = c(0, 0)) +
+  scale_fill_manual(name = "General\nHTS\nreduction", breaks = c(0, 25, 50, 75, 100), values = c(`0` = "black", `25` = "#377eb8", `50` = "#4daf4a", `75` = "#984ea3",  `100` = "#ff7f00"), 
+                    labels= c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill")) + 
+  ggtitle("Adults on ART\n(15+ years)")
+ggsave("unaids_figures/art_need.png", device = "png", units = "cm", height = 17, width = 20)
+
+
+plwh_summary %>% 
+  arrange(test_reduction) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "StartingART_15",
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_blank(), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Adults starting ART (thousands)", labels =(function(l) {paste(round(l/1e3,1), "thousand")}),expand = c(0, 0)) +
+  scale_fill_manual(name = "General\nHTS\nreduction", breaks = c(0, 25, 50, 75, 100), values = c(`0` = "black", `25` = "#377eb8", `50` = "#4daf4a", `75` = "#984ea3",  `100` = "#ff7f00"), 
+                    labels= c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill")) + 
+  ggtitle("Adults starting ART\n(15+ years)")
+ggsave("unaids_figures/starting_art_.png", device = "png", units = "cm", height = 17, width = 20)
+
+
+
+plwh_on_art_0_25_100_htc_red %>% filter(indicator == "TotalAdultsOnART", 
+                                    year %in% c(2075), 
+                                    scenario == "intervention", 
+                                    test_reduction%in% c(0, 25, 100),
+                                    pitc_reduction_year == 2025) %>%
+  mutate(mean = round(mean/10**6,2), 
+         lower_CI = round(lower_CI/10**6,2), 
+         upper_CI = round(upper_CI/10**6,2)) %>% 
+  select(year, test_reduction, mean, lower_CI, upper_CI) %>% 
+  arrange(test_reduction)
+
+plwh_on_art_0_25_100_htc_red %>% arrange(test_reduction) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "TotalAdultsOnART",
+         year >= 2020, 
+         test_reduction %in% c(0)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = F) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 16), 
+        axis.title.y = element_blank(), 
+        axis.title.x = element_text(size = 16),
+        legend.text = element_text(size = 16), 
+        plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Adults on ART (millions)", labels =(function(l) {paste(round(l/1e6,1), "million")}),expand = c(0, 0)) +
+  scale_fill_manual(name = "General\nHTS\nreduction", breaks = c(0, 25, 100), values = c(`0` = "black", `25` = "red", `100` = "#377eb8"), 
+                    labels= c("None", "25%", "100%"), aesthetics = c("colour", "fill")) + 
+  ggtitle("Adults on ART\n(15+ years)")
+ggsave("unaids_figures/baseline_art_need.png", device = "png", units = "cm", height = 13, width = 15)
+
+plwh_summary %>% 
+  arrange(test_reduction) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator %in% c("cost_art_adults_1st_line_1st_yr", "cost_art_adults_1st_line_fu", 
+                          "cost_art_adults_2nd_line"),
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_blank(), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Adults starting ART (thousands)", labels =(function(l) {paste(round(l/1e3,1), "thousand")}),expand = c(0, 0)) +
+  scale_fill_manual(name = "General\nHTS\nreduction", breaks = c(0, 25, 50, 75, 100), values = c(`0` = "black", `25` = "#377eb8", `50` = "#4daf4a", `75` = "#984ea3",  `100` = "#ff7f00"), 
+                    labels= c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill")) + 
+  ggtitle("Adults starting ART\n(15+ years)") +
+  facet_wrap(facets = "indicator", scales = "free_y")
+ggsave("unaids_figures/starting_art_.png", device = "png", units = "cm", height = 17, width = 20)
+
+
+
+
+
+plwh_on_art_0_25_100_htc_red %>% arrange(test_reduction) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "TotalAdultsOnART",
+         year >= 2020, 
+         test_reduction %in% c(0, 25)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = F) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 16), 
+        axis.title.y = element_blank(), 
+        axis.title.x = element_text(size = 16),
+        legend.text = element_text(size = 16), 
+        plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Adults on ART (millions)", labels =(function(l) {paste(round(l/1e6,1), "million")}),expand = c(0, 0)) +
+  scale_fill_manual(name = "General\nHTS\nreduction", breaks = c(0, 25, 100), values = c(`0` = "black", `25` = "#377eb8", `100` = "#ff7f00"), 
+                    labels= c("None", "25%", "100%"), aesthetics = c("colour", "fill")) + 
+  ggtitle("Adults on ART\n(15+ years)")
+ggsave("unaids_figures/art_numbers25red.png", device = "png", units = "cm", height = 13, width = 15)
+
+plwh_on_art_0_25_100_htc_red %>% arrange(test_reduction) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "TotalAdultsOnART",
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 75, 100)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Adults on ART (millions)", labels =(function(l) {paste(round(l/1e6,1), "million")}),expand = c(0, 0)) +
+  scale_fill_manual(name = "General\nHTS\nreduction", 
+                    breaks = c("baseline", "0", "25", "50", "75", "100"), values = c( "0" ="black", "25" = "#e41a1c","50" =  "#377eb8", "75" = "#4daf4a","100" =  "#984ea3"), labels= c("Status quo", "None", "25%", "50%", "75%", "100%"), 
+                    aesthetics = c("colour", "fill")) +
+  ggtitle("Adults on ART\n(15+ years)")
+ggsave("unaids_figures/art_numbers100red.png", device = "png", units = "cm", height = 13, width = 15)
+
+
+
 
 #### figure 1 single plots ####
 

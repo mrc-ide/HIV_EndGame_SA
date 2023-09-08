@@ -14,7 +14,7 @@ run_on_cluster <- function(pitc_reduction_years,
                            art_coverage_decrease,
                            art_interrupt_rate_increase,
                            art_decr_start,
-                           cumulative_years,
+                           cumulative_years_list,
                            summary_name){
 
  
@@ -23,11 +23,7 @@ run_on_cluster <- function(pitc_reduction_years,
   # names of all the outputs of interest
   
   output_names <- c("TotalHIVtests", "NewAdultHIV",
-                    "AIDSdeathsAdultM", "AIDSdeathsAdultF", "TotSexActs",
-                    "SWsexActs", "TotProtSexActs", "SWsexActsProt", "HIVinc15to49", 
-                    "Prev15to49", "ARTcoverageDiagM", "ARTcoverageDiagF", "MalesOver15", 
-                    "FemalesOver15", "TotHIV15", "ARTcoverageAdult", 
-                    "VLsuppressed15", "VLunsuppressed15", "TotalART15F", "TotalART15M",
+                    "AIDSdeathsAdultM", "AIDSdeathsAdultF", "TotalART15F", "TotalART15M",
                     "TotalART15M2L", "TotalART15F2L", "AdultHIVtestsPos", "AdultHIVtestsNeg",
                     "TotANCtests", "NewDiagnosesPregnancy", "RediagnosesPregnancy",
                     "PreARTunder200M", "PreART200to349M", "PreART350to499M", "PreARTover500M",
@@ -70,7 +66,7 @@ run_on_cluster <- function(pitc_reduction_years,
   art_coverage_decrease <- art_coverage_decrease # switch for increasing art interruption rates, thereby reducing ART retention
   art_interrupt_rate_increase <- art_interrupt_rate_increase/100 # proportion of previous year's rate that art interruption rate increases
   art_decr_years <- seq(art_decr_start, art_decr_start+10, 1) # years for which art interruption rate decreases
-  cumulative_years <- cumulative_years # number of years over which cumulative values are calculated
+  cumulative_years_list <- cumulative_years_list # number of years over which cumulative values are calculated
   if (art_coverage_increase) {
     art_maintenance_years <- seq(art_incr_start+11, 2100, 1)
   }
@@ -167,6 +163,10 @@ run_on_cluster <- function(pitc_reduction_years,
     mutate(FollowUpART3to5 = TotalART3to5 - StartingART3to5) %>% 
     mutate(FollowUpART6to9 = TotalART6to9 - StartingART6to9) %>% 
     mutate(FollowUpART10to14 = TotalART10to14 - StartingART10to14) %>% 
+    select(-c(AIDSdeathsAdultF, AIDSdeathsAdultM, TotalART15F, TotalART15M,
+              StartingART_M15, StartingART_F15, TotalART15M2L, TotalART15F2L,
+              RediagnosesPregnancy, NewDiagnosesPregnancy, TotANCtests, TotalART1to2,
+              TotalART3to5, TotalART6to9, TotalART10to14)) %>% 
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
   
   df <- df %>%
@@ -197,25 +197,123 @@ run_on_cluster <- function(pitc_reduction_years,
     mutate(cost_inpatient_pre_art_200to349 = (PreART200to349M + PreART200to349F + DiscART200to349) * 68.4427860509122) %>%
     mutate(cost_inpatient_pre_art_350to499 = (PreART350to499M + PreART350to499F + DiscART350to499) * 55.9435601208129) %>%
     mutate(cost_inpatient_pre_art_over500 = (PreARTover500M + PreARTover500F + DiscARTover500) * 27.1998757594983) %>%
+    select(-c(Adult_1st_line_FU,Total2LAdultsOnART,StartingART0,StartingART1to2,
+              StartingART3to5, FollowUpART3to5, StartingART6to9, FollowUpART6to9,
+              StartingART10to14, FollowUpART10to14, AdultHIVtestsNeg, AdultHIVtestsPos,
+              ANCtestNeg, ANCtestPos, OnARTunder200, OnART200to349, OnART350to499, OnARTover500,
+              PreARTunder200M, PreARTunder200F, DiscARTunder200, PreART200to349M, PreART200to349F,
+              DiscART200to349, PreART350to499M, PreART350to499F, DiscART350to499, PreARTover500M,
+              PreARTover500F, DiscARTover500)) %>% 
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
   
-  
-
-  # calculate condom usage for total adults and fsw-client only
   df <- df %>%
     pivot_wider(names_from = indicator) %>%
-    mutate(CondomUsage = ((TotProtSexActs/TotSexActs)*100)) %>%
-    mutate(FSWCondomUsage = ((SWsexActsProt/SWsexActs)*100)) %>%
+    group_by(parameter_set) %>% 
+    mutate(cost_total_testing = cost_general_hts_neg + 
+                                   cost_general_hts_pos + 
+                                   cost_anc_test_neg + 
+                                   cost_anc_test_pos) %>% 
+    mutate(cost_total_treatment = cost_art_adults_1st_line_1st_yr +
+                                     cost_art_adults_1st_line_fu +
+                                     cost_art_adults_2nd_line + 
+                                     cost_art_neonates + 
+                                     cost_art_kids_under_1 + 
+                                     cost_art_kids_1to2 + 
+                                     cost_art_kids_1to2_fu +
+                                     cost_art_kids_3to5 +
+                                     cost_art_kids_3to5_fu + 
+                                     cost_art_kids_6to9 + 
+                                     cost_art_kids_6to9_fu + 
+                                     cost_art_kids_10to14 + 
+                                     cost_art_kids_10to14_fu) %>% 
+    mutate(cost_total_care = cost_palliative_care + 
+                                      cost_inpatient_art_under200 + 
+                                      cost_inpatient_art_200to349 + 
+                                      cost_inpatient_art_350to499 + 
+                                      cost_inpatient_art_over500 +
+                                      cost_inpatient_pre_art_under200 + 
+                                      cost_inpatient_pre_art_200to349 + 
+                                      cost_inpatient_pre_art_350to499 +
+                                      cost_inpatient_pre_art_over500) %>% 
+    mutate(cost_total = cost_total_testing + cost_total_treatment +
+             cost_total_care) %>% 
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
+  
+  # calculate condom usage for total adults and fsw-client only
+  # df <- df %>%
+  #   pivot_wider(names_from = indicator) %>%
+  #   mutate(CondomUsage = ((TotProtSexActs/TotSexActs)*100)) %>%
+  #   mutate(FSWCondomUsage = ((SWsexActsProt/SWsexActs)*100)) %>%
+  #   pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
 
   df$test_reduction <- 100 - as.integer(df$test_reduction)
 
   # make test_reduction a factor
   df$test_reduction <- as.factor(df$test_reduction)
-
+  
+  # add discounting
+  
+  df_3pct_disc <- df %>%
+    pivot_wider(names_from = year)
+  
+  for (i in 46:121){
+    df_3pct_disc[,i] <- df_3pct_disc[,i]*(1-0.03)^(as.numeric(colnames(df_3pct_disc[,i]))- 2025)
+  }
+  
+  df_3pct_disc <- df_3pct_disc %>% 
+    pivot_longer(-(pitc_reduction_year:indicator), names_to = "year")
+  
+  df_3pct_disc <- df_3pct_disc %>% 
+    mutate(year = as.numeric(year)) %>% 
+    relocate(year, .before = parameter_set)
+  
+  df_6pct_disc <- df %>%
+    pivot_wider(names_from = year)
+  
+  for (i in 46:121){
+    df_6pct_disc[,i] <- df_6pct_disc[,i]*(1-0.06)^(as.numeric(colnames(df_6pct_disc[,i]))- 2025)
+  }
+  
+  df_6pct_disc <- df_6pct_disc %>% 
+    pivot_longer(-(pitc_reduction_year:indicator), names_to = "year")
+  
+  df_6pct_disc <- df_6pct_disc %>% 
+    mutate(year = as.numeric(year)) %>% 
+    relocate(year, .before = parameter_set)
+  
+  df_825pct_disc <- df %>%
+    pivot_wider(names_from = year)
+  
+  for (i in 46:121){
+    df_825pct_disc[,i] <- df_825pct_disc[,i]*(1-0.0825)^(as.numeric(colnames(df_825pct_disc[,i]))- 2025)
+  }
+  
+  df_825pct_disc <- df_825pct_disc %>% 
+    pivot_longer(-(pitc_reduction_year:indicator), names_to = "year")
+  
+  df_825pct_disc <- df_825pct_disc %>% 
+    mutate(year = as.numeric(year)) %>% 
+    relocate(year, .before = parameter_set)
+  
+  df$discount <- "undiscounted"
+  df_3pct_disc$discount <- "3%"
+  df_6pct_disc$discount <- "6%"
+  df_825pct_disc$discount <- "8.25%"
+  
+  df <- bind_rows(df, df_3pct_disc, df_6pct_disc, df_825pct_disc)
+  
+  df <- df %>% 
+    relocate(discount, .before =  value)
+  
+  df <- df %>% 
+    pivot_wider(names_from = scenario) %>%
+    mutate(annual_percent_change = ((intervention - baseline)/baseline)*100) %>%
+    mutate(annual_absolute_dif = intervention - baseline) %>% 
+    pivot_longer(-(pitc_reduction_year:discount), names_to = "scenario")
+    
   # saving a summary csv of all outputs
   summary <- as.data.frame(df) %>% 
-    dplyr::group_by(year, scenario, indicator, pitc_reduction_year, test_reduction) %>%
+    dplyr::group_by(year, scenario, indicator, pitc_reduction_year, test_reduction, discount) %>%
     dplyr::summarise(mean = mean(value), upper_CI = quantile(value, probs = 0.975, na.rm = TRUE),
               lower_CI = quantile(value, probs = 0.025, na.rm = TRUE))  %>% mutate(future_variability = "test_reduction_only", future_value = 0)
   if (condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase & !art_coverage_decrease){
@@ -235,52 +333,66 @@ run_on_cluster <- function(pitc_reduction_years,
     summary$future_value <- art_interrupt_rate_increase
   }
   
-
   write_csv(summary, paste0("results/", summary_name, ".csv"))
-
-  # cumulative values
-  cumulative_years <- cumulative_years
-  cumulative_values <- calc_all_cumulatives(as.numeric(pitc_reduction_years), cumulative_years, df = df)
-
-  # calculate elimination years and add to cumulative values
   
-  cumulative_values <- add_elimination_year_to_cumulative(cumulative_values, df)
+  cumulative_summaries <- data.frame()
   
-  # calculate cumulative percent change from baseline
+  for (i in 1:length(cumulative_years_list)){
 
-  cumulative_values <- cumulative_values %>%
-    pivot_wider(names_from = scenario, values_from = cumulative) %>%
-    mutate(percent_change = ((intervention - baseline)/baseline)*100) %>%
-    mutate(absolute_dif = intervention - baseline) %>%
-    pivot_longer(-(indicator:test_reduction), names_to = "scenario")
-
-  # Plotting cumulative HIV infections over 40 year
-  cumulative_summary <- cumulative_values %>%
-    group_by(indicator, pitc_reduction_year, test_reduction, scenario) %>%
-    summarise(mean = mean(value), median = median(value), upper_CI = quantile(value, probs = 0.975, na.rm = TRUE),
-              lower_CI = quantile(value, probs = 0.025, na.rm = TRUE))
+    # cumulative values
+    cumulative_years <- cumulative_years_list[i]
+    cumulative_values <- calc_all_cumulatives(as.numeric(pitc_reduction_years), 
+                                              cumulative_years, df = df)
   
-  cumulative_summary <- cumulative_summary %>% mutate(future_variability = "test_reduction_only", future_value = 0)
-  if (condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase & !art_coverage_decrease){
-    cumulative_summary$future_variability <- "condom_reduction"
-    cumulative_summary$future_value <- condom_usage_decrease
-  }
-  if (condom_usage_promotion & !condom_usage_reduction & !art_coverage_increase & !art_coverage_decrease){
-    cumulative_summary$future_variability <- "condom_promotion"
-    cumulative_summary$future_value <- condom_usage_increase
-  }
-  if (art_coverage_increase & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_decrease){
-    cumulative_summary$future_variability <-  "art_improvement"
-    cumulative_summary$future_value <- art_interrupt_rate_decrease
-  }
-  if (art_coverage_decrease & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase){
-    cumulative_summary$future_variability <- "art_deterioration"
-    cumulative_summary$future_value <- art_interrupt_rate_increase
-  }
+    # calculate elimination years and add to cumulative values
+    
+    cumulative_values <- add_elimination_year_to_cumulative(cumulative_values, df)
+    
+    # add cumulative year column
+    
+    cumulative_values$cumulative_years <- cumulative_years
+    
+    cumulative_values <- cumulative_values %>% 
+      relocate(cumulative_years, .before = scenario)
+    
+    # calculate cumulative percent change from baseline
   
-
-  write_csv(cumulative_summary, paste0("results/cumulative_", summary_name, ".csv"))
+    cumulative_values <- cumulative_values %>%
+      pivot_wider(names_from = scenario, values_from = cumulative) %>%
+      mutate(percent_change = ((intervention - baseline)/baseline)*100) %>%
+      mutate(absolute_dif = intervention - baseline) %>% 
+      pivot_longer(-(indicator:discount), names_to = "scenario")
+    
+  
+    # Plotting cumulative HIV infections over 40 year
+    cumulative_summary <- cumulative_values %>%
+      group_by(indicator, pitc_reduction_year, test_reduction, scenario, discount) %>%
+      summarise(mean = mean(value), median = median(value), upper_CI = quantile(value, probs = 0.975, na.rm = TRUE),
+                lower_CI = quantile(value, probs = 0.025, na.rm = TRUE))
+    
+    cumulative_summary <- cumulative_summary %>% mutate(future_variability = "test_reduction_only", future_value = 0)
+    if (condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase & !art_coverage_decrease){
+      cumulative_summary$future_variability <- "condom_reduction"
+      cumulative_summary$future_value <- condom_usage_decrease
+    }
+    if (condom_usage_promotion & !condom_usage_reduction & !art_coverage_increase & !art_coverage_decrease){
+      cumulative_summary$future_variability <- "condom_promotion"
+      cumulative_summary$future_value <- condom_usage_increase
+    }
+    if (art_coverage_increase & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_decrease){
+      cumulative_summary$future_variability <-  "art_improvement"
+      cumulative_summary$future_value <- art_interrupt_rate_decrease
+    }
+    if (art_coverage_decrease & !condom_usage_reduction & !condom_usage_promotion & !art_coverage_increase){
+      cumulative_summary$future_variability <- "art_deterioration"
+      cumulative_summary$future_value <- art_interrupt_rate_increase
+    }
+    cumulative_summary$cumulative_years <- cumulative_years
+    cumulative_summaries <- bind_rows(cumulative_summaries, cumulative_summary)
+  }
+  write_csv(cumulative_summaries, paste0("results/cumulative_", summary_name, ".csv"))
 }
+  
 
 
 

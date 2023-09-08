@@ -3235,3 +3235,14 @@ figures/suppfig7.pdf
 figures/suppfig7.png
 figures/suppfig8.pdf
 figures/suppfig8.png
+*.png
+*.png
+figures/fig1.pdf
+*.pdf
+THEMBISAv18/results/proportion_total.csv
+THEMBISAv18/results/~$hts_reduction_costs_1000_param.xlsx
+THEMBISAv18/results/plwh_on_art_red_0.csv
+THEMBISAv18/results/plwh_on_art_red.csv
+THEMBISAv18/results/plwh_on_art_25_htc_red.csv
+THEMBISAv18/results/plwh_on_art_0_25_100_htc_red.csv
+THEMBISAv18/results/plwh_on_art.csv

@@ -464,7 +464,7 @@ calc_cumulative <- function(start_year, follow_up_years, df){
                 year >= start_year,
                 year <= end_year,
                 pitc_reduction_year == start_year)  %>% 
-    group_by(indicator, pitc_reduction_year, scenario, parameter_set, test_reduction) %>% 
+    group_by(indicator, pitc_reduction_year, scenario, parameter_set, test_reduction, discount) %>% 
     summarise(cumulative = sum(value))
 }
 

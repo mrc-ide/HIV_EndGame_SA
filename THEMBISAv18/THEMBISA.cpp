@@ -10078,6 +10078,9 @@ void ResultsAtStartOfYr()
 		}
 		DiscontinuedART_M.out[CurrSim - 1][iy] = Temp1;
 		DiscontinuedART_F.out[CurrSim - 1][iy] = Temp2;
+		TotalDiagNotOnART.out[CurrSim - 1][iy] = PreARTover500M.out[CurrSim - 1][iy] + PreART350to499M.out[CurrSim - 1][iy] + PreART200to349M.out[CurrSim - 1][iy] + 
+		PreARTunder200M.out[CurrSim - 1][iy] + PreARTover500F.out[CurrSim - 1][iy] + PreART350to499F.out[CurrSim - 1][iy] + PreART200to349F.out[CurrSim - 1][iy] + 
+		PreARTunder200F.out[CurrSim - 1][iy] + DiscontinuedART_M.out[CurrSim - 1][iy] + DiscontinuedART_F.out[CurrSim - 1][iy];
 		TotEarlyInfants.out[CurrSim - 1][iy] = TotalPositive[0][1] + TotalPositive[0][1] -
 			TotalNaiveElig_S[0][0] - TotalNaiveElig_S[0][1] - TotalART_S[0][0] -
 			TotalART_S[0][1] - TotalInterrupt_S[0][0] - TotalInterrupt_S[0][1];
@@ -16669,9 +16672,9 @@ void RunSample()
 	ProbTestedNextYr.RecordSample("ProbTestedNextYr.txt");*/
 	DiagnosedHIV_M.RecordSample("DiagnosedHIV_M.txt");
 	DiagnosedHIV_F.RecordSample("DiagnosedHIV_F.txt");
-	/*UndiagnosedHIV_M.RecordSample("UndiagnosedHIV_M.txt");
+	UndiagnosedHIV_M.RecordSample("UndiagnosedHIV_M.txt");
 	UndiagnosedHIV_F.RecordSample("UndiagnosedHIV_F.txt");
-	UndiagnosedHIV_U15.RecordSample("UndiagnosedHIV_U15.txt");
+	/*UndiagnosedHIV_U15.RecordSample("UndiagnosedHIV_U15.txt");
 	Undiagnosed2012.RecordSample("Undiagnosed2012.txt");
 	DiagnosedUntreated2012.RecordSample("DiagnosedUntreated2012.txt");
 	Treated2012.RecordSample("Treated2012.txt");
@@ -16731,6 +16734,7 @@ void RunSample()
 	DiscontinuedART_F.RecordSample("DiscontinuedART_F.txt");
 	TotNewNeed500M.RecordSample("TotNewNeed500M.txt");
 	TotNewNeed500F.RecordSample("TotNewNeed500F.txt");*/
+	TotalDiagNotOnART.RecordSample("TotalDiagNotOnART.txt");
 	TotSexActs.RecordSample("TotSexActs.txt");
 	TotProtSexActs.RecordSample("TotProtSexActs.txt");
 	CondomUse15to24F.RecordSample("CondomUse15to24F.txt");

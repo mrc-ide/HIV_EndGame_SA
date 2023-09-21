@@ -30,7 +30,9 @@ run_on_cluster <- function(pitc_reduction_years,
                     "RediagnosesPregnancy", "TotANCtests", "HIVtestsPos", 
                     "Number1stHIVtestsPos", "NumberHIVtestsPos", "TotalDiagnosesPregnancy", "ANCtestPos",
                     "HIVPosTestAnnualChange", "AdultTestPosAnnualChange", "TotalDiagPregAnnualChange", 
-                    "NewDiagPregAnnualChange", "TestPosANCAnnualChange" 
+                    "NewDiagPregAnnualChange", "TestPosANCAnnualChange", "TotalDiagNotOnART",
+                    "DiagnosedHIV_M", "DiagnosedHIV_F", "UndiagnosedHIV_F",
+                    "UndiagnosedHIV_M", "TotalART15F", "TotalART15M"
                     )
   
   # create empty folder for results
@@ -150,6 +152,9 @@ run_on_cluster <- function(pitc_reduction_years,
   df <- df %>%
     pivot_wider(names_from = indicator) %>%
     mutate(TotalAIDSdeathsadult = AIDSdeathsAdultF + AIDSdeathsAdultM) %>%
+    mutate(DiagnosedHIV = DiagnosedHIV_M + DiagnosedHIV_F) %>% 
+    mutate(UndiagnosedHIV = UndiagnosedHIV_F + UndiagnosedHIV_M) %>% 
+    mutate(TotalART15 = TotalART15F + TotalART15M) %>% 
     mutate(TestsPerAdult = TotalHIVtests / (MalesOver15 + FemalesOver15))%>%
     mutate(AIDS_Mortality = TotalAIDSdeathsadult / (TotHIV15)) %>% 
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")

@@ -26,29 +26,30 @@ library(RColorBrewer)
 test_reduction_only <- read_csv("results/test_reduction_only_summary.csv")
 ```
 
+## Testing reductions with ART need and costs
+
+```{r fig2 data, include = FALSE}
+
+cost_summary <- read_csv("results/cost_summary.csv")
+cumulative_costs <- read_csv("results/cumulative_costs.csv")
+
+```
+
 ## test_reduction_cumulative  from csvs
-``` {r fig2 data, include = FALSE}
+``` {r fig3 data, include = FALSE}
 test_reduction_cumulative <- read_csv("results/test_reduction_only_cumulative.csv")
 ```
 
 ## combined ART change data
-``` {r fig 3 data, include = FALSE}
+``` {r fig4 data, include = FALSE}
 art_change_summary <- read_csv("results/art_change_summary.csv")
 cumulative_art_change <- read_csv("results/art_change_cumulative.csv")
 ```
 ## Combined condom change data
 
-``` {r fig4 data, include = FALSE}
+``` {r fig5 data, include = FALSE}
 condom_change_summary <- read_csv("results/condom_change_summary.csv")
 condom_change_cumulative <- read_csv("results/condom_change_cumulative.csv")
-```
-
-## Testing reductions with ART need and costs
-
-```{r art_cost_data, include = FALSE}
-
-art_needs_costs <- read_csv("results/cost_analysis.csv")
-
 ```
 
 # Figures
@@ -178,127 +179,628 @@ ggsave(filename = "figures/fig1.pdf", plot = fig1, device = "pdf", width = 20, u
 ggsave(filename = "figures/fig1.png", plot = fig1, device = "png", width = 20, units = "cm")
 fig1
 ```
+## Figure 2 
 
-## Supplemenatry panels for figure 1 (SuppFig12)
+Cost analysis 
 
-Adults starting ART
+### Figure 2a annual cost difference from baseline by cost source
 
-```{r fig1e, echo=FALSE}
-fig1e <- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(scenario == "intervention", 
-         pitc_reduction_year == 2025, 
-         indicator == "StartingART_15",
-         year >= 2020, 
-         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
-  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = test_reduction), show.legend = T) +
-  scale_x_continuous("",expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
+```{r fig2a, echo = FALSE}
+
+### annual costs ####
+
+annual_cost_25 <- cost_summary %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(indicator %in% c("cost_total_testing", "cost_total_treatment", "cost_total_care"),
+         scenario %in% c("annual_absolute_dif"), 
+         pitc_reduction_year == 2025,
+         year >= 2025,
+         year <=2100,
+         test_reduction %in% c(25),
+         discount == "undiscounted") %>% 
+  ggplot(aes(year, mean, fill = indicator)) +
+  geom_bar(aes(colour = indicator), position = "stack", stat = "identity",show.legend=FALSE) + 
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  geom_line(data = filter(cost_summary,
+                          indicator %in% c("cost_total"),
+                          scenario %in% c("annual_absolute_dif"),
+                          year >= 2025,
+                          test_reduction %in% c(25),
+                          discount == "undiscounted") %>%
+              mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                     test_reduction = as.factor(test_reduction)),
+            aes(year, mean, fill = NULL, linetype = scenario), show.legend=FALSE, color = "black") +
+  geom_ribbon(data = filter(cost_summary,
+                          indicator %in% c("cost_total"),
+                          scenario %in% c("annual_absolute_dif"),
+                          year >= 2025,
+                          test_reduction %in% c(25),
+                          discount == "undiscounted") %>%
+              mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                     test_reduction = as.factor(test_reduction)),
+            aes(year, ymin = lower_CI, ymax = upper_CI, fill = NULL, linetype = scenario), show.legend = FALSE, alpha = 0.25, fill = "black") +
+  scale_y_continuous(" ",
+                     labels = (function(l) {paste0("$",round(l/1e6,1),"m")}),
+                     breaks = seq(-400e6, 400e6, 200e6), limits = c(-300e6, 400e6)) + 
+  scale_fill_brewer("",
+                    palette = "Dark2",
+                    direction = -1, 
+                    labels = c("Care", "Testing", "Treatment"),
+                    aesthetics = c("colour", "fill")) +
+  scale_linetype_manual(values = c("annual_absolute_dif" = "dashed"), 
+                        name = "",
+                        breaks = c("annual_absolute_dif"),
+                        labels = c("Total")) +
+  scale_x_continuous(" ", breaks = seq(2025, 2100, 25)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 10), 
+        axis.text.x = element_text(size = 10),
         axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Adults starting ART (thousands)", labels =(function(l) {round(l/1e3,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Adults starting ART\n(thousands; 15+ years)")
-fig1e
-```
+        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.30),
+        aspect.ratio=1,
+        strip.text = element_text(size = 11, vjust = 1, face = "bold"),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        legend.title = element_blank(),
+        plot.margin = margin(0,0,0,0),
+        legend.spacing.y = unit(-0.36, "cm"),
+        legend.justification="left"
+  ) +
+  ggtitle(" ") +
+  facet_wrap(~test_reduction, ncol =1, scale = "free_x", labeller = as_labeller(c("25" = "25% General\nHTS reduction",
+                                                                                  "50" = "50% General\nHTS reduction",
+                                                                                  "75" = "75% General\nHTS reduction",
+                                                                                  "100" = "100% General\nHTS reduction")),
+             strip.position = "left") + 
+  theme(plot.margin = unit(c(0,0.3,0,0), "cm"))
 
-Total adults on ART
-
-```{r fig1f, echo=FALSE}
-fig1f <- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(scenario == "intervention", 
-         pitc_reduction_year == 2025, 
-         indicator == "TotalAdultsOnART",
-         year >= 2020, 
-         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
-  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = test_reduction), show.legend = T) +
-  scale_x_continuous("",expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
+annual_cost_50 <- cost_summary %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(indicator %in% c("cost_total_testing", "cost_total_treatment", "cost_total_care"),
+         scenario %in% c("annual_absolute_dif"), 
+         pitc_reduction_year == 2025,
+         year >= 2025,
+         year <=2100,
+         test_reduction %in% c(50),
+         discount == "undiscounted") %>% 
+  ggplot(aes(year, mean, fill = indicator)) +
+  geom_bar(aes(colour = indicator), position = "stack", stat = "identity",show.legend=FALSE) + 
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  geom_line(data = filter(cost_summary,
+                          indicator %in% c("cost_total"),
+                          scenario %in% c("annual_absolute_dif"),
+                          year >= 2025,
+                          test_reduction %in% c(50),
+                          discount == "undiscounted") %>%
+              mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                     test_reduction = as.factor(test_reduction)),
+            aes(year, mean, fill = NULL, linetype = scenario), show.legend=FALSE, color = "black") +
+  geom_ribbon(data = filter(cost_summary,
+                            indicator %in% c("cost_total"),
+                            scenario %in% c("annual_absolute_dif"),
+                            year >= 2025,
+                            test_reduction %in% c(50),
+                            discount == "undiscounted") %>%
+                mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                       test_reduction = as.factor(test_reduction)),
+              aes(year, ymin = lower_CI, ymax = upper_CI, fill = NULL, linetype = scenario), show.legend = FALSE, alpha = 0.25, fill = "black") +
+  scale_y_continuous(" ",
+                     labels = (function(l) {paste0("$",round(l/1e6,1),"m")}),
+                     breaks = seq(-400e6, 400e6, 200e6), limits = c(-300e6, 400e6)) + 
+  scale_fill_brewer("",
+                    palette = "Dark2",
+                    direction = -1, 
+                    labels = c("Care", "Testing", "Treatment"),
+                    aesthetics = c("colour", "fill")) +
+  scale_linetype_manual(values = c("annual_absolute_dif" = "dashed"), 
+                        name = "",
+                        breaks = c("annual_absolute_dif"),
+                        labels = c("Total")) +
+  scale_x_continuous(" ", breaks = seq(2025, 2100, 25)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 11), 
+        axis.text.x = element_text(size = 10),
         axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Adults on ART (millions)", labels =(function(l) {round(l/1e6,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Adults on ART\n(millions; 15+ years)")
-fig1f
-```
+        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.25),
+        aspect.ratio=1,
+        strip.text = element_text(size = 11, vjust = 1, face = "bold"),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        legend.title = element_blank(),
+        plot.margin = margin(0,0,0,0),
+        legend.spacing.y = unit(-0.36, "cm"),
+        legend.justification="left"
+  ) +
+  ggtitle(" ") +
+  facet_wrap(~test_reduction, ncol =1, scale = "free_x", labeller = as_labeller(c("25" = "25% General\nHTS reduction",
+                                                                                  "50" = "50% General\nHTS reduction",
+                                                                                  "75" = "75% General\nHTS reduction",
+                                                                                  "100" = "100% General\nHTS reduction")),
+             strip.position = "left") + 
+  theme(plot.margin = unit(c(0,0.3,0,0), "cm"))
 
-New HIV infections
-
-```{r fig1g, echo=FALSE}
-fig1g<- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(scenario == "intervention", 
-         pitc_reduction_year == 2025, 
-         indicator == "NewAdultHIV",
-         year >= 2020, 
-         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
-  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = test_reduction), show.legend = T) +
-  scale_x_continuous("",expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
+annual_cost_75 <- cost_summary %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(indicator %in% c("cost_total_testing", "cost_total_treatment", "cost_total_care"),
+         scenario %in% c("annual_absolute_dif"), 
+         pitc_reduction_year == 2025,
+         year >= 2025,
+         year <=2100,
+         test_reduction %in% c(75),
+         discount == "undiscounted") %>% 
+  ggplot(aes(year, mean, fill = indicator)) +
+  geom_bar(aes(colour = indicator), position = "stack", stat = "identity",show.legend=FALSE) + 
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  geom_line(data = filter(cost_summary,
+                          indicator %in% c("cost_total"),
+                          scenario %in% c("annual_absolute_dif"),
+                          year >= 2025,
+                          test_reduction %in% c(75),
+                          discount == "undiscounted") %>%
+              mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                     test_reduction = as.factor(test_reduction)),
+            aes(year, mean, fill = NULL, linetype = scenario), show.legend=FALSE, color = "black") +
+  geom_ribbon(data = filter(cost_summary,
+                            indicator %in% c("cost_total"),
+                            scenario %in% c("annual_absolute_dif"),
+                            year >= 2025,
+                            test_reduction %in% c(75),
+                            discount == "undiscounted") %>%
+                mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                       test_reduction = as.factor(test_reduction)),
+              aes(year, ymin = lower_CI, ymax = upper_CI, fill = NULL, linetype = scenario), show.legend = FALSE, alpha = 0.25, fill = "black") +
+  scale_y_continuous(" ",
+                     labels = (function(l) {paste0("$",round(l/1e6,1),"m")}),
+                     breaks = seq(-400e6, 400e6, 200e6), limits = c(-300e6, 400e6)) + 
+  scale_fill_brewer("",
+                    palette = "Dark2",
+                    direction = -1, 
+                    labels = c("Care", "Testing", "Treatment"),
+                    aesthetics = c("colour", "fill")) +
+  scale_linetype_manual(values = c("annual_absolute_dif" = "dashed"), 
+                        name = "",
+                        breaks = c("annual_absolute_dif"),
+                        labels = c("Total")) +
+  scale_x_continuous(" ", breaks = seq(2025, 2100, 25)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 11), 
+        axis.text.x = element_text(size = 10),
         axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("New HIV infections (thousands)", labels =(function(l) {round(l/1e3,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("New HIV infections\n(thousands; 15+ years)")
-fig1g
-```
+        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.25),
+        aspect.ratio=1,
+        strip.text = element_text(size = 11, vjust = 1, face = "bold"),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        legend.title = element_blank(),
+        plot.margin = margin(0,0,0,0),
+        legend.spacing.y = unit(-0.36, "cm"),
+        legend.justification="left"
+  ) +
+  ggtitle(" ") +
+  facet_wrap(~test_reduction, ncol =1, scale = "free_x", labeller = as_labeller(c("25" = "25% General\nHTS reduction",
+                                                                                  "50" = "50% General\nHTS reduction",
+                                                                                  "75" = "75% General\nHTS reduction",
+                                                                                  "100" = "100% General\nHTS reduction")),
+             strip.position = "left") + 
+  theme(plot.margin = unit(c(0,0.3,0,0), "cm"))
 
-AIDS-related deaths
-
-```{r fig1h, echo=FALSE}
-fig1h<- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(scenario == "intervention", 
-         pitc_reduction_year == 2025, 
-         indicator == "TotalAIDSdeathsadult",
-         year >= 2020, 
-         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
-  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = test_reduction), show.legend = T) +
-  scale_x_continuous("",expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
+annual_cost_100 <- cost_summary %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(indicator %in% c("cost_total_testing", "cost_total_treatment", "cost_total_care"),
+         scenario %in% c("annual_absolute_dif"), 
+         pitc_reduction_year == 2025,
+         year >= 2025,
+         year <=2100,
+         test_reduction %in% c(100),
+         discount == "undiscounted") %>% 
+  ggplot(aes(year, mean, fill = indicator)) +
+  geom_bar(aes(colour = indicator), position = "stack", stat = "identity",show.legend=FALSE) + 
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  geom_line(data = filter(cost_summary,
+                          indicator %in% c("cost_total"),
+                          scenario %in% c("annual_absolute_dif"),
+                          year >= 2025,
+                          test_reduction %in% c(100),
+                          discount == "undiscounted") %>%
+              mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                     test_reduction = as.factor(test_reduction)),
+            aes(year, mean, fill = NULL, linetype = scenario), show.legend=FALSE, color = "black") +
+  geom_ribbon(data = filter(cost_summary,
+                            indicator %in% c("cost_total"),
+                            scenario %in% c("annual_absolute_dif"),
+                            year >= 2025,
+                            test_reduction %in% c(100),
+                            discount == "undiscounted") %>%
+                mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                       test_reduction = as.factor(test_reduction)),
+              aes(year, ymin = lower_CI, ymax = upper_CI, fill = NULL, linetype = scenario), show.legend = FALSE, alpha = 0.25, fill = "black") +
+  scale_y_continuous(" ",
+                     labels = (function(l) {paste0("$",round(l/1e6,1),"m")}),
+                     breaks = seq(-400e6, 400e6, 200e6), limits = c(-300e6, 400e6)) + 
+  scale_fill_brewer("",
+                    palette = "Dark2",
+                    direction = -1, 
+                    labels = c("Care", "Testing", "Treatment"),
+                    aesthetics = c("colour", "fill")) +
+  scale_linetype_manual(values = c("annual_absolute_dif" = "dashed"), 
+                        name = "",
+                        breaks = c("annual_absolute_dif"),
+                        labels = c("Total")) +
+  scale_x_continuous(" ", breaks = seq(2025, 2100, 25)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 11), 
+        axis.text.x = element_text(size = 10),
         axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("AIDS-deaths (thousands)", labels =(function(l) {round(l/1e3,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("AIDS-deaths\n(thousands; 15+ years)")
-fig1h
+        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.25),
+        aspect.ratio=1,
+        strip.text = element_text(size = 11, vjust = 1, face = "bold"),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        legend.title = element_blank(),
+        plot.margin = margin(0,0,0,0),
+        legend.spacing.y = unit(-0.36, "cm"),
+        legend.justification="left"
+  ) +
+  ggtitle(" ") +
+  facet_wrap(~test_reduction, ncol =1, scale = "free_x", labeller = as_labeller(c("25" = "25% General\nHTS reduction",
+                                                                                  "50" = "50% General\nHTS reduction",
+                                                                                  "75" = "75% General\nHTS reduction",
+                                                                                  "100" = "100% General\nHTS reduction")),
+             strip.position = "left") + 
+  theme(plot.margin = unit(c(0,0.3,0,0), "cm"))
+
+annual_cost_25
+annual_cost_50
+annual_cost_75
+annual_cost_100
+
+annual_cost_combo <- ggarrange(annual_cost_25, annual_cost_50, annual_cost_75, annual_cost_100,
+                               ncol =1, common.legend = TRUE, legend = "right", align = "h")
+annual_cost_combo <- annotate_figure(annual_cost_combo, top = text_grob("Annual cost difference\n(2023 US$; Undiscounted)", 
+                                          color = "black", 
+                                          face = "bold", size = 11.5, hjust = 0.32))
+annual_cost_combo
 ```
 
+## Figure 2b 
 
-## Figure 2
+Cumulative percentage of total baseline costs by cost source
+
+```{r fig2b, echo=FALSE}
+
+#### cumulative_cost_from_summary ####
+
+# baseline total cost
+
+cost_cum_base <- cost_summary %>% 
+  filter(indicator %in% c("cost_total"),
+         scenario %in% c("baseline"),
+         test_reduction %in% c(25, 50, 75, 100),
+         year >= 2025) %>% 
+  select(-c(upper_CI, lower_CI, future_variability, future_value)) %>% 
+  group_by(scenario, indicator, pitc_reduction_year, test_reduction, discount) %>% 
+  summarise(cumulative_mean = cumsum(mean))
+cost_cum_base$year <- c(rep(seq(2025,2100,1), 12))
+cost_cum_base <- cost_cum_base %>% 
+  filter(year %in% c(2029, 2034, 2049, 2074)) %>% 
+  mutate(cumulative_years = year - 2024) %>% 
+  relocate(cumulative_years, .before = scenario) 
+
+# intervention total cost 
+
+cost_cum_intervention <- cost_summary %>% 
+  filter(indicator %in% c("cost_total"),
+         scenario %in% c("annual_absolute_dif"),
+         test_reduction %in% c(25, 50, 75, 100),
+         year >= 2025) %>% 
+  select(-c(upper_CI, lower_CI, future_variability, future_value)) %>% 
+  group_by(scenario, indicator, pitc_reduction_year, test_reduction, discount) %>% 
+  summarise(cumulative_mean = cumsum(mean))
+cost_cum_intervention$year <- c(rep(seq(2025,2100,1), 12))
+cost_cum_intervention <- cost_cum_intervention %>% 
+  filter(year %in% c(2029, 2034, 2049, 2074)) %>% 
+  mutate(cumulative_years = year - 2024) %>% 
+  relocate(cumulative_years, .before = scenario) 
+
+# intervention testing cost
+
+cost_cum_testing <- cost_summary %>% 
+  filter(indicator %in% c("cost_total_testing"),
+         scenario %in% c("annual_absolute_dif"),
+         test_reduction %in% c(25, 50, 75, 100),
+         year >= 2025) %>% 
+  select(-c(upper_CI, lower_CI, future_variability, future_value)) %>% 
+  group_by(scenario, indicator, pitc_reduction_year, test_reduction, discount) %>% 
+  summarise(cumulative_mean = cumsum(mean))
+cost_cum_testing$year <- c(rep(seq(2025,2100,1), 12))
+cost_cum_testing <- cost_cum_testing %>% 
+  filter(year %in% c(2029, 2034, 2049, 2074)) %>% 
+  mutate(cumulative_years = year - 2024) %>% 
+  relocate(cumulative_years, .before = scenario) 
+
+# intervention treatment cost
+
+cost_cum_treatment <- cost_summary %>% 
+  filter(indicator %in% c("cost_total_treatment"),
+         scenario %in% c("annual_absolute_dif"),
+         test_reduction %in% c(25, 50, 75, 100),
+         year >= 2025) %>% 
+  select(-c(upper_CI, lower_CI, future_variability, future_value)) %>% 
+  group_by(scenario, indicator, pitc_reduction_year, test_reduction, discount) %>% 
+  summarise(cumulative_mean = cumsum(mean))
+cost_cum_treatment$year <- c(rep(seq(2025,2100,1), 12))
+cost_cum_treatment <- cost_cum_treatment %>% 
+  filter(year %in% c(2029, 2034, 2049, 2074)) %>% 
+  mutate(cumulative_years = year - 2024) %>% 
+  relocate(cumulative_years, .before = scenario) 
+
+# intervention treatment inpatient
+
+cost_cum_care <- cost_summary %>% 
+  filter(indicator %in% c("cost_total_care"),
+         scenario %in% c("annual_absolute_dif"),
+         test_reduction %in% c(25, 50, 75, 100),
+         year >= 2025) %>% 
+  select(-c(upper_CI, lower_CI, future_variability, future_value)) %>% 
+  group_by(scenario, indicator, pitc_reduction_year, test_reduction, discount) %>% 
+  summarise(cumulative_mean = cumsum(mean))
+cost_cum_care$year <- c(rep(seq(2025,2100,1), 12))
+cost_cum_care <- cost_cum_care %>% 
+  filter(year %in% c(2029, 2034, 2049, 2074)) %>% 
+  mutate(cumulative_years = year - 2024) %>% 
+  relocate(cumulative_years, .before = scenario) 
+
+cost_cum_intervention$percentage_change_baseline <- (cost_cum_intervention$cumulative_mean  / cost_cum_base$cumulative_mean) * 100
+cost_cum_care$percentage_change_baseline <- (cost_cum_care$cumulative_mean / cost_cum_base$cumulative_mean) * 100
+cost_cum_testing$percentage_change_baseline <- (cost_cum_testing$cumulative_mean / cost_cum_base$cumulative_mean) * 100
+cost_cum_treatment$percentage_change_baseline <- (cost_cum_treatment$cumulative_mean / cost_cum_base$cumulative_mean) * 100
+
+cumulative_change_from_baseline_total <- bind_rows(cost_cum_intervention,cost_cum_testing,cost_cum_treatment,cost_cum_care)
+
+cumulative_change_from_baseline_total <- cumulative_change_from_baseline_total %>% 
+  mutate(indicator = factor(indicator,
+                            labels = c("Total", "Testing", "Treatment", "Inpatient"),
+                            levels = c("cost_total", "cost_total_testing", "cost_total_treatment", "cost_total_care")),
+         scenario = factor(scenario, 
+                           labels = c("Total")))
+
+percent_change_25 <- cumulative_change_from_baseline_total %>% 
+  filter(test_reduction == 25,
+         indicator %in% c("Testing", "Treatment", "Inpatient")) %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year), 
+         test_reduction = as.factor(test_reduction),
+         cumulative_years = as.factor(cumulative_years)) %>% 
+  ggplot(aes(cumulative_years, percentage_change_baseline, fill = indicator)) +
+  geom_bar(aes(), position =  "stack", stat = "identity", 
+           #width = 0.85, alpha = 0.75
+  ) +
+  scale_y_continuous("",
+                     breaks = seq(-6, 6, 3),
+                     limits = c(-6,7),
+                     labels = (function(l) {paste0(l,"%")})) + 
+  geom_point(data = filter(cumulative_change_from_baseline_total,
+                           indicator %in% c("Total"),
+                           scenario == "Total",
+                           test_reduction == 25) %>% 
+               mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                      test_reduction = as.factor(test_reduction),
+                      cumulative_years = as.factor(cumulative_years)),
+             aes(cumulative_years, percentage_change_baseline, colour = scenario), shape = 15) +
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  scale_discrete_manual("",
+                    breaks = c("Total", "Testing", "Treatment", "Inpatient"), 
+                    values = c("Total" = "black", "Testing" = "#d95f02", "Treatment" = "#1b9e77", "Inpatient" = "#7570b3"), 
+                    labels= c("Total", "Testing", "Treatment", "Inpatient"), 
+                    aesthetics = c("fill", "colour", "shape")) +
+  scale_x_discrete(" ", labels = c(5, 10, 25, 50)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11.5, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_blank(),
+        plot.margin = unit(c(0,0,0,-0.4), "cm"),
+        legend.spacing.y = unit(-0.15, "cm"),
+        legend.text.align = 0,
+        strip.text = element_text(size = 10, vjust = 0),
+        strip.background = element_blank(),
+        strip.placement = "inside") +
+  facet_wrap(~factor(discount,levels = c("undiscounted", "3%", "6%", "8.25%")), 
+             scale = "free_x", nrow = 1,
+             labeller = as_labeller(c("undiscounted" = "Undiscounted",
+                                      "3%" = "3% discount",
+                                      "6%" = "6% discount",
+                                      "8.25%" = "8.25% discount")),
+             strip.position = "top")
+
+percent_change_25
+
+percent_change_50 <- cumulative_change_from_baseline_total %>% 
+  filter(test_reduction == 50,
+         indicator %in% c("Testing", "Treatment", "Inpatient")) %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year), 
+         test_reduction = as.factor(test_reduction),
+         cumulative_years = as.factor(cumulative_years)) %>% 
+  ggplot(aes(cumulative_years, percentage_change_baseline, fill = indicator)) +
+  geom_bar(aes(), position =  "stack", stat = "identity", 
+           #width = 0.85, alpha = 0.75
+  ) +
+  scale_y_continuous("",
+                     breaks = seq(-6, 6, 3),
+                     limits = c(-6,7),
+                     labels = (function(l) {paste0(l,"%")})) + 
+  geom_point(data = filter(cumulative_change_from_baseline_total,
+                           indicator %in% c("Total"),
+                           scenario == "Total",
+                           test_reduction == 50) %>% 
+               mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                      test_reduction = as.factor(test_reduction),
+                      cumulative_years = as.factor(cumulative_years)),
+             aes(cumulative_years, percentage_change_baseline, colour = scenario), shape = 15) +
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  scale_discrete_manual("",
+                        breaks = c("Total", "Testing", "Treatment", "Inpatient"), 
+                        values = c("Total" = "black", "Testing" = "#d95f02", "Treatment" = "#1b9e77", "Inpatient" = "#7570b3"), 
+                        labels= c("Total", "Testing", "Treatment", "Inpatient"), 
+                        aesthetics = c("fill", "colour", "shape")) +
+  scale_x_discrete(" ", labels = c(5, 10, 25, 50)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11.5, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_blank(),
+        plot.margin = unit(c(0,0,0,-0.4), "cm"),
+        legend.spacing.y = unit(-0.15, "cm"),
+        strip.text = element_text(size = 10, vjust = 0),
+        strip.background = element_blank(),
+        strip.placement = "inside") +
+  facet_wrap(~factor(discount,levels = c("undiscounted", "3%", "6%", "8.25%")), 
+             scale = "free_x", nrow = 1,
+             labeller = as_labeller(c("undiscounted" = " ",
+                                      "3%" = " ",
+                                      "6%" = " ",
+                                      "8.25%" = " ")),
+             strip.position = "top")
+
+percent_change_75 <- cumulative_change_from_baseline_total %>% 
+  filter(test_reduction == 75,
+         indicator %in% c("Testing", "Treatment", "Inpatient")) %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year), 
+         test_reduction = as.factor(test_reduction),
+         cumulative_years = as.factor(cumulative_years)) %>% 
+  ggplot(aes(cumulative_years, percentage_change_baseline, fill = indicator)) +
+  geom_bar(aes(), position =  "stack", stat = "identity", 
+           #width = 0.85, alpha = 0.75
+  ) +
+  scale_y_continuous("",
+                     breaks = seq(-6, 6, 3),
+                     limits = c(-6,7),
+                     labels = (function(l) {paste0(l,"%")})) + 
+  geom_point(data = filter(cumulative_change_from_baseline_total,
+                           indicator %in% c("Total"),
+                           scenario == "Total",
+                           test_reduction == 75) %>% 
+               mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                      test_reduction = as.factor(test_reduction),
+                      cumulative_years = as.factor(cumulative_years)),
+             aes(cumulative_years, percentage_change_baseline, colour = scenario), shape = 15) +
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  scale_discrete_manual("",
+                        breaks = c("Total", "Testing", "Treatment", "Inpatient"), 
+                        values = c("Total" = "black", "Testing" = "#d95f02", "Treatment" = "#1b9e77", "Inpatient" = "#7570b3"), 
+                        labels= c("Total", "Testing", "Treatment", "Inpatient"), 
+                        aesthetics = c("fill", "colour", "shape")) +
+  scale_x_discrete(" ", labels = c(5, 10, 25, 50)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11.5, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_blank(),
+        plot.margin = unit(c(0,0,0,-0.4), "cm"),
+        legend.spacing.y = unit(-0.15, "cm"),
+        strip.text = element_text(size = 10, vjust = 0),
+        strip.background = element_blank(),
+        strip.placement = "inside") +
+  facet_wrap(~factor(discount,levels = c("undiscounted", "3%", "6%", "8.25%")), 
+             scale = "free_x", nrow = 1,
+             labeller = as_labeller(c("undiscounted" = " ",
+                                      "3%" = " ",
+                                      "6%" = " ",
+                                      "8.25%" = " ")),
+             strip.position = "top")
+
+percent_change_100 <- cumulative_change_from_baseline_total %>% 
+  filter(test_reduction == 100,
+         indicator %in% c("Testing", "Treatment", "Inpatient")) %>% 
+  mutate(pitc_reduction_year = as.factor(pitc_reduction_year), 
+         test_reduction = as.factor(test_reduction),
+         cumulative_years = as.factor(cumulative_years)) %>% 
+  ggplot(aes(cumulative_years, percentage_change_baseline, fill = indicator)) +
+  geom_bar(aes(), position =  "stack", stat = "identity", 
+           #width = 0.85, alpha = 0.75
+  ) +
+  scale_y_continuous("",
+                     breaks = seq(-6, 6, 3),
+                     limits = c(-6,7),
+                     labels = (function(l) {paste0(l,"%")})) + 
+  geom_point(data = filter(cumulative_change_from_baseline_total,
+                           indicator %in% c("Total"),
+                           scenario == "Total",
+                           test_reduction == 100) %>% 
+               mutate(pitc_reduction_year = as.factor(pitc_reduction_year),
+                      test_reduction = as.factor(test_reduction),
+                      cumulative_years = as.factor(cumulative_years)),
+             aes(cumulative_years, percentage_change_baseline, colour = scenario), shape = 15) +
+  geom_hline(aes(yintercept = 0), lty = "solid", colour = "black") +
+  scale_discrete_manual("",
+                        breaks = c("Total", "Testing", "Treatment", "Inpatient"), 
+                        values = c("Total" = "black", "Testing" = "#d95f02", "Treatment" = "#1b9e77", "Inpatient" = "#7570b3"), 
+                        labels= c("Total", "Testing", "Treatment", "Inpatient"), 
+                        aesthetics = c("fill", "colour", "shape")) +
+  scale_x_discrete("Cumulative years from 2025", labels = c(5, 10, 25, 50)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11.5, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_blank(),
+        plot.margin = unit(c(0,0,0,-0.4), "cm"),
+        legend.spacing.y = unit(-0.15, "cm"),
+        strip.text = element_text(size = 10, vjust = 0),
+        strip.background = element_blank(),
+        strip.placement = "inside") +
+  facet_wrap(~factor(discount,levels = c("undiscounted", "3%", "6%")), 
+             scale = "free_x", nrow = 1,
+             labeller = as_labeller(c("undiscounted" = " ",
+                                      "3%" = " ",
+                                      "6%" = " ")),
+             strip.position = "top")
+
+percent_change_100
+
+percent_change <- ggarrange(percent_change_25, percent_change_50, percent_change_75, percent_change_100,
+          ncol =1, common.legend = TRUE, legend = "right", align = "h")
+
+percent_change <- annotate_figure(percent_change, top = text_grob("Percentage of baseline\ncumulative cost", 
+                                                   color = "black", face = "bold", size = 11.5, hjust = 0.70))
+
+
+```
+
+## Combined figure 2
+
+```{r fig2combined, echo=FALSE}
+
+percent_combo <- ggarrange(annual_cost_combo, percent_change, ncol = 2, common.legend = TRUE, legend = "right",
+                           widths = c(4.175,8.3), heights = c(4.175,8.3), align = "hv", labels = "AUTO")
+
+ggsave(plot = percent_combo, filename = "figures/fig2.png", device = "png", 
+       units = "cm", height = 20, width = 20)
+
+ggsave(plot = percent_combo, filename = "figures/fig2.pdf", device = "pdf", 
+       units = "cm", height = 20, width = 20)
+
+```
+
+## Figure 3
 
 Impact of timing of testing reductions on long-term incidence and epi costs
 
-### Figure 2a
+### Figure 3a
 
 Incidence in 2100 when testing reduced at different times 
 
-```{r fig2a, echo = FALSE}
+```{r fig3a, echo = FALSE}
 
 fig2a <- test_reduction_only %>% 
   mutate(pitc_reduction_year = as.factor(pitc_reduction_year), 
@@ -326,15 +828,15 @@ fig2a <- test_reduction_only %>%
   scale_color_brewer("Year HTS\nreduced",palette = "Dark2",direction = -1) +
   scale_fill_brewer("Year HTS\nreduced", palette = "Dark2",direction = -1) +
   ggtitle("HIV incidence in 2100\n(per 1000; 15-49 years)\n")
-fig2a
-ggsave(filename = "figures/fig2a.png", plot = fig2a, device = "png", units = "cm", width = 11.69, height = 10.41)
+fig3a
+ggsave(filename = "figures/fig3a.png", plot = fig2a, device = "png", units = "cm", width = 11.69, height = 10.41)
 ```
 
-### Figure 2b 
+### Figure 3b 
 
 Additional HIV infections when testing reduced at different times
 
-``` {r fig2b, echo = FALSE}
+``` {r fig3b, echo = FALSE}
 
 fig2b <- test_reduction_cumulative %>% 
   filter(indicator == "NewAdultHIV", 
@@ -360,14 +862,14 @@ fig2b <- test_reduction_cumulative %>%
         plot.margin = margin(0,0,0,0)) +
   ggtitle("Additional HIV infections\nover 50-years\n(millions; 15+ years)")
 fig2b
-ggsave(filename = "figures/fig2b.png", plot = fig2b, device = "png", units = "cm", width = 11.69, height = 10.41)
+#ggsave(filename = "figures/fig3b.png", plot = fig2b, device = "png", units = "cm", width = 11.69, height = 10.41)
 ```
 
-### Figure 2c 
+### Figure 3c 
 
 Additional AIDS-related deaths when testing reduced at different times
 
-``` {r fig2c, echo = FALSE}
+``` {r fig3c, echo = FALSE}
 
 fig2c <- test_reduction_cumulative %>% 
   filter(indicator == "TotalAIDSdeathsadult", 
@@ -392,26 +894,26 @@ fig2c <- test_reduction_cumulative %>%
         plot.margin = margin(0,0,0,0)) +
   ggtitle("Additional AIDS deaths\nover 50-years\n(thousands; 15+ years)")
 fig2c
-ggsave(filename = "figures/fig2c.png", plot = fig2c, device = "png", units = "cm", width = 11.69, height = 10.41)
+#ggsave(filename = "figures/fig3c.png", plot = fig2c, device = "png", units = "cm", width = 11.69, height = 10.41)
 ```
 
-### Combined figure 2
+### Combined figure 3
 
 ``` {r fig2, echo = FALSE}
 
 fig2 <- ggarrange(fig2a, fig2b, fig2c, nrow = 1, ncol = 3, common.legend = TRUE, legend = "right", labels = "AUTO", 
                   font.label = list(size = 14), align = "v")
 fig2
-ggsave(filename = "figures/fig2.pdf", plot = fig2, device = "pdf", width = 20, height = 8, units = "cm")
-ggsave(filename = "figures/fig2.png", plot = fig2, device = "png", width = 20, height = 8, units = "cm")
+ggsave(filename = "figures/fig3.pdf", plot = fig2, device = "pdf", width = 20, height = 8, units = "cm")
+ggsave(filename = "figures/fig3.png", plot = fig2, device = "png", width = 20, height = 8, units = "cm")
 
 ```
 
-## Figure 3
+## Figure 4
 
 Effect of altered ART coverage on impact of testing reductions
 
-### Figure 3a
+### Figure 4a
 Heatmap of 2100 incidence under altered ART coverage
 
 ``` {r fig3a, echo = FALSE, warning = FALSE}
@@ -477,7 +979,7 @@ fig3a
 ggsave("figures/fig3a.png", plot = fig3a, device = "png", width = 11.69, height = 10.41, units = "cm")
 ```
 
-### Figure 3b 
+### Figure 4b 
 Heatmap of HIV elimination year under altered ART coverage
 
 ```{r fig3b, echo = FALSE, warning = FALSE}
@@ -540,7 +1042,7 @@ fig3b
 
 ```
 
-### Figure 3c
+### Figure 4c
 Heatmap of additional HIV infections under altered ART coverage
 
 ``` {r fig3c, echo = FALSE, warning = FALSE}
@@ -597,7 +1099,7 @@ ggsave("figures/fig3c.png", plot = fig3c, device = "png", height = 10.41, width 
 ```
 
 
-### Figure 3d
+### Figure 4d
 Heatmap of additional AIDS-related deaths under altered ART coverage
 
 ```{r fig3d, echo=FALSE, warning = FALSE}
@@ -651,22 +1153,22 @@ fig3d <- temp3d %>%
 fig3d
 ```
 
-### Combined Figure 3
+### Combined Figure 4
 
 ```{r fig3, echo = FALSE, warning = FALSE}
 
 fig3 <- ggarrange(fig3a, fig3b, fig3c, fig3d, nrow = 2, ncol = 2, labels = "AUTO")
 fig3
-ggsave(filename = "figures/fig3.pdf", plot = fig3, device = "pdf", width = 20, height = 17.8, units = "cm")
-ggsave(filename = "figures/fig3.png", plot = fig3, device = "png", width = 20, height = 17.8, units = "cm")
+ggsave(filename = "figures/fig4.pdf", plot = fig3, device = "pdf", width = 20, height = 17.8, units = "cm")
+ggsave(filename = "figures/fig4.png", plot = fig3, device = "png", width = 20, height = 17.8, units = "cm")
 ```
 
 
-## Figure 4
+## Figure 5
 
 Effect of altered condom usage on impact of testing reductions
 
-### Figure 4a
+### Figure 5a
 
 Heatmap of 2100 incidence under altered condom usage 
 
@@ -739,7 +1241,7 @@ fig4a <- temp4a %>%
 fig4a
 ```
 
-### Figure 4b
+### Figure 5b
 
 Heatmap of HIV elimination year under altered condom usage 
 
@@ -805,7 +1307,7 @@ fig4b <- temp4b %>%
 fig4b
 ```
 
-### Figure 4c
+### Figure 5c
 
 Heatmap of additional HIV infections under altered condom usage 
 
@@ -869,7 +1371,7 @@ fig4c
 
 ```
 
-### Figure 4d
+### Figure 5d
 
 Heatmap of additional AIDS-related deaths under altered condom usage 
 
@@ -933,8 +1435,8 @@ fig4d
 ``` {r fig4, echo = FALSE, warning = FALSE}
 fig4 <- ggarrange(fig4a, fig4b, fig4c, fig4d, nrow = 2, ncol = 2, legend = "right", labels = "AUTO")
 fig4
-ggsave(filename = "figures/fig4.pdf", plot = fig4, device = "pdf", width = 20, height = 17.8, units = "cm")
-ggsave(filename = "figures/fig4.png", plot = fig4, device = "png", width = 20, height = 17.8, units = "cm")
+ggsave(filename = "figures/fig5.pdf", plot = fig4, device = "pdf", width = 20, height = 17.8, units = "cm")
+ggsave(filename = "figures/fig5.png", plot = fig4, device = "png", width = 20, height = 17.8, units = "cm")
 ```
 
 ## Supplementary Figure 1
@@ -2411,12 +2913,205 @@ ggsave(filename = "figures/suppfig6.png", plot = suppfig10, device = "png", widt
 
 ## Supplementary figure 11
 
-```{r suppfig11costs, echo = FALSE}
+Annual costs by cost source
+```{r suppfig11a, echo = FALSE}
 
-
-suppfig11 <- art_needs_costs %>% 
-  arrange(test_reduction) %>% 
+annual_cost_line <- cost_summary %>% 
   mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(indicator %in% c("cost_total", "cost_total_testing", "cost_total_treatment", "cost_total_care"),
+         scenario %in% c("intervention"), 
+         pitc_reduction_year == 2025,
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 50, 75, 100),
+         discount == "undiscounted") %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11.5, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = unit(c(0,0,0,0), "cm"),
+        strip.text = element_text(size = 10, vjust = 1),
+        strip.background = element_blank(),
+        strip.placement = "outside") +
+  scale_y_continuous("Cost (US$ millions)", labels =(function(l) {paste0(round(l/1e6,1))}),expand = c(0, 0)) +
+  scale_fill_brewer("General\nHTS\nreduction", 
+                    labels = c("None", "25%", "50%", "75%", "100%"), 
+                    aesthetics = c("colour", "fill"), 
+                    palette = "Set1",
+                    direction = 1) + 
+  ggtitle("Annual costs (2023 US$ millions)\n(Undiscounted)") + 
+  facet_wrap(~factor(indicator, 
+                     level = c("cost_total",
+                               "cost_total_testing",
+                               "cost_total_treatment",
+                               "cost_total_care")), 
+             scale = "free", 
+             nrow = 1,
+             strip.position = "top",
+             labeller = as_labeller(c("cost_total_testing" = "Testing",
+                                      "cost_total_treatment" = "Treatment",
+                                      "cost_total_care" = "Inpatient",
+                                      "cost_total" = "Total")))
+
+```
+
+Percentage of total annual costs by cost source
+```{r supp11b, echo = FALSE}
+
+#### annual percentage cost ####
+annual_percentage_total <- cost_summary %>% 
+  filter(indicator %in% c("cost_total"),
+         scenario %in% c("intervention"),
+         test_reduction %in% c(0, 25,50,75,100),
+         discount != "8.25%", 
+         year >= 2020)
+
+annual_percentage_care <- cost_summary %>% 
+  filter(indicator %in% c("cost_total_care"),
+         scenario %in% c("intervention"),
+         test_reduction %in% c(0, 25,50,75,100),
+         discount != "8.25%", 
+         year >= 2020)
+
+annual_percentage_testing <- cost_summary %>% 
+  filter(indicator %in% c("cost_total_testing"),
+         scenario %in% c("intervention"),
+         test_reduction %in% c(0, 25,50,75,100),
+         discount != "8.25%", 
+         year >= 2020)
+
+annual_percentage_treatment <- cost_summary %>% 
+  filter(indicator %in% c("cost_total_treatment"),
+         scenario %in% c("intervention"),
+         test_reduction %in% c(0, 25,50,75,100),
+         discount != "8.25%", 
+         year >= 2020)
+
+annual_percentage_total$proportion_total <- annual_percentage_total$mean / annual_percentage_total$mean
+annual_percentage_care$proportion_total <- annual_percentage_care$mean / annual_percentage_total$mean
+annual_percentage_testing$proportion_total <- annual_percentage_testing$mean / annual_percentage_total$mean
+annual_percentage_treatment$proportion_total <- annual_percentage_treatment$mean / annual_percentage_total$mean
+
+annual_percentage <- bind_rows(annual_percentage_total,
+                               annual_percentage_care, 
+                               annual_percentage_testing,
+                               annual_percentage_treatment) %>% 
+  select(-c(upper_CI, lower_CI, future_variability, future_value, pitc_reduction_year, scenario)) %>% 
+  mutate(cost_source = case_when(indicator == "cost_total" ~ "total",
+                                 indicator == "cost_total_care" ~ "care",
+                                 indicator == "cost_total_testing" ~ "testing",
+                                 indicator == "cost_total_treatment" ~ "treatment")) %>% 
+  relocate(cost_source, .before = indicator) %>% 
+  select(-indicator) %>% 
+  rename(mean_cost = mean) %>%
+  mutate(percentage_total = round((proportion_total * 100),2))
+
+
+annual_percentage_fig <- annual_percentage %>% 
+  filter(cost_source %in% c("testing", "treatment", "care"),
+         discount == "undiscounted",
+         year <=2100) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  ggplot(aes(year, mean_cost, fill = cost_source, colour = cost_source)) +
+  geom_bar(aes(), position =  "fill", stat = "identity", 
+           width = 1
+  ) +
+  scale_y_continuous("",
+                     labels = (function(l) {paste0(l*100,"%")}), expand = c(0,0)) +
+  scale_discrete_manual("",
+                        breaks = c("total", "testing", "treatment", "care"), 
+                        values = c("total" = "black", "testing" = "#d95f02", "treatment" = "#1b9e77", "care" = "#7570b3"), 
+                        labels= c("Total", "Testing", "Treatment", "Inpatient"), 
+                        aesthetics = c("fill", "colour")) +
+  scale_x_continuous("", breaks = seq(2020, 2100, 40), expand = c(0,0)) + theme_classic() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 11.5, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_blank(),
+        plot.margin = unit(c(0,0,0,0), "cm"),
+        strip.text = element_text(size = 9.5, vjust = 1),
+        strip.background = element_blank(),
+        strip.placement = "outside") +
+  facet_wrap(~test_reduction, 
+             scale = "free", nrow = 1,
+             labeller = as_labeller(c(
+               `0` = "Status quo\ngeneral HTS",
+               `25` = "25% general\nHTS reduction",
+               `50` = "50% general\nHTS reduction",
+               `75` = "75% general\nHTS reduction",
+               `100` = "100% general\nHTS reduction")),
+             strip.position = "top") + 
+  ggtitle("Percentage of total annual costs\n(Undiscounted)")
+
+```
+
+## Combined supplementary figure 11
+
+```{r suppfig11, echo=FALSE}
+total_annual_costs <- ggarrange(annual_cost_line, annual_percentage_fig,
+          ncol =1, align = "h", labels = "AUTO", widths = c(0.75, 1), 
+          heights = c(0.75, 1))
+
+ggsave(plot = total_annual_costs, 
+       filename = "figures/suppfig11.png", 
+       width = 21, 
+       height = 15,
+       device = "png", 
+       units = "cm")
+
+ggsave(plot = total_annual_costs, 
+       filename = "figures/suppfig11.pdf", 
+       width = 21, 
+       height = 15,
+       device = "pdf", 
+       units = "cm")
+```
+
+## Supplementary figure 12
+
+### Supplemenatry panels for figure 1 (SuppFig12)
+
+Adults starting ART
+
+```{r fig1e, echo=FALSE}
+fig1e <- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "StartingART_15",
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Adults starting ART (thousands)", labels =(function(l) {round(l/1e3,1)}),expand = c(0, 0)) +
+  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Adults starting ART\n(thousands; 15+ years)")
+fig1e
+```
+
+Total adults on ART
+
+```{r fig1f, echo=FALSE}
+fig1f <- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
   filter(scenario == "intervention", 
          pitc_reduction_year == 2025, 
          indicator == "TotalAdultsOnART",
@@ -2428,22 +3123,72 @@ suppfig11 <- art_needs_costs %>%
   scale_x_continuous("",expand = c(0, 0)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_blank(), 
+        axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 11, face = "bold", hjust = 0.5),
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
         legend.title = element_text(size = 11)) +
-  scale_y_continuous("Adults on ART (millions)", labels =(function(l) {paste(round(l/1e6,1))}),expand = c(0, 0)) +
-  scale_fill_brewer(name = "General\nHTS\nreduction", 
-                    labels= c("None", "25%", "50%", "75%", "100%"), palette = "Set1", aesthetics = c("colour", "fill")) + 
+  scale_y_continuous("Adults on ART (millions)", labels =(function(l) {round(l/1e6,1)}),expand = c(0, 0)) +
+  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("Adults on ART\n(millions; 15+ years)")
-ggsave(plot = suppfig11, filename = "figures/suppfig11.png", device = "png", units = "cm", height = 14, width = 16)
-ggsave(plot = suppfig11, filename = "figures/suppfig11.pdf", device = "pdf", units = "cm", height = 14, width = 16)
-
+fig1f
 ```
 
-## Supplementary figure 12
+New HIV infections
+
+```{r fig1g, echo=FALSE}
+fig1g<- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "NewAdultHIV",
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("New HIV infections (thousands)", labels =(function(l) {round(l/1e3,1)}),expand = c(0, 0)) +
+  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("New HIV infections\n(thousands; 15+ years)")
+fig1g
+```
+
+AIDS-related deaths
+
+```{r fig1h, echo=FALSE}
+fig1h<- art_needs_costs %>% mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(scenario == "intervention", 
+         pitc_reduction_year == 2025, 
+         indicator == "TotalAIDSdeathsadult",
+         year >= 2020, 
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("AIDS-deaths (thousands)", labels =(function(l) {round(l/1e3,1)}),expand = c(0, 0)) +
+  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("AIDS-deaths\n(thousands; 15+ years)")
+fig1h
+```
+
 New infections, AIDS-deaths, starting ART and total ART over time
 
 ```{r suppfig12, echo = FALSE}

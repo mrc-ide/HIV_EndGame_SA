@@ -15,27 +15,50 @@ source("R/cluster_function_orderly.R")
 setwd("~/Documents/HIV_EndGame_SA/THEMBISAv18")
 system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
 system("./thembisa")
+for (i in c(0, 25, 50, 75, 100)) {
+  run_on_cluster(pitc_reduction_years = 2025, 
+                 pitc_reduction_percentage = i,
+                 condom_usage_reduction = FALSE,
+                 condom_usage_decrease = 0,
+                 condom_decr_start = 2025,
+                 condom_usage_promotion = FALSE,
+                 condom_usage_increase = 0,
+                 condom_incr_start = 2025,
+                 art_coverage_increase = FALSE,
+                 art_interrupt_rate_decrease = 0,
+                 art_incr_start = 2025,
+                 art_coverage_decrease = FALSE,
+                 art_interrupt_rate_increase = 0,
+                 art_decr_start = 2025,
+                 cumulative_years_list = c(9, 49),
+                 summary_name = paste0("costs_", i) 
+  )
+}
 
-run_on_cluster(pitc_reduction_years = 2025, 
-               pitc_reduction_percentage = c(0, 25, 50, 75, 100),
-               condom_usage_reduction = FALSE,
-               condom_usage_decrease = 0,
-               condom_decr_start = 2025,
-               condom_usage_promotion = FALSE,
-               condom_usage_increase = 0,
-               condom_incr_start = 2025,
-               art_coverage_increase = FALSE,
-               art_interrupt_rate_decrease = 0,
-               art_incr_start = 2025,
-               art_coverage_decrease = FALSE,
-               art_interrupt_rate_increase = 0,
-               art_decr_start = 2025,
-               cumulative_years_list = c(9, 49),
-               summary_name = "costs" 
-)
 
-cumulative_costs <- read_csv("results/cumulative_costs.csv")
-cost_summary <- read_csv("results/costs.csv")
+cumulative_costs_0 <- read_csv("results/cumulative_costs_0.csv")
+cumulative_costs_25 <- read_csv("results/cumulative_costs_25.csv")
+cumulative_costs_50 <- read_csv("results/cumulative_costs_50.csv")
+cumulative_costs_75 <- read_csv("results/cumulative_costs_75.csv")
+cumulative_costs_100 <- read_csv("results/cumulative_costs_100.csv")
+
+cumulative_costs <- bind_rows(cumulative_costs_0, cumulative_costs_25, 
+                              cumulative_costs_50, cumulative_costs_75,
+                              cumulative_costs_100)
+write_csv(cumulative_costs, "~/Documents/clean_results/cumulative_costs.csv")
+
+cost_summary_0 <- read_csv("results/costs_0.csv")
+cost_summary_25 <- read_csv("results/costs_25.csv")
+cost_summary_50 <- read_csv("results/costs_50.csv")
+cost_summary_75 <- read_csv("results/costs_75.csv")
+cost_summary_100 <- read_csv("results/costs_100.csv")
+
+cost_summary <- bind_rows(cost_summary_0, cost_summary_25,
+                          cost_summary_50, cost_summary_75,
+                          cost_summary_100)
+
+write_csv(cost_summary, "~/Documents/clean_results/cost_summary.csv")
+
 # plwh_summary <- read_csv("results/plwh_on_art.csv")
 # smoothed annual costs over time
 
@@ -830,6 +853,9 @@ percent_combo <- ggarrange(annual_cost_combo, percent_change, ncol = 2, common.l
 ggsave(plot = percent_combo, filename = "figures/percent_combo.png", device = "png", 
        units = "cm", height = 20, width = 20)
 
+ggsave(plot = percent_combo, filename = "figures/percent_combo.pdf", device = "pdf", 
+       units = "cm", height = 20, width = 20)
+
 # big_combo <- ggarrange(annual_cost_combo, cum_costs, ncol = 2, common.legend = TRUE, legend = "right",
 #                        widths = c(4,8.3), heights = c(4,8.3), align = "hv", labels = "AUTO")
 # ggsave(plot = big_combo, filename = "figures/big_combo.png", device = "png", 
@@ -1150,6 +1176,13 @@ ggsave(plot = total_annual_costs,
        width = 21, 
        height = 15,
        device = "png", 
+       units = "cm")
+
+ggsave(plot = total_annual_costs, 
+       filename = "figures/total_annual_costs.pdf", 
+       width = 21, 
+       height = 15,
+       device = "pdf", 
        units = "cm")
 
 cost_summary %>% 

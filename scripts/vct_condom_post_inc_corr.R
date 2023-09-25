@@ -29,6 +29,16 @@ names(vctcondom_posterior) <- "vct_condom_posterior"
 HIVinc15to49_2100 <- HIVinc15to49 %>% filter(year == 2100)
 HIVinc15to49_2100 <- rename(HIVinc15to49_2100, HIVinc2100 = value)
 
+# filter by year in 2025
+HIVinc15to49_2025 <- HIVinc15to49 %>% filter(year == 2025)
+HIVinc15to49_2025<- rename(HIVinc15to49_2025, HIVinc2025 = value)
+
+# filter by year in 2050
+HIVinc15to49_2050 <- HIVinc15to49 %>% filter(year == 2050)
+HIVinc15to49_2050<- rename(HIVinc15to49_2050, HIVinc2050 = value)
+
+
+
 # join dfs together
 vctcondom_correlation <- cbind(HIVinc15to49_2100, vctcondom_posterior)
 

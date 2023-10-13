@@ -66,6 +66,8 @@ const int CalibARTcoverage = 1; // 1 = calibrate to ARV metabolite data
 const int CalibMarriageData = 0; // 1 = calibrate to marriage data
 const int UTTretention = 0; // 1 = toggle HIV Investment Case 95% ART coverage by 2025 scenario
 double UTTretval = 0.002; // adjusment to ART retention in HIV Investment Case 95% ART coverage by 2025 scenario
+const int DiscontinuePrEP = 0; // 1 = toggle PrEP to discontinue in future year
+int DiscPrEPyear = 2025; // future year in which PrEP is discontinued
 
 //=============================================================================
 // Parameters in the 'Adult assumptions' sheet
@@ -1570,6 +1572,7 @@ PostOutputArray Prev10to14F(31);*/
 // HIV incidence outputs
 PostOutputArray NewHIVinFSW(116);
 PostOutputArray NewHIVclients(116);
+PostOutputArray NewHIVinMSM(116);
 PostOutputArray HIVinc0to14(116);
 PostOutputArray HIVinc15to49(116);
 PostOutputArray HIVinc15to49adj(116);
@@ -1589,7 +1592,7 @@ PostOutputArray HIVinc15plusM(116);
 PostOutputArray HIVinc15plusF(116);
 PostOutputArray HIVinc2000(18); // HIV incidence by age, sex in 2000
 PostOutputArray HIVinc2010(18); // HIV incidence by age, sex in 2010
-PostOutputArray PAFforCSW(41);
+PostOutputArray PAFforCSW(116);
 PostOutputArray HIVincFSW(116);
 PostOutputArray HIVincMSM(116);
 PostOutputArray ANCincidence(116);
@@ -1945,6 +1948,7 @@ PostOutputArray MenOnPrEP(116);
 PostOutputArray WomenOnPrEP(116);
 PostOutputArray FSWonPrEP(116);
 PostOutputArray MSMonPrEP(116);
+PostOutputArray PrEPeligibleMSM(116);
 PostOutputArray AGYWonPrEP(116);
 PostOutputArray NewPrEP_M(116);
 PostOutputArray NewPrEP_F(116);
@@ -2027,6 +2031,7 @@ PostOutputArray TotSexWorkers(116);
 PostOutputArray SWsexActs(116);
 PostOutputArray SWsexActsProt(116);
 PostOutputArray FSWonART(116);
+PostOutputArray MSMonART(116);
 PostOutputArray DiscordantARTelig(116);
 PostOutputArray DiscordantPrEPelig(116);
 PostOutputArray OnARTover500(116);

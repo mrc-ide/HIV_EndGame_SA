@@ -6661,10 +6661,12 @@ void UpdatePrEPandVM()
 			}
 		}
 	}
-	else if (CurrYear > PrEPdataYr + 5){ CurrPrEPrateFSW = UltPrEPrateFSW; }
+	else if (CurrYear > PrEPdataYr + 5){ CurrPrEPrateFSW = UltPrEPrateFSW;}
 	else if (CurrYear > PrEPdataYr){ CurrPrEPrateFSW = StoredPrEPrateFSW + (UltPrEPrateFSW - StoredPrEPrateFSW) *
 		(CurrYear - PrEPdataYr) / 5.0; }
 	else if(CurrMonth == 0){ CurrPrEPrateFSW = 0.0; }
+	if (DiscontinuePrEP == 1 && (CurrYear > PrEPdataYr + 5)){
+		CurrPrEPrateFSW = 0.0;}
 	if ((TotStartingPrEP[iy] > 0 || (FixedUncertainty == 1 && CurrYear > PrEPdataYr)) && CurrMonth == 0){
 		GetPrEPrateFSW();
 	}
@@ -9896,6 +9898,7 @@ void ResultsAtStartOfYr()
 			}
 		}
 		DiagnosedHIV_FSW.out[CurrSim - 1][iy] = Temp2 / (Temp1 + Temp2);
+		FSWonART.out[CurrSim - 1][iy] = Temp3;
 		ARTcoverageFSW.out[CurrSim-1][iy] = Temp3 / (Temp1 + Temp2);
 		// Cascade indicators for MSM
 		Temp1 = 0.0;
@@ -9925,6 +9928,7 @@ void ResultsAtStartOfYr()
 			}
 		}
 		DiagnosedHIV_MSM.out[CurrSim - 1][iy] = Temp2 / (Temp1 + Temp2);
+		MSMonART.out[CurrSim - 1][iy] = Temp3;
 		ARTcoverageMSM.out[CurrSim - 1][iy] = Temp3 / (Temp1 + Temp2);
 	}
 
@@ -10496,7 +10500,8 @@ void GetPrEPrateFSW()
 		if (PrEPeligFSW > 0.0){ PrEPcoverageFSW.out[CurrSim - 1][iy] = FSWonPrEP.out[CurrSim - 1][iy] / PrEPeligFSW; }
 		tempMSM = 0.0;
 		for (ia = 0; ia < 81; ia++){ tempMSM += PrEPeligMSM[ia][0] + PrEPeligMSM[ia][1]; }
-		if (tempMSM > 0.0){ PrEPcoverageMSM.out[CurrSim - 1][iy] = MSMonPrEP.out[CurrSim - 1][iy] / tempMSM; }
+		if (tempMSM > 0.0){ PrEPcoverageMSM.out[CurrSim - 1][iy] = MSMonPrEP.out[CurrSim - 1][iy] / tempMSM; 
+		PrEPeligibleMSM.out[CurrSim - 1][iy] = tempMSM;}
 		temp = 0.0;
 		for (ia = 0; ia < 15; ia++){ temp += PrEPeligOther[ia][0][1] + PrEPeligOther[ia][1][1]; }
 		if (temp > 0.0){ PrEPcoverageAGYW.out[CurrSim - 1][iy] = AGYWonPrEP.out[CurrSim - 1][iy] / temp; }
@@ -13164,6 +13169,7 @@ void ResultsAtEndOfYr2()
 
 	// HIV incidence in key populations
 	HIVincFSW.out[CurrSim - 1][iy] = NewHIVinFSW.out[CurrSim - 1][iy] / NegFSW.out[CurrSim - 1][iy];
+	NewHIVinMSM.out[CurrSim - 1][iy] = HIVincMSM.out[CurrSim - 1][iy];
 	HIVincMSM.out[CurrSim - 1][iy] = HIVincMSM.out[CurrSim - 1][iy] / NegMSM.out[CurrSim - 1][iy];
 
 	// Incidence:prevalence ratio
@@ -16463,7 +16469,7 @@ void RunSample()
     // PrevPreg40to49.RecordSample("PrevPreg40to49.txt");
     // ANCbias.RecordSample("ANCbias.txt");
     // ErrorVariance.RecordSample("ErrorVar.txt");
-    // PrevFSW.RecordSample("PrevFSW.txt");
+    PrevFSW.RecordSample("PrevFSW.txt");
 	//PrevFSW15to24.RecordSample("PrevFSW15to24.txt");
 	//PrevFSW25plus.RecordSample("PrevFSW25plus.txt");
     // NegFSW.RecordSample("NegFSW.txt");
@@ -16490,13 +16496,29 @@ void RunSample()
 	Prev10to14M.RecordSample("Prev10to14M.txt");
 	Prev10to14F.RecordSample("Prev10to14F.txt");*/
 	/*MSMprev18to24.RecordSample("MSMprev18to24.txt");
-	MSMprev25plus.RecordSample("MSMprev25plus.txt");
-	MSMprev18plus.RecordSample("MSMprev18plus.txt");*/
+	MSMprev25plus.RecordSample("MSMprev25plus.txt");*/
+	MSMprev18plus.RecordSample("MSMprev18plus.txt");
 
 	// Write HIV incidence outputs to text files
   NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
   NewHIVclients.RecordSample("NewHIVclients.txt");
+  NewHIVinMSM.RecordSample("NewHIVinMSM.txt");
   NewAdultHIV.RecordSample("NewAdultHIV.txt");
+  NewHIV15F.RecordSample("NewHIV15F.txt");
+  NewHIV15M.RecordSample("NewHIV15M.txt");
+  NewHIV15to24.RecordSample("NewHIV15to24.txt");
+  NewHIV15to24F.RecordSample("NewHIV15to24F.txt");
+  NewHIV15to24M.RecordSample("NewHIV15to24M.txt");
+  NewHIV15to49.RecordSample("NewHIV15to49.txt");
+  NewHIV15to49F.RecordSample("NewHIV15to49F.txt");
+  NewHIV15to49M.RecordSample("NewHIV15to49M.txt");
+  NewHIV25to49.RecordSample("NewHIV25to49.txt");
+  NewHIV25to49F.RecordSample("NewHIV25to49F.txt");
+  NewHIV25to49M.RecordSample("NewHIV25to49M.txt");
+  NewHIV50.RecordSample("NewHIV50.txt");
+  NewHIV50F.RecordSample("NewHIV50F.txt");
+  NewHIV50M.RecordSample("NewHIV50M.txt");
+  NewHIVU15.RecordSample("NewHIVU15.txt");
 	HIVinc0to14.RecordSample("HIVinc0to14.txt");
 	HIVinc15to49.RecordSample("HIVinc15to49.txt");
 	HIVinc15to49M.RecordSample("HIVinc15to49M.txt");
@@ -16509,6 +16531,8 @@ void RunSample()
 	HIVinc50M.RecordSample("HIVinc50M.txt");
 	HIVinc15plusM.RecordSample("HIVinc15plusM.txt");
 	HIVinc15plusF.RecordSample("HIVinc15plusF.txt");
+	HIVincFSW.RecordSample("HIVincFSW.txt"); 
+	HIVincMSM.RecordSample("HIVincMSM.txt");
 	/*HIVinc2000.RecordSample("HIVinc2000.txt");
 	HIVinc2010.RecordSample("HIVinc2010.txt");
 	PAFforCSW.RecordSample("PAFforCSW.txt");
@@ -16607,6 +16631,8 @@ void RunSample()
 	ARTcoverageDiag15.RecordSample("ARTcoverageDiag15.txt");
 	ARTcoverageDiagF.RecordSample("ARTcoverageDiagF.txt");
 	ARTcoverageDiagM.RecordSample("ARTcoverageDiagM.txt");
+	ARTcoverageMSM.RecordSample("ARTcoverageMSM.txt");
+	ARTcoverageFSW.RecordSample("ARTcoverageFSW.txt");
 	/*NewARTunder200.RecordSample("NewARTunder200.txt");
 	NewART200to349.RecordSample("NewART200to349.txt");
 	NewART350to499.RecordSample("NewART350to499.txt");
@@ -16619,6 +16645,7 @@ void RunSample()
 	TotalART3to5.RecordSample("TotalART3to5.txt");
 	TotalART6to9.RecordSample("TotalART6to9.txt");
 	TotalART10to14.RecordSample("TotalART10to14.txt");
+	MSMonART.RecordSample("MSMonART.txt");
 
 	/*TotalARTunder15.RecordSample("TotalARTunder15.txt");
 	TotUnmet15F.RecordSample("TotUnmet15F.txt");
@@ -16762,13 +16789,13 @@ void RunSample()
 	CondomUse15to24F.RecordSample("CondomUse15to24F.txt");
 	CondomUse25to49F.RecordSample("CondomUse25to49F.txt");
 	//TotProtSexActs18.RecordSample("TotProtSexActs18.txt");
-	/*MMC10to14.RecordSample("MMC10to14.txt");
+	MMC10to14.RecordSample("MMC10to14.txt");
 	MMC15to19.RecordSample("MMC15to19.txt");
 	MMC20to24.RecordSample("MMC20to24.txt");
 	MMC25to49.RecordSample("MMC25to49.txt");
 	MMCover50.RecordSample("MMCover50.txt");
 	Circumcised15to49.RecordSample("Circumcised15to49.txt");
-	AdultsEverTestedM.RecordSample("AdultsEverTestedM.txt");
+	/*AdultsEverTestedM.RecordSample("AdultsEverTestedM.txt");
 	AdultsEverTestedF.RecordSample("AdultsEverTestedF.txt");
 	BirthsDiagHIV.RecordSample("BirthsDiagHIV.txt");
 	BirthsOver500.RecordSample("BirthsOver500.txt");
@@ -16778,12 +16805,20 @@ void RunSample()
 	TotSexWorkers.RecordSample("TotSexWorkers.txt");
 	SWsexActs.RecordSample("SWsexActs.txt");
 	SWsexActsProt.RecordSample("SWsexActsProt.txt");
-	/*MenOnPrEP.RecordSample("MenOnPrEP.txt");
+	MenOnPrEP.RecordSample("MenOnPrEP.txt");
 	WomenOnPrEP.RecordSample("WomenOnPrEP.txt");
 	FSWonPrEP.RecordSample("FSWonPrEP.txt");
-	WomenOnVM.RecordSample("WomenOnVM.txt");
+	MSMonPrEP.RecordSample("MSMonPrEP.txt");
+	PrEPcoverageFSW.RecordSample("PrEPcoverageFSW.txt");
+	PrEPcoverageMSM.RecordSample("PrEPcoverageMSM.txt");
+	PrEPeligibleMSM.RecordSample("PrEPeligibleMSM.txt");
+	PrEPcoverageAGYW.RecordSample("PrEPcoverageAGYW.txt");
+	PrEPcoverageAll.RecordSample("PrEPcoverageAll.txt");
+	NewPrEP_M.RecordSample("NewPrEP_M.txt");
+	NewPrEP_F.RecordSample("NewPrEP_F.txt");
+	//WomenOnVM.RecordSample("WomenOnVM.txt");
 	AdolescOnPrEP.RecordSample("AdolescOnPrEP.txt");
-	FSWonART.RecordSample("FSWonART.txt");*/
+	FSWonART.RecordSample("FSWonART.txt");
 	//DiscordantARTelig.RecordSample("DiscordantARTelig.txt");
 	//DiscordantPrEPelig.RecordSample("DiscordantPrEPelig.txt");*/
 	OnARTover500.RecordSample("OnARTover500.txt");

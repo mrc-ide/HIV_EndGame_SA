@@ -18,7 +18,7 @@ system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -
 system("./thembisa")
 
 run_on_cluster(pitc_reduction_years = 2025, 
-               pitc_reduction_percentage = c(0,25,50,75,100),
+               pitc_reduction_percentage = c(100),
                condom_usage_reduction = FALSE,
                condom_usage_decrease = 0,
                condom_decr_start = 2025,
@@ -31,13 +31,19 @@ run_on_cluster(pitc_reduction_years = 2025,
                art_coverage_decrease = FALSE,
                art_interrupt_rate_increase = 0,
                art_decr_start = 2025,
-               cumulative_years_list = seq(0,75,1),
-               summary_name = "costs" 
+               cumulative_years_list = 50,
+               change_mmc = FALSE,
+               mmc_rel_rate = 0,
+               mmc_change_start = 2025,
+               change_prep = TRUE,
+               prep_rel_rate = 1, 
+               prep_change_start = 2025, 
+               summary_name = "prep" 
 )
 
-cumulative_costs <- read_csv("results/cumulative_costs.csv")
-cost_summary <- read_csv("results/costs.csv")
-plwh_summary <- read_csv("results/plwh_on_art.csv")
+cumulative_prep <- read_csv("results/cumulative_prep.csv")
+prep_summary <- read_csv("results/prep.csv")
+
 # smoothed annual costs over time
 
 annual_costs <- cost_summary %>% 

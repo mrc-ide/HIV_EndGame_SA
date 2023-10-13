@@ -157,14 +157,15 @@ edit_formatted_data_prev_year <- function(formatted_data, parameter_name, new_va
 }
 
 # to be included in run_thembisa_scenario_prev_year - reduces condom usage by a percentage of the previous year's
-reduce_condom_usage_prev_year  <- function(formatted_data, 
+reduce_condom_usage_prev_year  <- function(formatted_data2, 
                                            output_names, 
                                            fsw_condom_usage_decrease, 
                                            st_condom_usage_decrease,
                                            lt_condom_usage_decrease,
                                            condom_decr_years){
+  formatted_data2 <- formatted_data2
   data <- readLines("Rollout_Original.txt")
-  formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
+  # formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
   for (year in condom_decr_years){ #loops over each condom usage decrease year and changes the proportion reduction of probability
     formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_fsw", 
                                                      new_values = (1-fsw_condom_usage_decrease), 
@@ -180,14 +181,14 @@ reduce_condom_usage_prev_year  <- function(formatted_data,
 }
 
 # to be included in run_thembisa_scenario_prev_year - increases condom usage by a percentage of the previous year's
-increase_condom_usage_prev_year  <- function(formatted_data, 
+increase_condom_usage_prev_year  <- function(formatted_data2, 
                                            output_names, 
                                            fsw_condom_usage_increase, 
                                            st_condom_usage_increase,
                                            lt_condom_usage_increase,
                                            condom_incr_years){
-  data <- readLines("Rollout_Original.txt")
-  formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
+  # data <- readLines("Rollout_Original.txt")
+  # formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
   for (year in condom_incr_years){ #loops over each condom usage increase year and changes the proportion increase of probability
     formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "reduction_condom_fsw", 
                                                      new_values = (1+fsw_condom_usage_increase), 
@@ -204,8 +205,8 @@ increase_condom_usage_prev_year  <- function(formatted_data,
 
 # reduces ART interruption rate by a percentage of the previous year's rate
 reduce_art_interruption_prev_year  <- function(formatted_data2, output_names, art_interrupt_rate_decrease, art_incr_years){
-  data <- readLines("Rollout_Original.txt")
-  formatted_data2 <- format_data(data, dictionary)
+  # data <- readLines("Rollout_Original.txt")
+  # formatted_data2 <- format_data(data, dictionary)
   for (year in art_incr_years){
     formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_art_by_year", 
                                                      new_values = (1-art_interrupt_rate_decrease), 
@@ -219,8 +220,8 @@ reduce_art_interruption_prev_year  <- function(formatted_data2, output_names, ar
 
 # increases ART interruption rate by a percentage of the previous year's rate
 increase_art_interruption_prev_year  <- function(formatted_data2, output_names, art_interrupt_rate_increase, art_decr_years){
-  data <- readLines("Rollout_Original.txt")
-  formatted_data2 <- format_data(data, dictionary)
+  # data <- readLines("Rollout_Original.txt")
+  # formatted_data2 <- format_data(data, dictionary)
   for (year in art_decr_years){
     formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_art_by_year", 
                                                      new_values = (1+art_interrupt_rate_increase ), 
@@ -229,16 +230,16 @@ increase_art_interruption_prev_year  <- function(formatted_data2, output_names, 
   return(formatted_data2)
 }
 
-edit_formatted_data_maintain <- function(formatted_data, parameter_name, starting_year, final_year=2100){
+edit_formatted_data_maintain <- function(formatted_data2, parameter_name, starting_year, final_year=2100){
   # select parameter using dictionary
-  parameter <- formatted_data$data[,which(dictionary$name == parameter_name)]
+  parameter <- formatted_data2$data[,which(dictionary$name == parameter_name)]
   # Edit value
   for (i in ((starting_year)-1985):((final_year)-1985)){
     parameter[i+1] <- parameter[i]
   }
   # reassign to formatted data
-  parameter -> formatted_data$data[,which(dictionary$name == parameter_name)]
-  return(formatted_data)
+  parameter -> formatted_data2$data[,which(dictionary$name == parameter_name)]
+  return(formatted_data2)
 }
 
 # to be included in run_thembisa_scenario_prev_year
@@ -269,6 +270,93 @@ maintain_condom_usage <- function(formatted_data2,
   return(formatted_data2)
 }
 
+# reduce VMMC
+
+change_mmc_prev_year  <- function(formatted_data,
+                                  output_names,
+                                  rel_rate_mmc_10_to_14_yr,
+                                  rel_rate_mmc_15_to_19_yr,
+                                  rel_rate_mmc_20_to_24_yr,
+                                  rel_rate_mmc_25_to_49_yr,
+                                  rel_rate_mmc_over_50_yr,
+                                  mmc_change_years,
+                                  mmc_rel_rate){
+  # data <- readLines("Rollout_Original.txt")
+  # formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
+  for (year in mmc_change_years){ #loops over each condom usage decrease year and changes the proportion reduction of probability
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data, "rel_rate_mmc_10_to_14_yr", 
+                                                     new_values = (1 - mmc_rel_rate), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_mmc_15_to_19_yr", 
+                                                     new_values = (1 - mmc_rel_rate), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_mmc_20_to_24_yr", 
+                                                     new_values = (1 - mmc_rel_rate), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_mmc_25_to_49_yr", 
+                                                     new_values = (1 - mmc_rel_rate), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_mmc_over_50_yr", 
+                                                     new_values = (1 - mmc_rel_rate), 
+                                                     starting_year = year)
+  }
+  return(formatted_data2)
+}
+
+# maintains mmc after reducing it temporariliy
+maintain_mmc <- function(formatted_data2, 
+                                  output_names, 
+                                  mmc_maintenance_years){
+  for (year in mmc_maintenance_years){ #loops over each condom usage maintenance year and makes all years the same value as last reduction
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_mmc_10_to_14_yr", 
+                                                    starting_year = year)
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_mmc_15_to_19_yr", 
+                                                    starting_year = year)
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_mmc_20_to_24_yr",
+                                                    starting_year = year)
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_mmc_25_to_49_yr",
+                                                    starting_year = year)
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_mmc_over_50_yr",
+                                                    starting_year = year)
+  }
+  return(formatted_data2)
+}
+
+# reduce PrEP
+
+change_prep_prev_year  <- function(formatted_data,
+                                  output_names,
+                                  rel_rate_prep_msm_over_20,
+                                  rel_rate_prep_women_over_20,
+                                  prep_change_years,
+                                  prep_rel_rate){
+  # data <- readLines("Rollout_Original.txt")
+  # formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
+  for (year in prep_change_years){ #loops over each prep decrease year and changes the proportion reduction of probability
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data, "rel_rate_prep_msm_over_20", 
+                                                     new_values = (1 - prep_rel_rate), 
+                                                     starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_prep_women_over_20", 
+                                                     new_values = (1 - prep_rel_rate), 
+                                                     starting_year = year)
+    
+  }
+  return(formatted_data2)
+}
+
+# maintains prep after reducing it temporariliy
+maintain_prep <- function(formatted_data2, 
+                         output_names, 
+                         prep_maintenance_years){
+  for (year in prep_maintenance_years){ #loops over each prep maintenance year and makes all years the same value as last reduction
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_prep_msm_over_20", 
+                                                    starting_year = year)
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_prep_women_over_20", 
+                                                    starting_year = year)
+  }
+  return(formatted_data2)
+}
+
 run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
                                             condom_usage_reduction,
                                             fsw_condom_usage_decrease, 
@@ -288,6 +376,14 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
                                             art_interrupt_rate_increase,
                                             art_decr_years,
                                             art_maintenance_years,
+                                            change_mmc,
+                                            mmc_rel_rate,
+                                            mmc_change_years,
+                                            mmc_maintenance_years,
+                                            change_prep,
+                                            prep_rel_rate,
+                                            prep_change_years,
+                                            prep_maintenance_years,
                                             output_names, 
                                             base_rate_reduction){
   data <- readLines("Rollout_Original.txt")
@@ -325,6 +421,47 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
                                                      condom_incr_years)
     formatted_data2 <- maintain_condom_usage(formatted_data2, output_names,
                                              condom_maintenance_years)
+  }
+  if (change_mmc == TRUE & !change_prep){
+    formatted_data2 <- change_mmc_prev_year(formatted_data2, output_names,
+                                            rel_rate_mmc_10_to_14_yr,
+                                            rel_rate_mmc_15_to_19_yr,
+                                            rel_rate_mmc_20_to_24_yr,
+                                            rel_rate_mmc_25_to_49_yr,
+                                            rel_rate_mmc_over_50_yr,
+                                            mmc_change_years,
+                                            mmc_rel_rate)
+    formatted_data2 <- maintain_mmc(formatted_data2, output_names,
+                                             mmc_maintenance_years)
+    
+  }
+  if (change_prep == TRUE & !change_mmc){
+    formatted_data2 <- change_prep_prev_year(formatted_data2, output_names,
+                                             rel_rate_prep_msm_over_20,
+                                             rel_rate_prep_women_over_20,
+                                             prep_change_years,
+                                             prep_rel_rate)
+    formatted_data2 <- maintain_prep(formatted_data2, output_names,
+                                     prep_maintenance_years)
+  }
+  if (change_mmc & change_prep){
+    formatted_data2 <- change_mmc_prev_year(formatted_data2, output_names,
+                                            rel_rate_mmc_10_to_14_yr,
+                                            rel_rate_mmc_15_to_19_yr,
+                                            rel_rate_mmc_20_to_24_yr,
+                                            rel_rate_mmc_25_to_49_yr,
+                                            rel_rate_mmc_over_50_yr,
+                                            mmc_change_years,
+                                            mmc_rel_rate)
+    formatted_data2 <- maintain_mmc(formatted_data2, output_names,
+                                    mmc_maintenance_years)
+    formatted_data2 <- change_prep_prev_year(formatted_data2, output_names,
+                                             rel_rate_prep_msm_over_20,
+                                             rel_rate_prep_women_over_20,
+                                             prep_change_years,
+                                             prep_rel_rate)
+    formatted_data2 <- maintain_prep(formatted_data2, output_names,
+                                     prep_maintenance_years)
   }
   if (!is.na(pitc_reduction_year)){
     formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 

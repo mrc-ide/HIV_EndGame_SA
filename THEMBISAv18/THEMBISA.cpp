@@ -9220,6 +9220,7 @@ void ResultsAtStartOfYr()
 				Temp2 = 0.0;
 			}
 		}
+		TotalMSM.out[CurrSim - 1][iy] = Temp2;
 		MSMprev25plus.out[CurrSim - 1][iy] = 1.0 - (Temp1 / Temp2);
 		MSMpropn18to24.out[CurrSim - 1][iy] = Temp3 / (Temp3 + Temp2);
 		MSMprev18plus.out[CurrSim - 1][iy] = MSMpropn18to24.out[CurrSim - 1][iy] * MSMprev18to24.out[CurrSim - 1][iy] +
@@ -9964,6 +9965,9 @@ void ResultsAtStartOfYr()
 				MLU_STM.RegPrEP[ia] + MLC_STM.RegPrEP[ia];
 		}
 		MSMonPrEP.out[CurrSim - 1][iy] = Temp1;
+		GenAdultOnPrEP.out[CurrSim - 1][iy] = (MenOnPrEP.out[CurrSim - 1][iy] + 
+		WomenOnPrEP.out[CurrSim - 1][iy]) - (FSWonPrEP.out[CurrSim - 1][iy] + 
+		AGYWonPrEP.out[CurrSim - 1][iy] + MSMonPrEP.out[CurrSim - 1][iy]);
 	}
 
 	// Additional outputs for Investment Case
@@ -13171,6 +13175,7 @@ void ResultsAtEndOfYr2()
 	HIVincFSW.out[CurrSim - 1][iy] = NewHIVinFSW.out[CurrSim - 1][iy] / NegFSW.out[CurrSim - 1][iy];
 	NewHIVinMSM.out[CurrSim - 1][iy] = HIVincMSM.out[CurrSim - 1][iy];
 	HIVincMSM.out[CurrSim - 1][iy] = HIVincMSM.out[CurrSim - 1][iy] / NegMSM.out[CurrSim - 1][iy];
+	HIVincClients.out[CurrSim - 1][iy] = NewHIVclients.out[CurrSim - 1][iy] / NegClients.out[CurrSim - 1][iy];
 
 	// Incidence:prevalence ratio
 	IncPrevRatio.out[CurrSim - 1][iy] = TotalNewHIV.out[CurrSim - 1][iy] / TotalHIV.out[CurrSim - 1][iy];
@@ -16477,6 +16482,21 @@ void RunSample()
     // NegClients.RecordSample("NegClients.txt");
 	TotalHIV.RecordSample("TotalHIV.txt");
   TotHIV15.RecordSample("TotHIV15.txt");
+  TotHIV15M.RecordSample("TotHIV15M.txt");
+	TotHIV15F.RecordSample("TotHIV15F.txt");
+	TotPaedHIV.RecordSample("TotPaedHIV.txt");
+	TotHIV15to24.RecordSample("TotHIV15to24.txt");
+	TotHIV15to24M.RecordSample("TotHIV15to24M.txt");
+	TotHIV15to24F.RecordSample("TotHIV15to24F.txt");
+	TotHIV15to49.RecordSample("TotHIV15to49.txt");
+	TotHIV15to49M.RecordSample("TotHIV15to49M.txt");
+	TotHIV15to49F.RecordSample("TotHIV15to49F.txt");
+	TotHIV25to49.RecordSample("TotHIV25to49.txt");
+	TotHIV25to49M.RecordSample("TotHIV25to49M.txt");
+	TotHIV25to49F.RecordSample("TotHIV25to49F.txt");
+	TotHIV50plus.RecordSample("TotHIV50plus.txt");
+	TotHIV50plusM.RecordSample("TotHIV50plusM.txt");
+	TotHIV50plusF.RecordSample("TotHIV50plusF.txt");
     // Prev15to24.RecordSample("Prev15to24.txt");
   Prev15to49.RecordSample("Prev15to49.txt");
     // Prev25plus.RecordSample("Prev25plus.txt");
@@ -16498,6 +16518,7 @@ void RunSample()
 	/*MSMprev18to24.RecordSample("MSMprev18to24.txt");
 	MSMprev25plus.RecordSample("MSMprev25plus.txt");*/
 	MSMprev18plus.RecordSample("MSMprev18plus.txt");
+	TotalMSM.RecordSample("TotalMSM.txt");
 
 	// Write HIV incidence outputs to text files
   NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
@@ -16523,16 +16544,20 @@ void RunSample()
 	HIVinc15to49.RecordSample("HIVinc15to49.txt");
 	HIVinc15to49M.RecordSample("HIVinc15to49M.txt");
 	HIVinc15to49F.RecordSample("HIVinc15to49F.txt");
+	HIVinc15to24.RecordSample("HIVinc15to24.txt");
 	HIVinc15to24M.RecordSample("HIVinc15to24M.txt");
 	HIVinc15to24F.RecordSample("HIVinc15to24F.txt");
 	HIVinc25to49M.RecordSample("HIVinc25to49M.txt");
 	HIVinc25to49F.RecordSample("HIVinc25to49F.txt");
+	HIVinc25to49.RecordSample("HIVinc25to49.txt");
 	HIVinc50F.RecordSample("HIVinc50F.txt");
 	HIVinc50M.RecordSample("HIVinc50M.txt");
+	HIVinc50.RecordSample("HIVinc50.txt");
 	HIVinc15plusM.RecordSample("HIVinc15plusM.txt");
 	HIVinc15plusF.RecordSample("HIVinc15plusF.txt");
 	HIVincFSW.RecordSample("HIVincFSW.txt"); 
 	HIVincMSM.RecordSample("HIVincMSM.txt");
+	HIVincClients.RecordSample("HIVincClients.txt");
 	/*HIVinc2000.RecordSample("HIVinc2000.txt");
 	HIVinc2010.RecordSample("HIVinc2010.txt");
 	PAFforCSW.RecordSample("PAFforCSW.txt");
@@ -16809,6 +16834,8 @@ void RunSample()
 	WomenOnPrEP.RecordSample("WomenOnPrEP.txt");
 	FSWonPrEP.RecordSample("FSWonPrEP.txt");
 	MSMonPrEP.RecordSample("MSMonPrEP.txt");
+	AGYWonPrEP.RecordSample("AGYWonPrEP.txt");
+	GenAdultOnPrEP.RecordSample("GenAdultOnPrEP.txt");
 	PrEPcoverageFSW.RecordSample("PrEPcoverageFSW.txt");
 	PrEPcoverageMSM.RecordSample("PrEPcoverageMSM.txt");
 	PrEPeligibleMSM.RecordSample("PrEPeligibleMSM.txt");
@@ -16834,8 +16861,8 @@ void RunSample()
 	TotBirthDiagnosed.RecordSample("TotBirthDiagnosed.txt");*/
 
 	/*GetSummaryOutputs("SummaryOutput.txt");
-	GetAddedOutputs("AddnalOutput.txt");
-	GetOutputsByAge("OutputByAge.txt");*/
+	GetAddedOutputs("AddnalOutput.txt");*/
+	GetOutputsByAge("OutputByAge.txt");
 }
 
 void ReadPriors()

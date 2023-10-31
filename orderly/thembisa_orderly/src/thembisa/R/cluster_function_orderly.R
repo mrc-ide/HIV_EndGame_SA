@@ -34,7 +34,8 @@ run_on_cluster <- function(pitc_reduction_years,
                     "AIDSdeathsAdultM", "MalesOver15", "FemalesOver15", 
                     "TotalART15F", "TotalART15M",
                     "TotHIV15", "StartingART_M15", "StartingART_F15", 
-                    "TotProtSexActs", "TotSexActs", "MenOnPrEP", "WomenOnPrEP",
+                    "TotProtSexActs", "TotSexActs", "SWsexActs", 
+                    "SWsexActsProt","MenOnPrEP", "WomenOnPrEP",
                     "PrEPcoverageFSW", "PrEPcoverageMSM", 
                     "PrEPcoverageAGYW", "PrEPcoverageAll", "NewPrEP_M", "NewPrEP_F",
                     "Circumcised15to49", "ARTcoverageAdult", "MSMprev18plus",
@@ -46,7 +47,13 @@ run_on_cluster <- function(pitc_reduction_years,
                     "NewHIV15to24", "NewHIV15to24F", "NewHIV15to24M", "NewHIV15to49", 
                     "NewHIV15to49F", "NewHIV15to49M", "NewHIV25to49", "NewHIV25to49F", 
                     "NewHIV25to49M", "NewHIV50", "NewHIV50F", "NewHIV50M", "NewHIVU15",
-                    "PrEPeligibleMSM"
+                    "PrEPeligibleMSM", "TotHIV15M", "TotHIV15F", "TotPaedHIV", "TotHIV15to24",
+                    "TotHIV15to24M", "TotHIV15to24F", "TotHIV15to49", "TotHIV15to49M", 
+                    "TotHIV15to49F", "TotHIV25to49", "TotHIV25to49M", "TotHIV25to49F", 
+                    "TotHIV50plus", "TotHIV50plusM", "TotHIV50plusF", "TotalMSM", "AGYWonPrEP",
+                    "GenAdultOnPrEP", "HIVinc0to14", "HIVinc15to24", "HIVinc15to24F", "HIVinc15to24M",
+                    "HIVinc25to49", "HIVinc25to49F", "HIVinc25to49M", "HIVinc50", "HIVinc50F", "HIVinc50M",
+                    "HIVincClients"
                     )
   
   # create empty folder for results
@@ -314,7 +321,7 @@ run_on_cluster <- function(pitc_reduction_years,
   df <- df %>%
     pivot_wider(names_from = indicator) %>%
     mutate(CondomUsage = ((TotProtSexActs/TotSexActs)*100)) %>%
-    #mutate(FSWCondomUsage = ((SWsexActsProt/SWsexActs)*100)) %>%
+    mutate(CondomUsageFSW = ((SWsexActsProt/SWsexActs)*100)) %>%
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
 
   df$test_reduction <- 100 - as.integer(df$test_reduction)

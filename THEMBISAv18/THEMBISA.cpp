@@ -9510,6 +9510,79 @@ void ResultsAtStartOfYr()
 			Temp2 += TotalSexuallyExp[ia + 10][1] * Temp3;
 		}
 		CondomUse15to24F.out[CurrSim - 1][iy] = Temp2 / Temp1;
+		
+		// By MSM 15-24
+		Temp1 = 0.0;
+		Temp2 = 0.0;
+		for (ia = 5; ia<15; ia++){
+			Temp3 = 0.0; // Condom use at indiv age
+			Temp3 += MHU_STM.NegNoHCT[ia] + MHU_STM.NegPastHCT[ia] + // Negative STM 
+			MHC_STM.NegNoHCT[ia] + MHC_STM.NegPastHCT[ia] +
+			MLU_STM.NegNoHCT[ia] + MLU_STM.NegPastHCT[ia] +
+			MLC_STM.NegNoHCT[ia] + MLC_STM.NegPastHCT[ia] + 
+			MHU_STM.RegPrEP[ia] + MHC_STM.RegPrEP[ia] + 
+			MLU_STM.RegPrEP[ia] + MLC_STM.RegPrEP[ia];
+			for (is = 0; is<5; is++){ // Positive STM adjusted by relative unprotected sex
+				Temp3 += (MHU_STM.PosNoHCT[ia][is] + MHC_STM.PosNoHCT[ia][is] + 
+				MLU_STM.PosNoHCT[ia][is] + MLC_STM.PosNoHCT[ia][is]) * RelativeUnprot[is] +
+				(MHU_STM.PosHCTpreHIV[ia][is] + MHC_STM.PosHCTpreHIV[ia][is] +
+				MLU_STM.PosHCTpreHIV[ia][is] + MLC_STM.PosHCTpreHIV[ia][is]) * RelativeUnprot[is+5] + 
+				(MHU_STM.PosDiagnosedPreART[ia][is] + MHC_STM.PosDiagnosedPreART[ia][is] +
+				MLU_STM.PosDiagnosedPreART[ia][is] + MLC_STM.PosDiagnosedPreART[ia][is]) * RelativeUnprot[is+10] + 
+				(MHU_STM.OnARTpre500[ia][is] + MHC_STM.OnARTpre500[ia][is] +
+				MLU_STM.OnARTpre500[ia][is] + MLC_STM.OnARTpre500[ia][is]) * RelativeUnprot[is+15] + 
+				(MHU_STM.OnART500[ia][is] + MHC_STM.OnART500[ia][is] +
+				MLU_STM.OnART500[ia][is] + MLC_STM.OnART500[ia][is]) * RelativeUnprot[is+20] + 
+				(MHU_STM.OnART350[ia][is] + MHC_STM.OnART350[ia][is] +
+				MLU_STM.OnART350[ia][is] + MLC_STM.OnART350[ia][is]) * RelativeUnprot[is+25] + 
+				(MHU_STM.OnART200[ia][is] + MHC_STM.OnART200[ia][is] +
+				MLU_STM.OnART200[ia][is] + MLC_STM.OnART200[ia][is]) * RelativeUnprot[is+30];}
+			for (is = 0; is<4; is++){
+				Temp3 += (MHU_STM.StoppedART[ia][is] + MHC_STM.StoppedART[ia][is] +
+				MLU_STM.StoppedART[ia][is] + MLC_STM.StoppedART[ia][is]) * RelativeUnprot[is+35];
+			}	
+			Temp3 = 1.0 - (1.0 - ProbCondomST[ia][0]) * Temp3 / (MHU_STM.Total[ia] + MHC_STM.Total[ia]  + MLU_STM.Total[ia]  + MLC_STM.Total[ia]);
+			Temp1 += MHU_STM.Total[ia] + MHC_STM.Total[ia]  + MLU_STM.Total[ia]  + MLC_STM.Total[ia];
+			Temp2 += (MHU_STM.Total[ia] + MHC_STM.Total[ia]  + MLU_STM.Total[ia]  + MLC_STM.Total[ia]) * Temp3;
+		}
+		CondomUse15to24MSM.out[CurrSim - 1][iy] = Temp2 / Temp1;
+
+		// By MSM 15-49
+		Temp1 = 0.0;
+		Temp2 = 0.0;
+		for (ia = 5; ia<40; ia++){
+			Temp3 = 0.0; // Condom use at indiv age
+			Temp3 += MHU_STM.NegNoHCT[ia] + MHU_STM.NegPastHCT[ia] +
+			MHC_STM.NegNoHCT[ia] + MHC_STM.NegPastHCT[ia] +
+			MLU_STM.NegNoHCT[ia] + MLU_STM.NegPastHCT[ia] +
+			MLC_STM.NegNoHCT[ia] + MLC_STM.NegPastHCT[ia] +
+			MHU_STM.RegPrEP[ia] + MHC_STM.RegPrEP[ia] + 
+			MLU_STM.RegPrEP[ia] + MLC_STM.RegPrEP[ia];
+			for (is = 0; is<5; is++){
+				Temp3 += (MHU_STM.PosNoHCT[ia][is] + MHC_STM.PosNoHCT[ia][is] + 
+				MLU_STM.PosNoHCT[ia][is] + MLC_STM.PosNoHCT[ia][is]) * RelativeUnprot[is] +
+				(MHU_STM.PosHCTpreHIV[ia][is] + MHC_STM.PosHCTpreHIV[ia][is] +
+				MLU_STM.PosHCTpreHIV[ia][is] + MLC_STM.PosHCTpreHIV[ia][is]) * RelativeUnprot[is+5] + 
+				(MHU_STM.PosDiagnosedPreART[ia][is] + MHC_STM.PosDiagnosedPreART[ia][is] +
+				MLU_STM.PosDiagnosedPreART[ia][is] + MLC_STM.PosDiagnosedPreART[ia][is]) * RelativeUnprot[is+10] + 
+				(MHU_STM.OnARTpre500[ia][is] + MHC_STM.OnARTpre500[ia][is] +
+				MLU_STM.OnARTpre500[ia][is] + MLC_STM.OnARTpre500[ia][is]) * RelativeUnprot[is+15] + 
+				(MHU_STM.OnART500[ia][is] + MHC_STM.OnART500[ia][is] +
+				MLU_STM.OnART500[ia][is] + MLC_STM.OnART500[ia][is]) * RelativeUnprot[is+20] + 
+				(MHU_STM.OnART350[ia][is] + MHC_STM.OnART350[ia][is] +
+				MLU_STM.OnART350[ia][is] + MLC_STM.OnART350[ia][is]) * RelativeUnprot[is+25] + 
+				(MHU_STM.OnART200[ia][is] + MHC_STM.OnART200[ia][is] +
+				MLU_STM.OnART200[ia][is] + MLC_STM.OnART200[ia][is]) * RelativeUnprot[is+30];}
+			for (is = 0; is<4; is++){
+				Temp3 += (MHU_STM.StoppedART[ia][is] + MHC_STM.StoppedART[ia][is] +
+				MLU_STM.StoppedART[ia][is] + MLC_STM.StoppedART[ia][is]) * RelativeUnprot[is+35];
+			}	
+			Temp3 = 1.0 - (1.0 - ProbCondomST[ia][0]) * Temp3 / (MHU_STM.Total[ia] + MHC_STM.Total[ia]  + MLU_STM.Total[ia]  + MLC_STM.Total[ia]);
+			Temp1 += MHU_STM.Total[ia] + MHC_STM.Total[ia]  + MLU_STM.Total[ia]  + MLC_STM.Total[ia];
+			Temp2 += (MHU_STM.Total[ia] + MHC_STM.Total[ia]  + MLU_STM.Total[ia]  + MLC_STM.Total[ia]) * Temp3;
+		}
+		CondomUse15to49MSM.out[CurrSim - 1][iy] = Temp2 / Temp1;
+
 		// By women 25-49 (slight simplification: ignoring virgins in 25-29 age group)
 		Temp1 = 0.0;
 		Temp2 = 0.0;
@@ -16813,6 +16886,8 @@ void RunSample()
 	TotProtSexActs.RecordSample("TotProtSexActs.txt");
 	CondomUse15to24F.RecordSample("CondomUse15to24F.txt");
 	CondomUse25to49F.RecordSample("CondomUse25to49F.txt");
+	CondomUse15to24MSM.RecordSample("CondomUse15to24MSM.txt");
+	CondomUse15to49MSM.RecordSample("CondomUse15to49MSM.txt");
 	//TotProtSexActs18.RecordSample("TotProtSexActs18.txt");
 	MMC10to14.RecordSample("MMC10to14.txt");
 	MMC15to19.RecordSample("MMC15to19.txt");

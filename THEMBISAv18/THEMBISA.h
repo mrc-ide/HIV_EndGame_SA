@@ -66,7 +66,7 @@ const int CalibARTcoverage = 1; // 1 = calibrate to ARV metabolite data
 const int CalibMarriageData = 0; // 1 = calibrate to marriage data
 const int UTTretention = 0; // 1 = toggle HIV Investment Case 95% ART coverage by 2025 scenario
 double UTTretval = 0.002; // adjusment to ART retention in HIV Investment Case 95% ART coverage by 2025 scenario
-const int DiscontinuePrEP = 1; // 1 = toggle PrEP to discontinue in future year
+const int DiscontinuePrEP = 1	; // 1 = toggle PrEP to discontinue in future year
 int DiscPrEPyear = 2025; // future year in which PrEP is discontinued
 
 //=============================================================================
@@ -1863,6 +1863,8 @@ PostOutputArray TotBirthsART(116);
 PostOutputArray TotBirthsARTconcep(116);
 PostOutputArray FSWcondomUse(116);
 PostOutputArray CondomUse15to24F(116);
+PostOutputArray CondomUse15to24MSM(116);
+PostOutputArray CondomUse15to49MSM(116);
 PostOutputArray CondomUse25to49F(116);
 PostOutputArray PrevTested05(20);
 PostOutputArray PrevTested08(20);

@@ -124,8 +124,9 @@ ggsave(filename = "unaids_figures/No_PrEP.png", device = "png", units = "cm", he
 prep_summary %>% 
   mutate(test_reduction = as.factor(test_reduction)) %>% 
   filter(pitc_reduction_year == 2025, 
-         indicator == "PrEPcoverageAll",
-         year >= 2020, 
+         indicator == "PrEPcoverageMSM",
+         year >= 2010,
+         year <= 2100,
          test_reduction %in% c(0), 
          scenario %in% c("intervention")) %>% 
   ggplot(aes(year, mean, group = scenario, fill = scenario)) +
@@ -134,20 +135,22 @@ prep_summary %>%
   geom_line(data = filter(
     baseline_summary,
     pitc_reduction_year == 2025,
-    indicator == "PrEPcoverageAGYW",
-    year >= 2020,
+    indicator == "PrEPcoverageMSM",
+    year >= 2010,
+    year <= 2100,
     test_reduction %in% c(0),
     scenario %in% c("baseline")),
     aes(year, mean, colour = scenario)) +
   geom_ribbon(data = filter(
     baseline_summary,
     pitc_reduction_year == 2025,
-    indicator == "PrEPcoverageAGYW",
-    year >= 2020,
+    indicator == "PrEPcoverageMSM",
+    year >= 2010,
+    year <= 2100,
     test_reduction %in% c(0),
     scenario %in% c("baseline")),
     aes(year, ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  scale_x_continuous("", expand = c(0, 0)) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2000, 2100, 20)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -156,17 +159,17 @@ prep_summary %>%
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
         legend.title = element_text(size = 11)) +
-  scale_y_continuous("Adults on PrEP (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "PrEP reduced"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("PrEP coverage (%; 15+ years)") 
+  scale_y_continuous("PrEP coverage (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
+  scale_fill_brewer("Scenario", labels = c("Status quo", "No PrEP"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("PrEP coverage (MSM)") 
 
 ggsave(filename = "unaids_figures/PrEP_coverage.png", device = "png", units = "cm", height = 13, width = 15)
 
 prep_summary %>% 
   mutate(test_reduction = as.factor(test_reduction)) %>% 
   filter(pitc_reduction_year == 2025, 
-         indicator == "FSWonPrEP",
-         year >= 2020,
+         indicator == "ARTcoverageMSM",
+         year >= 2010,
          year < 2100,
          test_reduction %in% c(0), 
          scenario %in% c("intervention")) %>% 
@@ -176,20 +179,20 @@ prep_summary %>%
   geom_line(data = filter(
     baseline_summary,
     pitc_reduction_year == 2025,
-    indicator == "FSWonPrEP",
-    year >= 2020,
+    indicator == "ARTcoverageMSM",
+    year >= 2010,
     test_reduction %in% c(0),
     scenario %in% c("baseline")),
     aes(year, mean, colour = scenario)) +
   geom_ribbon(data = filter(
     baseline_summary,
     pitc_reduction_year == 2025,
-    indicator == "FSWonPrEP",
-    year >= 2020,
+    indicator == "ARTcoverageMSM",
+    year >= 2010,
     test_reduction %in% c(0),
     scenario %in% c("baseline")),
     aes(year, ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  scale_x_continuous("", expand = c(0, 0)) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2000, 2100, 20)) +
   expand_limits(y=0) + theme_classic() + 
   theme(axis.text = element_text(size = 11), 
         axis.title.y = element_text(size = 11), 
@@ -198,9 +201,9 @@ prep_summary %>%
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
         legend.title = element_text(size = 11)) +
-  scale_y_continuous("Adults starting PrEP",expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Adults starting PrEP (15+ years)") 
+  scale_y_continuous("ART coverage (%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,1)})) +
+  scale_fill_brewer("Scenario", aesthetics = c("colour", "fill"), palette = "Set1", labels = c("Status quo", "No PrEP from 2025")) + 
+  ggtitle("ART coverage (%) \n(MSM)") 
 
 #### changed mmc ####
 setwd("~/Documents/HIV_EndGame_SA/orderly/thembisa_orderly/src/thembisa")
@@ -1418,7 +1421,7 @@ HIVinc15to49 <- all_scenarios %>%
          ) %>% 
   ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  geom_line(aes(colour = modeled_scenario), show.legend = F) +
   geom_hline(aes(yintercept = 0.001), lty = "dotted") +
   scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
   expand_limits(y=0) + theme_classic() + 
@@ -1428,7 +1431,8 @@ HIVinc15to49 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}), breaks = c(0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008),expand = c(0, 0)) +
   scale_fill_brewer("", labels = c("Status quo", "No PrEP", "No PrEP + No VMMC", "No PrEP + No VMMC +\nCondom usage 28%","No PrEP + No VMMC +\nCondom usage 23%"),aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV incidence \n(per 1000; 15-49 years)") 
@@ -1458,7 +1462,8 @@ HIVinc15to49_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}), breaks = c(0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008),expand = c(0, 0)) +
   scale_fill_brewer("", labels = c("Status quo", "95-95-95", "95-95-95 + No PrEP + No VMMC") ,aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV incidence \n(per 1000; 15-49 years)") 
@@ -1744,7 +1749,9 @@ HIVincFSW <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm"), 
+        legend.position = "bottom") +
   scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", labels = c("Status quo", "No PrEP", "No PrEP + No VMMC", "No PrEP + No VMMC +\nCondom usage 28%","No PrEP + No VMMC +\nCondom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV incidence \n(per 1000; FSW)") 
@@ -1774,7 +1781,8 @@ HIVincFSW_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm"), legend.position = "bottom") +
   scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", labels = c("Status quo", "95-95-95", "95-95-95 +\nNo PrEP + No VMMC"), aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV incidence \n(per 1000; FSW)") 
@@ -2000,7 +2008,8 @@ HIVincMSM <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", labels = c("Status quo", "No PrEP", "No PrEP + No VMMC", "No PrEP + No VMMC +\nCondom usage 28%","No PrEP + No VMMC +\nCondom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV incidence \n(per 1000; MSM)") 
@@ -2030,7 +2039,8 @@ HIVincMSM_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", labels = c("Status quo", "95-95-95", "95-95-95 +\nNo PrEP + No VMMC"), aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV incidence \n(per 1000; MSM)") 
@@ -2297,7 +2307,8 @@ Prev15to49 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV prevalence (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV prevalence \n(15-49 years)") 
@@ -2327,7 +2338,8 @@ Prev15to49_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV prevalence (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV prevalence \n(15-49 years)") 
@@ -2465,7 +2477,8 @@ PrevFSW <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV prevalence (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV prevalence \n(FSW)") 
@@ -2495,7 +2508,8 @@ PrevFSW_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV prevalence (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV prevalence \n(FSW)") 
@@ -2528,7 +2542,8 @@ MSMprev18plus <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV prevalence (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV prevalence \n(MSM 18+ years)") 
@@ -2558,7 +2573,8 @@ MSMprev18plus_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("HIV prevalence (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV prevalence \n(MSM 18+ years)") 
@@ -2590,7 +2606,8 @@ ARTcoverageAdult <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("ART coverage (%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)}), limits = c(0.5,1)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("ART coverage\n(15+ years)")
@@ -2620,7 +2637,8 @@ ARTcoverageAdult_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("ART coverage (%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)}), limits = c(0.5,1)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("ART coverage\n(15+ years)")
@@ -2738,7 +2756,8 @@ ARTcoverageFSW <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("ART coverage (%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)}), limits = c(0.5,1)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("ART coverage\n(FSW)")
@@ -2768,7 +2787,8 @@ ARTcoverageFSW_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("ART coverage (%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)}), limits = c(0.5,1)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("ART coverage\n(FSW)")
@@ -2800,7 +2820,8 @@ ARTcoverageMSM <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("ART coverage (%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)}), limits = c(0.5,1)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("ART coverage\n(MSM)")
@@ -2830,7 +2851,8 @@ ARTcoverageMSM_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("ART coverage (%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)}), limits = c(0.5,1)) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("ART coverage\n(MSM)")
@@ -3068,7 +3090,7 @@ CondomUsage <- all_scenarios %>%
          indicator == "CondomUsage",
          year >= 2020, 
          test_reduction %in% c(0), 
-         modeled_scenario %in% c("Status quo", "No PrEP + No VMMC + Condom usage 28%", 
+         modeled_scenario %in% c("Status quo","No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
                                  "No PrEP + No VMMC + Condom usage 23%")
   ) %>%  
   ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
@@ -3082,17 +3104,45 @@ CondomUsage <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("Protected sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l,2)}), limits = c(0,50)) +
-  scale_fill_brewer("", labels = c("Status quo", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  scale_fill_brewer("", labels = c("Status quo","No PrEP", "No PrEP + No VMMC", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("Condom usage\n(15+ years)")
 
 CondomUsage
 
 ggsave(filename = "unaids_figures/condomusage.png", device = "png", units = "cm", height = 17, width = 20)
 
+CondomUsage_art95 <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "CondomUsage",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         !modeled_scenario %in% c("No PrEP", "No PrEP + No VMMC",
+                                  "No PrEP + No VMMC + Condom usage 28%",
+                                  "No PrEP + No VMMC + Condom usage 23%")
+         ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("Protected sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l,2)}), limits = c(0,50)) +
+  scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Condom usage\n(15+ years)")
 
-#### plot condom usage adults ####
+CondomUsage_art95
+#### plot condom usage FSW ####
 
 CondomUsageFSW <- all_scenarios %>% 
   mutate(test_reduction = as.factor(test_reduction)) %>% 
@@ -3100,7 +3150,98 @@ CondomUsageFSW <- all_scenarios %>%
          indicator == "CondomUsageFSW",
          year >= 2020, 
          test_reduction %in% c(0), 
-         modeled_scenario %in% c("Status quo", "No PrEP + No VMMC + Condom usage 28%", 
+         modeled_scenario %in% c("Status quo", "No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
+                                 "No PrEP + No VMMC + Condom usage 23%")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("Protected FSW sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l,2)}), limits = c(0,100)) +
+  scale_fill_brewer("", labels = c("Status quo","No PrEP","No PrEP + No VMMC", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Condom usage\n(FSW - old approach)")
+
+CondomUsageFSW
+
+ggsave(filename = "unaids_figures/condomusage.png", device = "png", units = "cm", height = 17, width = 20)
+
+
+
+#### comparing fsw condom usage from different calculation ####
+
+FSWcondomUse <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator %in% c("FSWcondomUse"),
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo","No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
+                                 "No PrEP + No VMMC + Condom usage 23%")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("Protected FSW sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l*100,2)}), limits = c(0,1)) +
+  scale_fill_brewer("", labels = c("Status quo","No PrEP","No PrEP + No VMMC", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Condom usage\n(FSW)")
+FSWcondomUse
+
+FSWcondomUse_art95 <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator %in% c("FSWcondomUse"),
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         !modeled_scenario %in% c("No PrEP", "No PrEP + No VMMC",
+                                  "No PrEP + No VMMC + Condom usage 28%",
+                                  "No PrEP + No VMMC + Condom usage 23%")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("Protected FSW sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l*100,2)}), limits = c(0,1)) +
+  scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Condom usage\n(FSW)")
+FSWcondomUse_art95
+
+#### plot condom usage MSM 15 to 24####
+
+CondomUse15to24MSM <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "CondomUse15to24MSM",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
                                  "No PrEP + No VMMC + Condom usage 23%")
   ) %>%  
   ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
@@ -3115,13 +3256,76 @@ CondomUsageFSW <- all_scenarios %>%
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
         legend.title = element_text(size = 11)) +
-  scale_y_continuous("Protected FSW sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l,2)}), limits = c(0,100)) +
-  scale_fill_brewer("", labels = c("Status quo", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Condom usage\n(FSW)")
+  scale_y_continuous("Condom usage (%)",expand = c(0, 0), labels =(function(l) {round(l*100,2)}), limits = c(0,1)) +
+  scale_fill_brewer("", labels = c("Status quo", "No PrEP + No VMMC", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Condom usage\n(MSM; 15-24 years)")
 
-CondomUsageFSW
+CondomUse15to24MSM
 
-ggsave(filename = "unaids_figures/condomusage.png", device = "png", units = "cm", height = 17, width = 20)
+ggsave(filename = "unaids_figures/condomusageMSM15to24.png", device = "png", units = "cm", height = 17, width = 20)
+
+
+#### plot condom usage MSM 15 to 49 ####
+
+CondomUse15to49MSM <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "CondomUse15to49MSM",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo", "No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
+                                 "No PrEP + No VMMC + Condom usage 23%")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("Condom usage (%)",expand = c(0, 0), labels =(function(l) {round(l*100,2)}), limits = c(0,1)) +
+  scale_fill_brewer("", labels = c("Status quo","No PrEP","No PrEP + No VMMC", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Condom usage\n(MSM; 15-49 years)")
+
+CondomUse15to49MSM
+
+ggsave(filename = "unaids_figures/condomusageMSM15to49.png", device = "png", units = "cm", height = 17, width = 20)
+
+#### plot condom usage MSM 15 to 49 ####
+
+CondomUse15to49MSM_art95 <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "CondomUse15to49MSM",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo","No PrEP + No VMMC", "95-95-95", 
+                                 "95-95-95 + No PrEP + No VMMC")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("Condom usage (%)",expand = c(0, 0), labels =(function(l) {round(l*100,2)}), limits = c(0,1)) +
+  scale_fill_brewer("", labels = c("Status quo","No PrEP + No VMMC", "95-95-95", "95-95-95 + No PrEP + No VMMC"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Condom usage\n(MSM; 15-49 years)")
+
+CondomUse15to49MSM_art95
 
 #### plot HIV PrEP coverage 15-49 ####
 
@@ -3131,7 +3335,8 @@ PrEPcoverageAll <- all_scenarios %>%
          indicator == "PrEPcoverageAll",
          year >= 2020, 
          test_reduction %in% c(0), 
-         modeled_scenario %in% c("Status quo", "No PrEP")
+         modeled_scenario %in% c("Status quo", "No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
+                                 "No PrEP + No VMMC + Condom usage 23%")
   ) %>%  
   ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
@@ -3144,7 +3349,8 @@ PrEPcoverageAll <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("PrEP coverage(%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("PrEP coverage\n(Adults; 15-49 years)")
@@ -3152,6 +3358,34 @@ PrEPcoverageAll <- all_scenarios %>%
 PrEPcoverageAll
 
 ggsave(plot = PrEPcoverageAll, filename = "unaids_figures/prep_coverage_15to49.png", device = "png", units = "cm", height = 17, width = 20)
+
+PrEPcoverageAll_art95 <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "PrEPcoverageAll",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo","No PrEP + No VMMC", "95-95-95", 
+                                 "95-95-95 + No PrEP + No VMMC")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("PrEP coverage(%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)})) +
+  scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("PrEP coverage\n(Adults; 15-49 years)")
+
+PrEPcoverageAll_art95
 
 #### plot HIV PrEP coverage FSW ####
 
@@ -3161,7 +3395,8 @@ PrEPcoverageFSW <- all_scenarios %>%
          indicator == "PrEPcoverageFSW",
          year >= 2020, 
          test_reduction %in% c(0), 
-         modeled_scenario %in% c("Status quo", "No PrEP")
+         modeled_scenario %in% c("Status quo", "No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
+                                 "No PrEP + No VMMC + Condom usage 23%")
   ) %>%  
   ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
@@ -3174,12 +3409,40 @@ PrEPcoverageFSW <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("PrEP coverage(%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("PrEP coverage\n(FSW)")
 
 ggsave(filename = "unaids_figures/prep_coverage_fsw.png", device = "png", units = "cm", height = 17, width = 20)
+
+
+PrEPcoverageFSW_art95 <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "PrEPcoverageFSW",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo","No PrEP + No VMMC", "95-95-95", 
+                                 "95-95-95 + No PrEP + No VMMC")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("PrEP coverage(%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)})) +
+  scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("PrEP coverage\n(FSW)")
 
 #### plot HIV PrEP coverage MSM ####
 
@@ -3189,7 +3452,8 @@ PrEPcoverageMSM <- all_scenarios %>%
          indicator == "PrEPcoverageMSM",
          year >= 2020, 
          test_reduction %in% c(0), 
-         modeled_scenario %in% c("Status quo", "No PrEP")
+         modeled_scenario %in% c("Status quo", "No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
+                                 "No PrEP + No VMMC + Condom usage 23%")
   ) %>%  
   ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
@@ -3202,12 +3466,39 @@ PrEPcoverageMSM <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("PrEP coverage(%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("PrEP coverage\n(MSM)")
 
 ggsave(plot = PrEPcoverageMSM, filename = "unaids_figures/prep_coverage_msm.png", device = "png", units = "cm", height = 17, width = 20)
+
+PrEPcoverageMSM_art95 <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "PrEPcoverageMSM",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo","No PrEP + No VMMC", "95-95-95", 
+                                 "95-95-95 + No PrEP + No VMMC")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
+  scale_y_continuous("PrEP coverage(%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)})) +
+  scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("PrEP coverage\n(MSM)")
 
 #### plot PrEP coverage AGYW ####
 
@@ -3368,7 +3659,8 @@ NewAdultHIV <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("New HIV infections (thousands)",expand = c(0, 0), labels =(function(l) {round(l/1e3,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("New HIV infections\n(thousands; 15+ years)")
@@ -3398,7 +3690,8 @@ NewAdultHIV_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("New HIV infections (thousands)",expand = c(0, 0), labels =(function(l) {round(l/1e3,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("New HIV infections\n(thousands; 15+ years)")
@@ -3430,7 +3723,8 @@ NewHIVinFSW <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("New HIV infections (thousands)",expand = c(0, 0), labels =(function(l) {round(l/1e3,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("New HIV infections\n(thousands; FSW)")
@@ -3460,7 +3754,8 @@ NewHIVinFSW_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("New HIV infections (thousands)",expand = c(0, 0), labels =(function(l) {round(l/1e3,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("New HIV infections\n(thousands; FSW)")
@@ -3493,7 +3788,8 @@ NewHIVinMSM <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("New HIV infections (thousands)",expand = c(0, 0), labels =(function(l) {round(l/1e3,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("New HIV infections\n(thousands; MSM)")
@@ -3523,7 +3819,8 @@ NewHIVinMSM_art95 <- all_scenarios %>%
         legend.text = element_text(size = 11), 
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
+        legend.title = element_text(size = 11),
+        plot.margin = margin(r = 0.5,unit = "cm")) +
   scale_y_continuous("New HIV infections (thousands)",expand = c(0, 0), labels =(function(l) {round(l/1e3,2)})) +
   scale_fill_brewer("", aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("New HIV infections\n(thousands; MSM)")
@@ -3578,17 +3875,44 @@ ggsave(filename = "unaids_figures/msm_art95_combined.png", device = "png", units
 
 #### incidence, prevalence, ART coverage, New HIV infections ADULTS, FSW, MSM #### 
 
-ggarrange(HIVinc15to49,HIVincFSW,HIVincMSM, Prev15to49, PrevFSW,MSMprev18plus, NewAdultHIV,NewHIVinFSW, NewHIVinMSM,ARTcoverageAdult, ARTcoverageFSW, ARTcoverageMSM,
-          common.legend = TRUE, legend = "bottom", labels = "AUTO", ncol = 3, nrow = 4)
-ggsave(filename = "unaids_figures/all_populations_combined.png", device = "png", units = "cm", height = 25, width = 20.5)
+ggarrange(HIVinc15to49,HIVincFSW,HIVincMSM, Prev15to49, PrevFSW,MSMprev18plus, NewAdultHIV,NewHIVinFSW, NewHIVinMSM,ARTcoverageAdult, ARTcoverageFSW, ARTcoverageMSM,PrEPcoverageAll, PrEPcoverageFSW, PrEPcoverageMSM, CondomUsage, FSWcondomUse, CondomUse15to49MSM, 
+          common.legend = TRUE, legend = "right", ncol = 3, nrow = 6)
+ggsave(filename = "unaids_figures/all_populations_combined.png", device = "png", units = "cm", height = 30, width = 30)
 
 #### incidence, prevalence, ART coverage, New HIV infections ADULTS, FSW, MSM - ART 95#### 
 
-ggarrange(HIVinc15to49_art95,HIVincFSW_art95,HIVincMSM_art95, Prev15to49_art95, PrevFSW_art95,MSMprev18plus_art95, NewAdultHIV_art95,NewHIVinFSW_art95, NewHIVinMSM_art95,ARTcoverageAdult_art95, ARTcoverageFSW_art95, ARTcoverageMSM_art95,
-          common.legend = TRUE, legend = "bottom", labels = "AUTO", ncol = 3, nrow = 4)
-ggsave(filename = "unaids_figures/all_populations_ART95_combined.png", device = "png", units = "cm", height = 25, width = 20.5)
+ggarrange(HIVinc15to49_art95,HIVincFSW_art95,HIVincMSM_art95, Prev15to49_art95, PrevFSW_art95,MSMprev18plus_art95, NewAdultHIV_art95,NewHIVinFSW_art95, NewHIVinMSM_art95,ARTcoverageAdult_art95, ARTcoverageFSW_art95, ARTcoverageMSM_art95,PrEPcoverageAll_art95, PrEPcoverageFSW_art95, PrEPcoverageMSM_art95,CondomUsage_art95, FSWcondomUse_art95, CondomUse15to49MSM_art95, 
+          common.legend = TRUE, legend = "right", ncol = 3, nrow = 6)
+ggsave(filename = "unaids_figures/all_populations_ART95_combined.png", device = "png", units = "cm", height = 30, width = 25)
+
+#### incidence  ADULTS, FSW, MSM #### 
+
+incidences <- ggarrange(HIVinc15to49,HIVincFSW,HIVincMSM, legend = "none", ncol = 3, nrow = 1)
+incidences
+#### prevalence  ADULTS, FSW, MSM #### 
+prevalences <- ggarrange(Prev15to49, PrevFSW,MSMprev18plus, legend = "none", ncol = 3, nrow = 1)
+
+#### new infections  ADULTS, FSW, MSM #### 
+new_infections <- ggarrange(NewAdultHIV,NewHIVinFSW, NewHIVinMSM, legend = "none", ncol = 3, nrow = 1)
+
+#### ART coverage  ADULTS, FSW, MSM #### 
+art_coverages <- ggarrange(ARTcoverageAdult, ARTcoverageFSW, ARTcoverageMSM, legend = "none", ncol = 3, nrow = 1)
+
+#### PrEP coverage  ADULTS, FSW, MSM #### 
+prep_coverages <- ggarrange(PrEPcoverageAll, PrEPcoverageFSW, PrEPcoverageMSM, legend = "none", ncol = 3, nrow = 1)
+
+#### Condom use  ADULTS, FSW, MSM #### 
+condom_uses <- ggarrange(CondomUsage, FSWcondomUse, CondomUse15to49MSM, legend = "none", ncol = 3, nrow = 1)
+
+#### combined ADULTS, FSW, MSM #### 
+
+legend_inc <- get_legend(ARTcoverageMSM) 
+
+ggarrange(incidences, prevalences, new_infections, art_coverages, prep_coverages, condom_uses, 
+          nrow = 6, common.legend = TRUE, legend = "bottom",legend.grob = legend_inc)
 
 
+ggsave(filename = "unaids_figures/all_populations_combined.png", device = "png", units = "cm", height = 30, width = 21)
 
 #### PrEP coverage all, PrEP coverage FSW, PrEP coverage MSM, PrEP coverage AGYW #### 
 
@@ -4134,7 +4458,47 @@ new_infection_age_sex_lines <- all_scenarios %>%
 new_infection_age_sex_lines
 ggsave(new_infection_age_sex_lines, filename = "unaids_figures/new_infection_age_sex_lines.png", device = "png", units = "cm", height = 10, width = 22)
 
-#### grid by age and sex ####
+#### new HIV infections lines - scenario by age and sex ####
+
+new_infection_age_sex_lines_by_scenario <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator %in% c("NewHIVU15", "NewHIV15to24F", "NewHIV15to24M", "NewHIV25to49F",
+                          "NewHIV25to49M", "NewHIV50F", "NewHIV50M"),
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo", "No PrEP", "No PrEP + No VMMC", "95-95-95",  "95-95-95 + No PrEP + No VMMC")
+  ) %>%  
+  mutate(indicator = factor(indicator, levels = c("NewHIVU15", "NewHIV15to24F", "NewHIV15to24M", "NewHIV25to49F",
+                                                  "NewHIV25to49M", "NewHIV50F", "NewHIV50M"))) %>% 
+  ggplot(aes(year, mean, fill = modeled_scenario)) +
+  geom_line(aes(colour = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  scale_x_continuous("", expand = c(0, 1), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11),
+        strip.background = element_blank(),
+        strip.text = element_text(size = 11, face = "bold"),
+        panel.spacing = unit(1, "lines"), 
+        plot.margin = margin(r = 0.5,unit = "cm"), 
+        legend.position = "bottom") +
+  scale_y_continuous("New HIV infections\n(thousands)",expand = c(0, 0), labels =(function(l) {round(l/1e3,2)})) +
+  scale_fill_brewer("", aesthetics = c("colour", "fill"), 
+                    palette = "Set1") + 
+  ggtitle("") + 
+  facet_wrap(~factor(indicator), nrow = 1, scales = "free_y",labeller = as_labeller(c("NewHIVU15" = "0-14","NewHIV15to24F" = "15-24 Female", "NewHIV15to24M" = "15-24 Male", 
+                                                                                      "NewHIV25to49F" = "25-49 Female", "NewHIV25to49M" = "25-49 Male", "NewHIV50F" =  "50+ Female",
+                                                                                      "NewHIV50M" = "50+ Male")))
+new_infection_age_sex_lines_by_scenario
+ggsave(new_infection_age_sex_lines_by_scenario, filename = "unaids_figures/new_infection_age_sex_lines_by_scenario.png", device = "png", units = "cm", height = 10, width = 30)
+
+    #### grid by age and sex ####
 
 HIVinfectionsByAgeSex <- ggarrange(new_infections_age_sex, proportion_infections_age_sex, new_infection_age_sex_lines, 
           legend = "bottom", common.legend = TRUE, ncol =1)

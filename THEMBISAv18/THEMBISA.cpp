@@ -9599,7 +9599,73 @@ void ResultsAtStartOfYr()
 			Temp2 += TotalSexuallyExp[ia + 10][1] * Temp3;
 		}
 		CondomUse25to49F.out[CurrSim - 1][iy] = Temp2 / Temp1;
+
+		// By all women 15-49
+		Temp1 = 0.0;
+		Temp2 = 0.0;
+		for (ia = 5; ia<15; ia++){ // 15-24
+			Temp3 = 0.0; // Condom use at indiv age
+			for (is = 0; is<5; is++){
+				Temp3 += SumGroupsF[ia][is] - SumGroupsVF[ia][is];}
+			for (is = 0; is<39; is++){
+				Temp3 += (SumGroupsF[ia][is+5] - SumGroupsVF[ia][is+5]) * RelativeUnprot[is];}
+			Temp3 = 1.0 - (1.0 - (ProbCondomST[ia][1] * (TotalSexuallyExp[ia + 10][1] - TotalMarried[10 + ia][1]) +
+				ProbCondomLT[ia][1] * TotalMarried[10 + ia][1]) / TotalSexuallyExp[ia + 10][1]) * Temp3 /
+				TotalSexuallyExp[ia + 10][1];
+			Temp1 += TotalSexuallyExp[ia + 10][1];
+			Temp2 += TotalSexuallyExp[ia + 10][1] * Temp3;
+				}
+		for (ia = 15; ia<40; ia++){ // 25-49 ignoring virgins
+			Temp4 = 0.0;
+			for (is = 0; is<5; is++){
+				Temp4 += SumGroupsF[ia][is];}
+			for (is = 0; is<39; is++){
+				Temp4 += (SumGroupsF[ia][is+5]) * RelativeUnprot[is];}
+			Temp4 = 1.0 - (1.0 - (ProbCondomST[ia][1] * (TotalSexuallyExp[ia + 10][1] - TotalMarried[10 + ia][1]) +
+				ProbCondomLT[ia][1] * TotalMarried[10 + ia][1]) / TotalSexuallyExp[ia + 10][1]) * Temp4 /
+				TotalPop[ia + 10][1];
+			Temp1 += TotalSexuallyExp[ia + 10][1];
+			Temp2 += TotalSexuallyExp[ia + 10][1] * Temp4;
+			}
+		CondomUse15to49F.out[CurrSim - 1][iy] = Temp2 / Temp1;
+
+	// By all adults 15-49
+		Temp1 = 0.0;
+		Temp2 = 0.0;
+		for (ia = 5; ia<15; ia++){ // 15-24
+			Temp3 = 0.0; // Condom use at indiv age
+			for (is = 0; is<5; is++){
+				Temp3 += (SumGroupsF[ia][is] - SumGroupsVF[ia][is]) + (SumGroupsM[ia][is] - SumGroupsVM[ia][is]);}
+			for (is = 0; is<39; is++){
+				Temp3 += ((SumGroupsF[ia][is+5] - SumGroupsVF[ia][is+5]) + (SumGroupsM[ia][is+5] - SumGroupsVM[ia][is])) * RelativeUnprot[is];}
+			Temp3 = 1.0 - (1.0 - (ProbCondomST[ia][1] * (TotalSexuallyExp[ia + 10][1] - TotalMarried[10 + ia][1]) + 
+				ProbCondomST[ia][0] * (TotalSexuallyExp[ia + 10][0] - TotalMarried[10 + ia][0]) +
+				ProbCondomLT[ia][1] * TotalMarried[10 + ia][1] + 
+				ProbCondomLT[ia][0] * TotalMarried[10 + ia][0]) / 
+				(TotalSexuallyExp[ia + 10][1] + TotalSexuallyExp[ia + 10][0])) * Temp3 /
+				(TotalSexuallyExp[ia + 10][1] + TotalSexuallyExp[ia + 10][0]);
+			Temp1 += (TotalSexuallyExp[ia + 10][1] + TotalSexuallyExp[ia + 10][0]);
+			Temp2 += (TotalSexuallyExp[ia + 10][1] + TotalSexuallyExp[ia + 10][0]) * Temp3;
+			}
+		for (ia = 15; ia<40; ia++){
+			Temp4 = 0.0; // Condom use at indiv age
+			for (is = 0; is<5; is++){
+				Temp4 += (SumGroupsF[ia][is] + SumGroupsM[ia][is]);} // 25-49 ignoring virgins
+			for (is = 0; is<39; is++){
+				Temp4 += (SumGroupsF[ia][is+5] + SumGroupsM[ia][is+5]) * RelativeUnprot[is];}
+			Temp4 = 1.0 - (1.0 - (ProbCondomST[ia][1] * (TotalSexuallyExp[ia + 10][1] - TotalMarried[10 + ia][1]) + 
+				ProbCondomST[ia][0] * (TotalSexuallyExp[ia + 10][0] - TotalMarried[10 + ia][0]) +
+				ProbCondomLT[ia][1] * TotalMarried[10 + ia][1] + 
+				ProbCondomLT[ia][0] * TotalMarried[10 + ia][0]) / 
+				(TotalSexuallyExp[ia + 10][1] + TotalSexuallyExp[ia + 10][0])) * Temp4 /
+				(TotalPop[ia + 10][1] + TotalPop[ia + 10][0]);
+			Temp1 += (TotalSexuallyExp[ia + 10][1] + TotalSexuallyExp[ia + 10][0]);
+			Temp2 += (TotalSexuallyExp[ia + 10][1] + TotalSexuallyExp[ia + 10][0]) * Temp4;	
+		}
+		CondomUse15to49.out[CurrSim - 1][iy] = Temp2 / Temp1;
 	}
+
+	
 
 	// Adolescent numbers
 	/*Temp1 = 0.0;
@@ -16888,6 +16954,8 @@ void RunSample()
 	CondomUse25to49F.RecordSample("CondomUse25to49F.txt");
 	CondomUse15to24MSM.RecordSample("CondomUse15to24MSM.txt");
 	CondomUse15to49MSM.RecordSample("CondomUse15to49MSM.txt");
+	CondomUse15to49F.RecordSample("CondomUse15to49F.txt");
+	CondomUse15to49.RecordSample("CondomUse15to49.txt");
 	//TotProtSexActs18.RecordSample("TotProtSexActs18.txt");
 	MMC10to14.RecordSample("MMC10to14.txt");
 	MMC15to19.RecordSample("MMC15to19.txt");

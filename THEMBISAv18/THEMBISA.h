@@ -1866,6 +1866,8 @@ PostOutputArray CondomUse15to24F(116);
 PostOutputArray CondomUse15to24MSM(116);
 PostOutputArray CondomUse15to49MSM(116);
 PostOutputArray CondomUse25to49F(116);
+PostOutputArray CondomUse15to49F(116);
+PostOutputArray CondomUse15to49(116);
 PostOutputArray PrevTested05(20);
 PostOutputArray PrevTested08(20);
 PostOutputArray PrevTested12(20);

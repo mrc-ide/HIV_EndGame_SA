@@ -3087,7 +3087,7 @@ ggsave(filename = "unaids_figures/circumcision_15to49.png", device = "png", unit
 CondomUsage <- all_scenarios %>% 
   mutate(test_reduction = as.factor(test_reduction)) %>% 
   filter(pitc_reduction_year == 2025, 
-         indicator == "CondomUsage",
+         indicator %in% c("CondomUsage","CondomUse15to49"),
          year >= 2020, 
          test_reduction %in% c(0), 
          modeled_scenario %in% c("Status quo","No PrEP","No PrEP + No VMMC", "No PrEP + No VMMC + Condom usage 28%", 
@@ -3106,9 +3106,9 @@ CondomUsage <- all_scenarios %>%
         aspect.ratio=1, 
         legend.title = element_text(size = 11),
         plot.margin = margin(r = 0.5,unit = "cm")) +
-  scale_y_continuous("Protected sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l,2)}), limits = c(0,50)) +
+  scale_y_continuous("Protected sex acts (%)",expand = c(0, 0), labels =(function(l) {round(l*100,2)}), limits = c(0,0.5)) +
   scale_fill_brewer("", labels = c("Status quo","No PrEP", "No PrEP + No VMMC", "Condom usage 28%", "Condom usage 23%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Condom usage\n(15+ years)")
+  ggtitle("Condom usage\n(15+ years)") + facet_wrap(~indicator)
 
 CondomUsage
 

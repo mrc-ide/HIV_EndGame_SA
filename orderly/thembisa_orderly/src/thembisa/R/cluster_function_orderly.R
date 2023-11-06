@@ -53,7 +53,8 @@ run_on_cluster <- function(pitc_reduction_years,
                     "TotHIV50plus", "TotHIV50plusM", "TotHIV50plusF", "TotalMSM", "AGYWonPrEP",
                     "GenAdultOnPrEP", "HIVinc0to14", "HIVinc15to24", "HIVinc15to24F", "HIVinc15to24M",
                     "HIVinc25to49", "HIVinc25to49F", "HIVinc25to49M", "HIVinc50", "HIVinc50F", "HIVinc50M",
-                    "HIVincClients", "CondomUse15to24MSM", "CondomUse15to49MSM", "FSWcondomUse"
+                    "HIVincClients", "CondomUse15to24MSM", "CondomUse15to49MSM", "FSWcondomUse", "CondomUse15to49F",
+                    "CondomUse15to49", "CondomUse15to24F","CondomUse25to49F"
                     )
   
   # create empty folder for results
@@ -320,8 +321,8 @@ run_on_cluster <- function(pitc_reduction_years,
   # calculate condom usage for total adults and fsw-client only
   df <- df %>%
     pivot_wider(names_from = indicator) %>%
-    mutate(CondomUsage = ((TotProtSexActs/TotSexActs)*100)) %>%
-    mutate(CondomUsageFSW = ((SWsexActsProt/SWsexActs)*100)) %>%
+    mutate(CondomUsage = ((TotProtSexActs/TotSexActs))) %>%
+    mutate(CondomUsageFSW = ((SWsexActsProt/SWsexActs))) %>%
     pivot_longer(-(pitc_reduction_year:scenario), names_to = "indicator")
 
   df$test_reduction <- 100 - as.integer(df$test_reduction)

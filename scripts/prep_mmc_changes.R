@@ -4,7 +4,6 @@ library(tidyr)
 library(readr)
 library(ggplot2)
 library(gridExtra)
-library(gridExtra)
 library(metR)
 library(ggpubr)
 library(ggfx)
@@ -688,320 +687,6 @@ prep_mmc_condom28_summary %>%
 
 ggsave(filename = "unaids_figures/No_PrEP_No_VMMC_CondomUse28.png", device = "png", units = "cm", height = 13, width = 15)
 
-
-#### changed prep AND MMC + art retention improved to 85.3% ####
-setwd("~/Documents/HIV_EndGame_SA/orderly/thembisa_orderly/src/thembisa")
-source("R/cluster_function_orderly.R")
-setwd("~/Documents/HIV_EndGame_SA/THEMBISAv18")
-system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
-
-run_on_cluster(pitc_reduction_years = 2025, 
-               pitc_reduction_percentage = c(100),
-               condom_usage_reduction = FALSE,
-               condom_usage_decrease = 0,
-               condom_decr_start = 2025,
-               condom_usage_promotion = FALSE,
-               condom_usage_increase = 0,
-               condom_incr_start = 2025,
-               art_coverage_increase = TRUE,
-               art_interrupt_rate_decrease = 7,
-               art_incr_start = 2025,
-               art_coverage_decrease = FALSE,
-               art_interrupt_rate_increase = 0,
-               art_decr_start = 2025,
-               cumulative_years_list = 50,
-               change_mmc = TRUE,
-               mmc_rel_rate = 1,
-               mmc_change_start = 2025,
-               change_prep = TRUE,
-               prep_rel_rate = 1, 
-               prep_change_start = 2025, 
-               summary_name = "prep_mmc_art85" 
-)
-
-cumulative_prep_mmc_art85 <- read_csv("results/cumulative_prep_mmc_art85.csv")
-prep_mmc_art85_summary <- read_csv("results/prep_mmc_art85.csv")
-
-
-prep_mmc_art85_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "Circumcised15to49",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  ttheme(axis.text = element_text(size = 16), 
-        axis.title.y = element_blank(), 
-        axis.title.x = element_text(size = 16),
-        legend.text = element_text(size = 16), 
-        plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Circumcision coverage (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "VMMC discontinued"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Circumcision coverage\n(%; 15-49 years)") 
-
-prep_mmc_art85_summary %>%
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "PrEPcoverageAll",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_text(size = 11), 
-        axis.title.x = element_text(size = 11),
-        legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Adults on PrEP (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "PrEP reduced"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("PrEP coverage (%; 15+ years)") 
-
-prep_mmc_art85_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "CondomUsage",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_text(size = 11), 
-        axis.title.x = element_text(size = 11),
-        legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Condom usage",expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "PrEP & condom\nusage reduced &\nVMMC discontinued"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Condom usage \n(%; 15-49 years)")
-
-prep_mmc_art85_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "ARTcoverageAdult",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_text(size = 11), 
-        axis.title.x = element_text(size = 11),
-        legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("ART coverage",expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "PrEP & condom\nusage reduced &\nVMMC discontinued"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("ART coverage\n(%; 15+ years)")
-
-ggsave(filename = "unaids_figures/ARTcoverage85.png", device = "png", units = "cm", height = 13, width = 15)
-
-prep_mmc_art85_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "HIVinc15to49",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  geom_hline(aes(yintercept = 0.001), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 16), 
-        axis.title.y = element_blank(), 
-        axis.title.x = element_text(size = 16),
-        legend.text = element_text(size = 16), 
-        plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}), breaks = c(0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008),expand = c(0, 0)) +
-  scale_fill_brewer("", labels = c("Status quo", "No PrEP +\nNo VMMC +\nART coverage\nincreased to 85%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("HIV incidence \n(per 1000; 15-49 years)")
-
-ggsave(filename = "unaids_figures/No_PrEP_No_VMMC_ART85.png", device = "png", units = "cm", height = 13, width = 15)
-
-#### changed prep AND MMC + art retention improved to 91% ####
-setwd("~/Documents/HIV_EndGame_SA/orderly/thembisa_orderly/src/thembisa")
-source("R/cluster_function_orderly.R")
-setwd("~/Documents/HIV_EndGame_SA/THEMBISAv18")
-system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
-
-run_on_cluster(pitc_reduction_years = 2025, 
-               pitc_reduction_percentage = c(100),
-               condom_usage_reduction = FALSE,
-               condom_usage_decrease = 0,
-               condom_decr_start = 2025,
-               condom_usage_promotion = FALSE,
-               condom_usage_increase = 0,
-               condom_incr_start = 2025,
-               art_coverage_increase = TRUE,
-               art_interrupt_rate_decrease = 14,
-               art_incr_start = 2025,
-               art_coverage_decrease = FALSE,
-               art_interrupt_rate_increase = 0,
-               art_decr_start = 2025,
-               cumulative_years_list = 50,
-               change_mmc = TRUE,
-               mmc_rel_rate = 1,
-               mmc_change_start = 2025,
-               change_prep = TRUE,
-               prep_rel_rate = 1, 
-               prep_change_start = 2025, 
-               summary_name = "prep_mmc_art90" 
-)
-
-cumulative_prep_mmc_art90 <- read_csv("results/cumulative_prep_mmc_art90.csv")
-prep_mmc_art90_summary <- read_csv("results/prep_mmc_art90.csv")
-
-
-prep_mmc_art90_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "Circumcised15to49",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_text(size = 11), 
-        axis.title.x = element_text(size = 11),
-        legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Circumcision coverage (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "VMMC discontinued"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Circumcision coverage\n(%; 15-49 years)") 
-
-prep_mmc_art90_summary %>%
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "PrEPcoverageAll",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_text(size = 11), 
-        axis.title.x = element_text(size = 11),
-        legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Adults on PrEP (%)", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "PrEP reduced"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("PrEP coverage (%; 15+ years)") 
-
-prep_mmc_art90_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "CondomUsage",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_text(size = 11), 
-        axis.title.x = element_text(size = 11),
-        legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("Condom usage",expand = c(0, 0)) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "PrEP & condom\nusage reduced &\nVMMC discontinued"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("Condom usage \n(%; 15-49 years)")
-
-prep_mmc_art90_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "ARTcoverageAdult",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  geom_label(data = filter(prep_mmc_art90_summary,
-                          pitc_reduction_year == 2025, 
-                          indicator == "ARTcoverageAdult",
-                          year == 2035, 
-                          test_reduction %in% c(0), 
-                          scenario %in% c("intervention")),
-            aes(x = year, y = mean, label = round(100*mean,2), fill = NULL), 
-            show.legend = FALSE, label.size = NA) +scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 11), 
-        axis.title.y = element_text(size = 11), 
-        axis.title.x = element_text(size = 11),
-        legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("ART coverage",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)})) +
-  scale_fill_brewer("Scenario", labels = c("Status quo", "PrEP & condom\nusage reduced &\nVMMC discontinued"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("ART coverage\n(%; 15+ years)")
-
-prep_mmc_art90_summary %>% 
-  mutate(test_reduction = as.factor(test_reduction)) %>% 
-  filter(pitc_reduction_year == 2025, 
-         indicator == "HIVinc15to49",
-         year >= 2020, 
-         test_reduction %in% c(0), 
-         scenario %in% c("baseline", "intervention")) %>% 
-  ggplot(aes(year, mean, group = scenario, fill = scenario)) +
-  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = scenario), alpha = 0.10, show.legend = F) +
-  geom_line(aes(colour = scenario), show.legend = T) +
-  geom_hline(aes(yintercept = 0.001), lty = "dotted") +
-  scale_x_continuous("", expand = c(0, 0)) +
-  expand_limits(y=0) + theme_classic() + 
-  theme(axis.text = element_text(size = 16), 
-        axis.title.y = element_blank(), 
-        axis.title.x = element_text(size = 16),
-        legend.text = element_text(size = 16), 
-        plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
-        aspect.ratio=1, 
-        legend.title = element_text(size = 11)) +
-  scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}), breaks = c(0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008),expand = c(0, 0)) +
-  scale_fill_brewer("", labels = c("Status quo", "No PrEP +\nNo VMMC +\nART coverage\nincreased to 91%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("HIV incidence \n(per 1000; 15-49 years)")
-
-ggsave(filename = "unaids_figures/No_PrEP_No_VMMC_ART91.png", device = "png", units = "cm", height = 13, width = 15)
-
 #### changed prep AND MMC + art retention improved to 95-95-95 ####
 setwd("~/Documents/HIV_EndGame_SA/orderly/thembisa_orderly/src/thembisa")
 source("R/cluster_function_orderly.R")
@@ -1035,7 +720,6 @@ run_on_cluster(pitc_reduction_years = 2025,
 #cumulative_prep_mmc_art95 <- read_csv("results/cumulative_prep_mmc_art95.csv")
 
 prep_mmc_art95_summary <- read_csv("results/prep_mmc_art95.csv")
-
 
 prep_mmc_art95_summary %>% 
   mutate(test_reduction = as.factor(test_reduction)) %>% 
@@ -3081,6 +2765,37 @@ Circumcised15to49 <- all_scenarios %>%
 Circumcised15to49
 
 ggsave(filename = "unaids_figures/circumcision_15to49.png", device = "png", units = "cm", height = 17, width = 20)
+
+
+#### plot HIV circumcision 15-49 ####
+
+CircumcisedMSM15to49 <- all_scenarios %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+  filter(pitc_reduction_year == 2025, 
+         indicator == "CircumcisedMSM15to49",
+         year >= 2020, 
+         test_reduction %in% c(0), 
+         modeled_scenario %in% c("Status quo", "No PrEP + No VMMC")
+  ) %>%  
+  ggplot(aes(year, mean, group = modeled_scenario, fill = modeled_scenario)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = modeled_scenario), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = modeled_scenario), show.legend = T) +
+  scale_x_continuous("", expand = c(0, 0), breaks = seq(2025, 2100, 25)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Circumcision coverage(%)",expand = c(0, 0), labels =(function(l) {round(l*1e2,2)}), limits = c(0,1)) +
+  scale_fill_brewer("", labels =c("Status quo", "No VMMC"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Circumcision coverage\n(MSM; 15-49 years)")
+
+CircumcisedMSM15to49
+
+ggsave(filename = "unaids_figures/circumcision_MSM.png", device = "png", units = "cm", height = 17, width = 20)
 
 #### plot condom usage adults ####
 

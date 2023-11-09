@@ -54,7 +54,7 @@ run_on_cluster <- function(pitc_reduction_years,
                     "GenAdultOnPrEP", "HIVinc0to14", "HIVinc15to24", "HIVinc15to24F", "HIVinc15to24M",
                     "HIVinc25to49", "HIVinc25to49F", "HIVinc25to49M", "HIVinc50", "HIVinc50F", "HIVinc50M",
                     "HIVincClients", "CondomUse15to24MSM", "CondomUse15to49MSM", "FSWcondomUse", "CondomUse15to49F",
-                    "CondomUse15to49", "CondomUse15to24F","CondomUse25to49F"
+                    "CondomUse15to49", "CondomUse15to24F","CondomUse25to49F", "CircumcisedMSM15to49"
                     )
   
   # create empty folder for results

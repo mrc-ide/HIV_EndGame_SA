@@ -10300,6 +10300,15 @@ void ResultsAtStartOfYr()
 				Circumcised15to49.out[CurrSim - 1][iy] = Temp1 / Temp2; }
 		}
 		Circumcised15plus.out[CurrSim - 1][iy] = Temp1 / Temp2;
+		// Circumcsied MSM 15-49
+		Temp1 = 0.0;
+		Temp2 = 0.0;
+		for (ia = 5; ia < 39; ia++){
+			Temp1 += (MHC_STM.Total[ia] + MLC_STM.Total[ia]);
+			Temp2 += (MHC_STM.Total[ia] + MLC_STM.Total[ia] + MHU_STM.Total[ia] + MLU_STM.Total[ia]);
+		}
+		CircumcisedMSM15to49.out[CurrSim - 1][iy] = Temp1 / Temp2;
+
 		Temp1 = 0.0;
 		Temp2 = 0.0;
 		for (is = 0; is < 4; is++){ TempCD4[is] = 0.0; }
@@ -16963,6 +16972,7 @@ void RunSample()
 	MMC25to49.RecordSample("MMC25to49.txt");
 	MMCover50.RecordSample("MMCover50.txt");
 	Circumcised15to49.RecordSample("Circumcised15to49.txt");
+	CircumcisedMSM15to49.RecordSample("CircumcisedMSM15to49.txt");
 	/*AdultsEverTestedM.RecordSample("AdultsEverTestedM.txt");
 	AdultsEverTestedF.RecordSample("AdultsEverTestedF.txt");
 	BirthsDiagHIV.RecordSample("BirthsDiagHIV.txt");

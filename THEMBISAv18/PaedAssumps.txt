@@ -53,13 +53,13 @@ RRearlyPaedART
 ImmARTcorrectionP 		
 1		
 UltARTdelayC		
-33		
+44		
 MinARTdelayC		
 1		
 InterpolationStart		
-2020		
+2021		
 UltimateYr		
-2025		
+2026		
 MinMortP[3]		
 0.45	0.43	0.63
 RednLogMortP[3] 		
@@ -113,11 +113,11 @@ RRtestVirgin
 VirginTestAdjProv
 1.00
 RRtestPaedAdvanced
-12.6
+28.2
 RRtestAgePaed 
 1.80
 RetestPosP
-0.50
+0.544
 BirthSe
 0.38	0.75
 SixWeekSe

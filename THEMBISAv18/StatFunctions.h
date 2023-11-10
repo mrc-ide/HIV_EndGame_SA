@@ -5,8 +5,8 @@
 // on 4 March 2005. Last revised 22 June 2004.
 
 #include "cmath"
-// #using <mscorlib.dll>
-// using namespace std;
+#using <mscorlib.dll>
+using namespace std;
 
 double algdiv ( double *a, double *b );
 double alnrel ( double *a );
@@ -106,7 +106,7 @@ double fifdsign ( double mag, double sign );
 long fifidint ( double a );
 long fifmod ( long a, long b );
 double fpser ( double *a, double *b, double *x, double *eps );
-void ftnstop ( const char* msg );
+void ftnstop ( char *msg );
 double gam1 ( double *a );
 void gamma_inc ( double *a, double *x, double *ans, double *qans, int *ind );
 void gamma_inc_inv ( double *a, double *x, double *x0, double *p, double *q,

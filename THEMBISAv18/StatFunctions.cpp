@@ -1,6 +1,6 @@
 // Code from the DCDFLIB library
 // Authors: Barry Brown, James Lovato, and Kathy Russell
-// Department of Biomathematics, University of Texas, Houston, Texas.
+// Department of Biomathematics, University of Texas, Houston, Texas. 
 // Downloaded from http://www.csit.fsu.edu/~burkardt/cpp_src/dcdflib/dcdflib.html,
 // on 4 March 2005. Last revised 22 June 2004.
 
@@ -10,26 +10,26 @@
 # include <cmath>
 # include <ctime>
 
-// #include "stdafx.h"
+#include "stdafx.h"
 
-// #using <mscorlib.dll>
+#using <mscorlib.dll>
 #include "StatFunctions.h"
 
-// using namespace std;
+using namespace std;
 
 double algdiv ( double *a, double *b )
 
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    ALGDIV computes ln ( Gamma ( B ) / Gamma ( A + B ) ) when 8 <= B.
 //
 //  Discussion:
 //
 //    In this algorithm, DEL(X) is the function defined by
 //
-//      ln ( Gamma(X) ) = ( X - 0.5 ) * ln ( X ) - X + 0.5 * ln ( 2 * PI )
+//      ln ( Gamma(X) ) = ( X - 0.5 ) * ln ( X ) - X + 0.5 * ln ( 2 * PI ) 
 //                      + DEL(X).
 //
 //  Parameters:
@@ -115,13 +115,13 @@ double alnrel ( double *a )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    ALNREL evaluates the function ln ( 1 + A ).
 //
 //  Reference:
 //
 //    A R DiDinato and A H Morris,
-//    Algorithm 708:
+//    Algorithm 708: 
 //    Significant Digit Computation of the Incomplete Beta Function Ratios,
 //    ACM Transactions on Mathematical Software,
 //    Volume 18, 1993, pages 360-373.
@@ -159,15 +159,15 @@ double apser ( double *a, double *b, double *x, double *eps )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    APSER computes the incomplete beta ratio I(SUB(1-X))(B,A).
 //
 //  Discussion:
 //
 //    APSER is used only for cases where
 //
-//      A <= min ( EPS, EPS * B ),
-//      B * X <= 1, and
+//      A <= min ( EPS, EPS * B ), 
+//      B * X <= 1, and 
 //      X <= 0.5.
 //
 //  Parameters:
@@ -211,19 +211,19 @@ double bcorr ( double *a0, double *b0 )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BCORR evaluates DEL(A0) + DEL(B0) - DEL(A0 + B0).
 //
 //  Discussion:
 //
 //    The function DEL(A) is a remainder term that is used in the expression:
 //
-//      ln ( Gamma ( A ) ) = ( A - 0.5 ) * ln ( A )
+//      ln ( Gamma ( A ) ) = ( A - 0.5 ) * ln ( A ) 
 //        - A + 0.5 * ln ( 2 * PI ) + DEL ( A ),
 //
 //    or, in other words, DEL ( A ) is defined as:
 //
-//      DEL ( A ) = ln ( Gamma ( A ) ) - ( A - 0.5 ) * ln ( A )
+//      DEL ( A ) = ln ( Gamma ( A ) ) - ( A - 0.5 ) * ln ( A ) 
 //        + A + 0.5 * ln ( 2 * PI ).
 //
 //  Parameters:
@@ -424,7 +424,7 @@ double beta_frac ( double *a, double *b, double *x, double *y, double *lambda,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BETA_FRAC evaluates a continued fraction expansion for IX(A,B).
 //
 //  Parameters:
@@ -448,7 +448,7 @@ double beta_frac ( double *a, double *b, double *x, double *y, double *lambda,
 
   bfrac = beta_rcomp ( a, b, x, y );
 
-  if ( bfrac == 0.0e0 )
+  if ( bfrac == 0.0e0 ) 
   {
     return bfrac;
   }
@@ -489,7 +489,7 @@ S10:
   r0 = r;
   r = anp1/bnp1;
 
-  if ( fabs(r-r0) <= (*eps) * r )
+  if ( fabs(r-r0) <= (*eps) * r ) 
   {
     goto S20;
   }
@@ -516,13 +516,13 @@ void beta_grat ( double *a, double *b, double *x, double *y, double *w,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BETA_GRAT evaluates an asymptotic expansion for IX(A,B).
 //
 //  Parameters:
 //
 //    Input, double *A, *B, the parameters of the function.
-//    A and B should be nonnegative.  It is assumed that 15 <= A
+//    A and B should be nonnegative.  It is assumed that 15 <= A 
 //    and B <= 1, and that B is less than A.
 //
 //    Input, double *X, *Y.  X is the argument of the
@@ -615,7 +615,7 @@ void beta_inc ( double *a, double *b, double *x, double *y, double *w,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BETA_INC evaluates the incomplete beta function IX(A,B).
 //
 //  Author:
@@ -848,7 +848,7 @@ void beta_inc_values ( int *n_data, double *a, double *b, double *x, double *fx 
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    BETA_INC_VALUES returns some values of the incomplete Beta function.
 //
@@ -908,40 +908,40 @@ void beta_inc_values ( int *n_data, double *a, double *b, double *x, double *fx 
 # define N_MAX 30
 
   double a_vec[N_MAX] = {
-     0.5E+00,  0.5E+00,  0.5E+00,  1.0E+00,
-     1.0E+00,  1.0E+00,  1.0E+00,  1.0E+00,
-     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00,
-     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00,
-     2.0E+00,  5.5E+00, 10.0E+00, 10.0E+00,
-    10.0E+00, 10.0E+00, 20.0E+00, 20.0E+00,
-    20.0E+00, 20.0E+00, 20.0E+00, 30.0E+00,
+     0.5E+00,  0.5E+00,  0.5E+00,  1.0E+00, 
+     1.0E+00,  1.0E+00,  1.0E+00,  1.0E+00, 
+     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00, 
+     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00, 
+     2.0E+00,  5.5E+00, 10.0E+00, 10.0E+00, 
+    10.0E+00, 10.0E+00, 20.0E+00, 20.0E+00, 
+    20.0E+00, 20.0E+00, 20.0E+00, 30.0E+00, 
     30.0E+00, 40.0E+00 };
-  double b_vec[N_MAX] = {
-     0.5E+00,  0.5E+00,  0.5E+00,  0.5E+00,
-     0.5E+00,  0.5E+00,  0.5E+00,  1.0E+00,
-     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00,
-     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00,
-     2.0E+00,  5.0E+00,  0.5E+00,  5.0E+00,
-     5.0E+00, 10.0E+00,  5.0E+00, 10.0E+00,
-    10.0E+00, 20.0E+00, 20.0E+00, 10.0E+00,
+  double b_vec[N_MAX] = { 
+     0.5E+00,  0.5E+00,  0.5E+00,  0.5E+00, 
+     0.5E+00,  0.5E+00,  0.5E+00,  1.0E+00, 
+     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00, 
+     2.0E+00,  2.0E+00,  2.0E+00,  2.0E+00, 
+     2.0E+00,  5.0E+00,  0.5E+00,  5.0E+00, 
+     5.0E+00, 10.0E+00,  5.0E+00, 10.0E+00, 
+    10.0E+00, 20.0E+00, 20.0E+00, 10.0E+00, 
     10.0E+00, 20.0E+00 };
-  double fx_vec[N_MAX] = {
-    0.0637686E+00, 0.2048328E+00, 1.0000000E+00, 0.0E+00,
-    0.0050126E+00, 0.0513167E+00, 0.2928932E+00, 0.5000000E+00,
-    0.028E+00,     0.104E+00,     0.216E+00,     0.352E+00,
-    0.500E+00,     0.648E+00,     0.784E+00,     0.896E+00,
-    0.972E+00,     0.4361909E+00, 0.1516409E+00, 0.0897827E+00,
-    1.0000000E+00, 0.5000000E+00, 0.4598773E+00, 0.2146816E+00,
-    0.9507365E+00, 0.5000000E+00, 0.8979414E+00, 0.2241297E+00,
+  double fx_vec[N_MAX] = { 
+    0.0637686E+00, 0.2048328E+00, 1.0000000E+00, 0.0E+00,       
+    0.0050126E+00, 0.0513167E+00, 0.2928932E+00, 0.5000000E+00, 
+    0.028E+00,     0.104E+00,     0.216E+00,     0.352E+00,     
+    0.500E+00,     0.648E+00,     0.784E+00,     0.896E+00,     
+    0.972E+00,     0.4361909E+00, 0.1516409E+00, 0.0897827E+00, 
+    1.0000000E+00, 0.5000000E+00, 0.4598773E+00, 0.2146816E+00, 
+    0.9507365E+00, 0.5000000E+00, 0.8979414E+00, 0.2241297E+00, 
     0.7586405E+00, 0.7001783E+00 };
-  double x_vec[N_MAX] = {
-    0.01E+00, 0.10E+00, 1.00E+00, 0.0E+00,
-    0.01E+00, 0.10E+00, 0.50E+00, 0.50E+00,
-    0.1E+00,  0.2E+00,  0.3E+00,  0.4E+00,
-    0.5E+00,  0.6E+00,  0.7E+00,  0.8E+00,
-    0.9E+00,  0.50E+00, 0.90E+00, 0.50E+00,
-    1.00E+00, 0.50E+00, 0.80E+00, 0.60E+00,
-    0.80E+00, 0.50E+00, 0.60E+00, 0.70E+00,
+  double x_vec[N_MAX] = { 
+    0.01E+00, 0.10E+00, 1.00E+00, 0.0E+00,  
+    0.01E+00, 0.10E+00, 0.50E+00, 0.50E+00, 
+    0.1E+00,  0.2E+00,  0.3E+00,  0.4E+00,  
+    0.5E+00,  0.6E+00,  0.7E+00,  0.8E+00,  
+    0.9E+00,  0.50E+00, 0.90E+00, 0.50E+00, 
+    1.00E+00, 0.50E+00, 0.80E+00, 0.60E+00, 
+    0.80E+00, 0.50E+00, 0.60E+00, 0.70E+00, 
     0.80E+00, 0.70E+00 };
 
   if ( *n_data < 0 )
@@ -982,9 +982,9 @@ double beta_log ( double *a0, double *b0 )
 //  Reference:
 //
 //    A R DiDinato and A H Morris,
-//    Algorithm 708:
+//    Algorithm 708: 
 //    Significant Digit Computation of the Incomplete Beta Function Ratios,
-//    ACM Transactions on Mathematical Software,
+//    ACM Transactions on Mathematical Software, 
 //    Volume 18, 1993, pages 360-373.
 //
 //  Parameters:
@@ -1094,7 +1094,7 @@ double beta_pser ( double *a, double *b, double *x, double *eps )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BETA_PSER uses a power series expansion to evaluate IX(A,B)(X).
 //
 //  Discussion:
@@ -1204,7 +1204,7 @@ double beta_rcomp ( double *a, double *b, double *x, double *y )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BETA_RCOMP evaluates X**A * Y**B / Beta(A,B).
 //
 //  Parameters:
@@ -1347,7 +1347,7 @@ double beta_rcomp1 ( int *mu, double *a, double *b, double *x, double *y )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BETA_RCOMP1 evaluates exp(MU) * X**A * Y**B / Beta(A,B).
 //
 //  Parameters:
@@ -1493,7 +1493,7 @@ double beta_up ( double *a, double *b, double *x, double *y, int *n, double *eps
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    BETA_UP evaluates IX(A,B) - IX(A+N,B) where N is a positive integer.
 //
 //  Parameters:
@@ -1583,7 +1583,7 @@ void binomial_cdf_values ( int *n_data, int *a, double *b, int *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    BINOMIAL_CDF_VALUES returns some values of the binomial CDF.
 //
@@ -1626,29 +1626,29 @@ void binomial_cdf_values ( int *n_data, int *a, double *b, int *x, double *fx )
 {
 # define N_MAX 17
 
-  int a_vec[N_MAX] = {
-     2,  2,  2,  2,
-     2,  4,  4,  4,
-     4, 10, 10, 10,
-    10, 10, 10, 10,
+  int a_vec[N_MAX] = { 
+     2,  2,  2,  2, 
+     2,  4,  4,  4, 
+     4, 10, 10, 10, 
+    10, 10, 10, 10, 
     10 };
-  double b_vec[N_MAX] = {
-    0.05E+00, 0.05E+00, 0.05E+00, 0.50E+00,
-    0.50E+00, 0.25E+00, 0.25E+00, 0.25E+00,
-    0.25E+00, 0.05E+00, 0.10E+00, 0.15E+00,
-    0.20E+00, 0.25E+00, 0.30E+00, 0.40E+00,
+  double b_vec[N_MAX] = { 
+    0.05E+00, 0.05E+00, 0.05E+00, 0.50E+00, 
+    0.50E+00, 0.25E+00, 0.25E+00, 0.25E+00, 
+    0.25E+00, 0.05E+00, 0.10E+00, 0.15E+00, 
+    0.20E+00, 0.25E+00, 0.30E+00, 0.40E+00, 
     0.50E+00 };
-  double fx_vec[N_MAX] = {
-    0.9025E+00, 0.9975E+00, 1.0000E+00, 0.2500E+00,
-    0.7500E+00, 0.3164E+00, 0.7383E+00, 0.9492E+00,
-    0.9961E+00, 0.9999E+00, 0.9984E+00, 0.9901E+00,
-    0.9672E+00, 0.9219E+00, 0.8497E+00, 0.6331E+00,
+  double fx_vec[N_MAX] = { 
+    0.9025E+00, 0.9975E+00, 1.0000E+00, 0.2500E+00, 
+    0.7500E+00, 0.3164E+00, 0.7383E+00, 0.9492E+00, 
+    0.9961E+00, 0.9999E+00, 0.9984E+00, 0.9901E+00, 
+    0.9672E+00, 0.9219E+00, 0.8497E+00, 0.6331E+00, 
     0.3770E+00 };
-  int x_vec[N_MAX] = {
-     0, 1, 2, 0,
-     1, 0, 1, 2,
-     3, 4, 4, 4,
-     4, 4, 4, 4,
+  int x_vec[N_MAX] = { 
+     0, 1, 2, 0, 
+     1, 0, 1, 2, 
+     3, 4, 4, 4, 
+     4, 4, 4, 4, 
      4 };
 
   if ( *n_data < 0 )
@@ -1684,15 +1684,15 @@ void cdfbet ( int *which, double *p, double *q, double *x, double *y,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFBET evaluates the CDF of the Beta Distribution.
 //
 //  Discussion:
 //
-//    This routine calculates any one parameter of the beta distribution
+//    This routine calculates any one parameter of the beta distribution 
 //    given the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly by code associated with the reference.
 //
 //    Computation of the other parameters involves a seach for a value that
@@ -1708,9 +1708,9 @@ void cdfbet ( int *which, double *p, double *q, double *x, double *y,
 //  Reference:
 //
 //    A R DiDinato and A H Morris,
-//    Algorithm 708:
+//    Algorithm 708: 
 //    Significant Digit Computation of the Incomplete Beta Function Ratios,
-//    ACM Transactions on Mathematical Software,
+//    ACM Transactions on Mathematical Software, 
 //    Volume 18, 1993, pages 360-373.
 //
 //  Parameters:
@@ -1727,7 +1727,7 @@ void cdfbet ( int *which, double *p, double *q, double *x, double *y,
 //
 //    Input/output, double *Q, equals 1-P.  Input range: [0, 1].
 //
-//    Input/output, double *X, the upper limit of integration
+//    Input/output, double *X, the upper limit of integration 
 //    of the beta density.  If it is an input value, it should lie in
 //    the range [0,1].  If it is an output value, it will be searched for
 //    in the range [0,1].
@@ -2046,15 +2046,15 @@ void cdfbin ( int *which, double *p, double *q, double *s, double *xn,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFBIN evaluates the CDF of the Binomial distribution.
 //
 //  Discussion:
 //
-//    This routine calculates any one parameter of the binomial distribution
+//    This routine calculates any one parameter of the binomial distribution 
 //    given the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly.
 //
 //    Computation of the other parameters involves a seach for a value that
@@ -2062,7 +2062,7 @@ void cdfbin ( int *which, double *p, double *q, double *s, double *xn,
 //    monotonicity of P with respect to the other parameters.
 //
 //    P is the probablility of S or fewer successes in XN binomial trials,
-//    each trial having an individual probability of success of PR.
+//    each trial having an individual probability of success of PR.  
 //
 //  Modified:
 //
@@ -2070,13 +2070,13 @@ void cdfbin ( int *which, double *p, double *q, double *s, double *xn,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.24.
 //
 //  Parameters:
 //
-//    Input, int *WHICH, indicates which of argument values is to
+//    Input, int *WHICH, indicates which of argument values is to 
 //    be calculated from the others.
 //    1: Calculate P and Q from S, XN, PR and OMPR;
 //    2: Calculate S from P, Q, XN, PR and OMPR;
@@ -2084,7 +2084,7 @@ void cdfbin ( int *which, double *p, double *q, double *s, double *xn,
 //    4: Calculate PR and OMPR from P, Q, S and XN.
 //
 //    Input/output, double *P, the cumulation, from 0 to S,
-//    of the binomial distribution.  If P is an input value, it should
+//    of the binomial distribution.  If P is an input value, it should 
 //    lie in the range [0,1].
 //
 //    Input/output, double *Q, equal to 1-P.  If Q is an input
@@ -2100,7 +2100,7 @@ void cdfbin ( int *which, double *p, double *q, double *s, double *xn,
 //    If it is an output value it will be searched for in the
 //    range [1.0D-300, 1.0D+300].
 //
-//    Input/output, double *PR, the probability of success in each
+//    Input/output, double *PR, the probability of success in each 
 //    binomial trial.  Whether this is an input or output value, it should
 //    lie in the range: [0,1].
 //
@@ -2192,7 +2192,7 @@ S120:
 //
 //     S
 //
-    if(!(*s < 0.0e0 || (*which != 3 && *s > *xn))) goto S160;
+    if(!(*s < 0.0e0 || *which != 3 && *s > *xn)) goto S160;
     if(!(*s < 0.0e0)) goto S140;
     *bound = 0.0e0;
     goto S150;
@@ -2407,22 +2407,22 @@ void cdfchi ( int *which, double *p, double *q, double *x, double *df,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFCHI evaluates the CDF of the chi square distribution.
 //
 //  Discussion:
 //
-//    This routine calculates any one parameter of the chi square distribution
+//    This routine calculates any one parameter of the chi square distribution 
 //    given the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly.
 //
 //    Computation of the other parameters involves a seach for a value that
 //    produces the desired value of P.  The search relies on the
 //    monotonicity of P with respect to the other parameters.
 //
-//    The CDF of the chi square distribution can be evaluated
+//    The CDF of the chi square distribution can be evaluated 
 //    within Mathematica by commands such as:
 //
 //      Needs["Statistics`ContinuousDistributions`"]
@@ -2430,8 +2430,8 @@ void cdfchi ( int *which, double *p, double *q, double *x, double *df,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.4.19.
 //
 //    Stephen Wolfram,
@@ -2447,7 +2447,7 @@ void cdfchi ( int *which, double *p, double *q, double *x, double *df,
 //    2: Calculate X from P, Q and DF;
 //    3: Calculate DF from P, Q and X.
 //
-//    Input/output, double *P, the integral from 0 to X of
+//    Input/output, double *P, the integral from 0 to X of 
 //    the chi-square distribution.  If this is an input value, it should
 //    lie in the range [0,1].
 //
@@ -2455,8 +2455,8 @@ void cdfchi ( int *which, double *p, double *q, double *x, double *df,
 //    value, it should lie in the range [0,1].  If Q is an output value,
 //    it will lie in the range [0,1].
 //
-//    Input/output, double *X, the upper limit of integration
-//    of the chi-square distribution.  If this is an input
+//    Input/output, double *X, the upper limit of integration 
+//    of the chi-square distribution.  If this is an input 
 //    value, it should lie in the range: [0, +infinity).  If it is an output
 //    value, it will be searched for in the range: [0,1.0D+300].
 //
@@ -2688,7 +2688,7 @@ void cdfchn ( int *which, double *p, double *q, double *x, double *df,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFCHN evaluates the CDF of the Noncentral Chi-Square.
 //
 //  Discussion:
@@ -2696,7 +2696,7 @@ void cdfchn ( int *which, double *p, double *q, double *x, double *df,
 //    This routine calculates any one parameter of the noncentral chi-square
 //    distribution given values for the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly.
 //
 //    Computation of the other parameters involves a seach for a value that
@@ -2708,7 +2708,7 @@ void cdfchn ( int *which, double *p, double *q, double *x, double *df,
 //    this parameter can consume immense computer resources.  This is
 //    why the search range is bounded by 10,000.
 //
-//    The CDF of the noncentral chi square distribution can be evaluated
+//    The CDF of the noncentral chi square distribution can be evaluated 
 //    within Mathematica by commands such as:
 //
 //      Needs["Statistics`ContinuousDistributions`"]
@@ -2716,8 +2716,8 @@ void cdfchn ( int *which, double *p, double *q, double *x, double *df,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.25.
 //
 //    Stephen Wolfram,
@@ -2734,26 +2734,26 @@ void cdfchn ( int *which, double *p, double *q, double *x, double *df,
 //    3: Calculate DF from P, X and PNONC;
 //    4: Calculate PNONC from P, X and DF.
 //
-//    Input/output, double *P, the integral from 0 to X of
+//    Input/output, double *P, the integral from 0 to X of 
 //    the noncentral chi-square distribution.  If this is an input
 //    value, it should lie in the range: [0, 1.0-1.0D-16).
 //
-//    Input/output, double *Q, is generally not used by this
+//    Input/output, double *Q, is generally not used by this 
 //    subroutine and is only included for similarity with other routines.
 //    However, if P is to be computed, then a value will also be computed
 //    for Q.
 //
-//    Input, double *X, the upper limit of integration of the
+//    Input, double *X, the upper limit of integration of the 
 //    noncentral chi-square distribution.  If this is an input value, it
 //    should lie in the range: [0, +infinity).  If it is an output value,
 //    it will be sought in the range: [0,1.0D+300].
 //
-//    Input/output, double *DF, the number of degrees of freedom
+//    Input/output, double *DF, the number of degrees of freedom 
 //    of the noncentral chi-square distribution.  If this is an input value,
 //    it should lie in the range: (0, +infinity).  If it is an output value,
 //    it will be searched for in the range: [ 1.0D-300, 1.0D+300].
 //
-//    Input/output, double *PNONC, the noncentrality parameter of
+//    Input/output, double *PNONC, the noncentrality parameter of 
 //    the noncentral chi-square distribution.  If this is an input value, it
 //    should lie in the range: [0, +infinity).  If it is an output value,
 //    it will be searched for in the range: [0,1.0D+4]
@@ -2957,15 +2957,15 @@ void cdff ( int *which, double *p, double *q, double *f, double *dfn,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFF evaluates the CDF of the F distribution.
 //
 //  Discussion:
 //
-//    This routine calculates any one parameter of the F distribution
+//    This routine calculates any one parameter of the F distribution 
 //    given the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly.
 //
 //    Computation of the other parameters involves a seach for a value that
@@ -2979,8 +2979,8 @@ void cdff ( int *which, double *p, double *q, double *f, double *dfn,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.6.2.
 //
 //  Parameters:
@@ -2992,7 +2992,7 @@ void cdff ( int *which, double *p, double *q, double *f, double *dfn,
 //    3: Calculate DFN from P, Q, F and DFD;
 //    4: Calculate DFD from P, Q, F and DFN.
 //
-//    Input/output, double *P, the integral from 0 to F of
+//    Input/output, double *P, the integral from 0 to F of 
 //    the F-density.  If it is an input value, it should lie in the
 //    range [0,1].
 //
@@ -3000,17 +3000,17 @@ void cdff ( int *which, double *p, double *q, double *f, double *dfn,
 //    value, it should lie in the range [0,1].  If Q is an output value,
 //    it will lie in the range [0,1].
 //
-//    Input/output, double *F, the upper limit of integration
+//    Input/output, double *F, the upper limit of integration 
 //    of the F-density.  If this is an input value, it should lie in the
 //    range [0, +infinity).  If it is an output value, it will be searched
 //    for in the range [0,1.0D+300].
 //
-//    Input/output, double *DFN, the number of degrees of
+//    Input/output, double *DFN, the number of degrees of 
 //    freedom of the numerator sum of squares.  If this is an input value,
 //    it should lie in the range: (0, +infinity).  If it is an output value,
 //    it will be searched for in the range: [ 1.0D-300, 1.0D+300].
 //
-//    Input/output, double *DFD, the number of degrees of freedom
+//    Input/output, double *DFD, the number of degrees of freedom 
 //    of the denominator sum of squares.  If this is an input value, it should
 //    lie in the range: (0, +infinity).  If it is an output value, it will
 //    be searched for in the  range: [ 1.0D-300, 1.0D+300].
@@ -3261,23 +3261,23 @@ void cdffnc ( int *which, double *p, double *q, double *f, double *dfn,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFFNC evaluates the CDF of the Noncentral F distribution.
 //
 //  Discussion:
 //
-//    This routine originally used 1.0E+300 as the upper bound for the
+//    This routine originally used 1.0E+300 as the upper bound for the 
 //    interval in which many of the missing parameters are to be sought.
-//    Since the underlying rootfinder routine needs to evaluate the
+//    Since the underlying rootfinder routine needs to evaluate the 
 //    function at this point, it is no surprise that the program was
 //    experiencing overflows.  A less extravagant upper bound
 //    is being tried for now!
 //
 //
-//    This routine calculates any one parameter of the Noncentral F distribution
+//    This routine calculates any one parameter of the Noncentral F distribution 
 //    given the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly.
 //
 //    Computation of the other parameters involves a seach for a value that
@@ -3295,7 +3295,7 @@ void cdffnc ( int *which, double *p, double *q, double *f, double *dfn,
 //    assumes monotonicity and will find an arbitrary one of the two
 //    values.
 //
-//    The CDF of the noncentral F distribution can be evaluated
+//    The CDF of the noncentral F distribution can be evaluated 
 //    within Mathematica by commands such as:
 //
 //      Needs["Statistics`ContinuousDistributions`"]
@@ -3307,8 +3307,8 @@ void cdffnc ( int *which, double *p, double *q, double *f, double *dfn,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.6.20.
 //
 //    Stephen Wolfram,
@@ -3326,7 +3326,7 @@ void cdffnc ( int *which, double *p, double *q, double *f, double *dfn,
 //    4: Calculate DFD from P, Q, F, DFN and PNONC;
 //    5: Calculate PNONC from P, Q, F, DFN and DFD.
 //
-//    Input/output, double *P, the integral from 0 to F of
+//    Input/output, double *P, the integral from 0 to F of 
 //    the noncentral F-density.  If P is an input value it should
 //    lie in the range [0,1) (Not including 1!).
 //
@@ -3335,17 +3335,17 @@ void cdffnc ( int *which, double *p, double *q, double *f, double *dfn,
 //    Its input value is not checked.  If P is to be computed, the
 //    Q is set to 1 - P.
 //
-//    Input/output, double *F, the upper limit of integration
+//    Input/output, double *F, the upper limit of integration 
 //    of the noncentral F-density.  If this is an input value, it should
 //    lie in the range: [0, +infinity).  If it is an output value, it
 //    will be searched for in the range: [0,1.0D+30].
 //
-//    Input/output, double *DFN, the number of degrees of freedom
+//    Input/output, double *DFN, the number of degrees of freedom 
 //    of the numerator sum of squares.  If this is an input value, it should
 //    lie in the range: (0, +infinity).  If it is an output value, it will
 //    be searched for in the range: [ 1.0, 1.0D+30].
 //
-//    Input/output, double *DFD, the number of degrees of freedom
+//    Input/output, double *DFD, the number of degrees of freedom 
 //    of the denominator sum of squares.  If this is an input value, it should
 //    be in range: (0, +infinity).  If it is an output value, it will be
 //    searched for in the range [1.0, 1.0D+30].
@@ -3595,12 +3595,12 @@ void cdfgam ( int *which, double *p, double *q, double *x, double *shape,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFGAM evaluates the CDF of the Gamma Distribution.
 //
 //  Discussion:
 //
-//    This routine calculates any one parameter of the Gamma distribution
+//    This routine calculates any one parameter of the Gamma distribution 
 //    given the others.
 //
 //    The cumulative distribution function P is calculated directly.
@@ -3613,7 +3613,7 @@ void cdfgam ( int *which, double *p, double *q, double *x, double *shape,
 //
 //  Reference:
 //
-//    A R DiDinato and A H Morris,
+//    A R DiDinato and A H Morris, 
 //    Computation of the incomplete gamma function ratios and their inverse,
 //    ACM Transactions on Mathematical Software,
 //    Volume 12, 1986, pages 377-393.
@@ -3627,25 +3627,25 @@ void cdfgam ( int *which, double *p, double *q, double *x, double *shape,
 //    3: Calculate SHAPE from P, Q, X and SCALE;
 //    4: Calculate SCALE from P, Q, X and SHAPE.
 //
-//    Input/output, double *P, the integral from 0 to X of the
-//    Gamma density.  If this is an input value, it should lie in the
+//    Input/output, double *P, the integral from 0 to X of the 
+//    Gamma density.  If this is an input value, it should lie in the 
 //    range: [0,1].
 //
 //    Input/output, double *Q, equal to 1-P.  If Q is an input
 //    value, it should lie in the range [0,1].  If Q is an output value,
 //    it will lie in the range [0,1].
 //
-//    Input/output, double *X, the upper limit of integration of
+//    Input/output, double *X, the upper limit of integration of 
 //    the Gamma density.  If this is an input value, it should lie in the
 //    range: [0, +infinity).  If it is an output value, it will lie in
 //    the range: [0,1E300].
 //
-//    Input/output, double *SHAPE, the shape parameter of the
-//    Gamma density.  If this is an input value, it should lie in the range:
+//    Input/output, double *SHAPE, the shape parameter of the 
+//    Gamma density.  If this is an input value, it should lie in the range: 
 //    (0, +infinity).  If it is an output value, it will be searched for
 //    in the range: [1.0D-300,1.0D+300].
 //
-//    Input/output, double *SCALE, the scale parameter of the
+//    Input/output, double *SCALE, the scale parameter of the 
 //    Gamma density.  If this is an input value, it should lie in the range
 //    (0, +infinity).  If it is an output value, it will be searched for
 //    in the range: (1.0D-300,1.0D+300].
@@ -3656,7 +3656,7 @@ void cdfgam ( int *which, double *p, double *q, double *x, double *shape,
 //    +1, if the answer appears to be lower than lowest search bound;
 //    +2, if the answer appears to be higher than greatest search bound;
 //    +3, if P + Q /= 1;
-//    +10, if the Gamma or inverse Gamma routine cannot compute the answer.
+//    +10, if the Gamma or inverse Gamma routine cannot compute the answer.  
 //    This usually happens only for X and SHAPE very large (more than 1.0D+10.
 //
 //    Output, double *BOUND, is only defined if STATUS is nonzero.
@@ -3833,7 +3833,7 @@ S250:
 S260:
         fx = ccum-*q;
 S270:
-        if(!((qporq && cum > 1.5e0) || (!qporq && ccum > 1.5e0))) goto S280;
+        if(!(qporq && cum > 1.5e0 || !qporq && ccum > 1.5e0)) goto S280;
         *status = 10;
         return;
 S280:
@@ -3881,7 +3881,7 @@ void cdfnbn ( int *which, double *p, double *q, double *s, double *xn,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFNBN evaluates the CDF of the Negative Binomial distribution
 //
 //  Discussion:
@@ -3904,8 +3904,8 @@ void cdfnbn ( int *which, double *p, double *q, double *s, double *xn,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.26.
 //
 //  Parameters:
@@ -3917,7 +3917,7 @@ void cdfnbn ( int *which, double *p, double *q, double *s, double *xn,
 //    3: Calculate S from P, Q, F, PR and OMPR;
 //    4: Calculate PR and OMPR from P, Q, F and S.
 //
-//    Input/output, double P, the cumulation from 0 to F of
+//    Input/output, double P, the cumulation from 0 to F of 
 //    the negative binomial distribution.  If P is an input value, it
 //    should lie in the range [0,1].
 //
@@ -3925,23 +3925,23 @@ void cdfnbn ( int *which, double *p, double *q, double *s, double *xn,
 //    value, it should lie in the range [0,1].  If Q is an output value,
 //    it will lie in the range [0,1].
 //
-//    Input/output, double F, the upper limit of cumulation of
-//    the binomial distribution.  There are F or fewer failures before
+//    Input/output, double F, the upper limit of cumulation of 
+//    the binomial distribution.  There are F or fewer failures before 
 //    the S-th success.  If this is an input value, it may lie in the
 //    range [0,+infinity), and if it is an output value, it will be searched
 //    for in the range [0,1.0D+300].
 //
 //    Input/output, double S, the number of successes.
 //    If this is an input value, it should lie in the range: [0, +infinity).
-//    If it is an output value, it will be searched for in the range:
+//    If it is an output value, it will be searched for in the range: 
 //    [0, 1.0D+300].
 //
-//    Input/output, double PR, the probability of success in each
+//    Input/output, double PR, the probability of success in each 
 //    binomial trial.  Whether an input or output value, it should lie in the
 //    range [0,1].
 //
 //    Input/output, double OMPR, the value of (1-PR).  Whether an
-//    input or output value, it should lie in the range [0,1].
+//    input or output value, it should lie in the range [0,1].  
 //
 //    Output, int STATUS, reports the status of the computation.
 //     0, if the calculation completed correctly;
@@ -4235,7 +4235,7 @@ void cdfnor ( int *which, double *p, double *q, double *x, double *mean,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFNOR evaluates the CDF of the Normal distribution.
 //
 //  Discussion:
@@ -4244,7 +4244,7 @@ void cdfnor ( int *which, double *p, double *q, double *x, double *mean,
 //    is used to calculate the cumulative standard normal distribution.
 //
 //    The rational functions from pages 90-95 of Kennedy and Gentle
-//    are used as starting values to Newton's Iterations which
+//    are used as starting values to Newton's Iterations which 
 //    compute the inverse standard normal.  Therefore no searches are
 //    necessary for any parameter.
 //
@@ -4256,8 +4256,8 @@ void cdfnor ( int *which, double *p, double *q, double *x, double *mean,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.2.12.
 //
 //    W J Cody,
@@ -4280,7 +4280,7 @@ void cdfnor ( int *which, double *p, double *q, double *x, double *mean,
 //    3: Calculate MEAN from P, Q, X and SD;
 //    4: Calculate SD from P, Q, X and MEAN.
 //
-//    Input/output, double *P, the integral from -infinity to X
+//    Input/output, double *P, the integral from -infinity to X 
 //    of the Normal density.  If this is an input or output value, it will
 //    lie in the range [0,1].
 //
@@ -4288,12 +4288,12 @@ void cdfnor ( int *which, double *p, double *q, double *x, double *mean,
 //    value, it should lie in the range [0,1].  If Q is an output value,
 //    it will lie in the range [0,1].
 //
-//    Input/output, double *X, the upper limit of integration of
+//    Input/output, double *X, the upper limit of integration of 
 //    the Normal density.
 //
 //    Input/output, double *MEAN, the mean of the Normal density.
 //
-//    Input/output, double *SD, the standard deviation of the
+//    Input/output, double *SD, the standard deviation of the 
 //    Normal density.  If this is an input value, it should lie in the
 //    range (0,+infinity).
 //
@@ -4429,15 +4429,15 @@ void cdfpoi ( int *which, double *p, double *q, double *s, double *xlam,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFPOI evaluates the CDF of the Poisson distribution.
 //
 //  Discussion:
 //
-//    This routine calculates any one parameter of the Poisson distribution
+//    This routine calculates any one parameter of the Poisson distribution 
 //    given the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly.
 //
 //    Computation of other parameters involve a seach for a value that
@@ -4446,8 +4446,8 @@ void cdfpoi ( int *which, double *p, double *q, double *s, double *xlam,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.4.21.
 //
 //  Parameters:
@@ -4458,7 +4458,7 @@ void cdfpoi ( int *which, double *p, double *q, double *s, double *xlam,
 //    2: Calculate A from P, Q and XLAM;
 //    3: Calculate XLAM from P, Q and S.
 //
-//    Input/output, double *P, the cumulation from 0 to S of the
+//    Input/output, double *P, the cumulation from 0 to S of the 
 //    Poisson density.  Whether this is an input or output value, it will
 //    lie in the range [0,1].
 //
@@ -4471,7 +4471,7 @@ void cdfpoi ( int *which, double *p, double *q, double *s, double *xlam,
 //    the range: [0, +infinity).  If it is an output value, it will be
 //    searched for in the range: [0,1.0D+300].
 //
-//    Input/output, double *XLAM, the mean of the Poisson
+//    Input/output, double *XLAM, the mean of the Poisson 
 //    distribution.  If this is an input value, it should lie in the range
 //    [0, +infinity).  If it is an output value, it will be searched for
 //    in the range: [0,1E300].
@@ -4673,15 +4673,15 @@ void cdft ( int *which, double *p, double *q, double *t, double *df,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CDFT evaluates the CDF of the T distribution.
 //
 //  Discussion:
 //
-//    This routine calculates any one parameter of the T distribution
+//    This routine calculates any one parameter of the T distribution 
 //    given the others.
 //
-//    The value P of the cumulative distribution function is calculated
+//    The value P of the cumulative distribution function is calculated 
 //    directly.
 //
 //    Computation of other parameters involve a seach for a value that
@@ -4689,13 +4689,13 @@ void cdft ( int *which, double *p, double *q, double *t, double *df,
 //    monotonicity of P with respect to the other parameters.
 //
 //    The original version of this routine allowed the search interval
-//    to extend from -1.0E+300 to +1.0E+300, which is fine until you
+//    to extend from -1.0E+300 to +1.0E+300, which is fine until you 
 //    try to evaluate a function at such a point!
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.27.
 //
 //  Parameters:
@@ -4706,7 +4706,7 @@ void cdft ( int *which, double *p, double *q, double *t, double *df,
 //    2 : Calculate T from P, Q and DF;
 //    3 : Calculate DF from P, Q and T.
 //
-//    Input/output, double *P, the integral from -infinity to T of
+//    Input/output, double *P, the integral from -infinity to T of 
 //    the T-density.  Whether an input or output value, this will lie in the
 //    range [0,1].
 //
@@ -4714,7 +4714,7 @@ void cdft ( int *which, double *p, double *q, double *t, double *df,
 //    value, it should lie in the range [0,1].  If Q is an output value,
 //    it will lie in the range [0,1].
 //
-//    Input/output, double *T, the upper limit of integration of
+//    Input/output, double *T, the upper limit of integration of 
 //    the T-density.  If this is an input value, it may have any value.
 //    It it is an output value, it will be searched for in the range
 //    [ -1.0D+30, 1.0D+30 ].
@@ -4910,7 +4910,7 @@ S310:
 }
 //******************************************************************************
 
-void chi_noncentral_cdf_values ( int *n_data, double *x, double *lambda,
+void chi_noncentral_cdf_values ( int *n_data, double *x, double *lambda, 
   int *df, double *cdf )
 
 //******************************************************************************
@@ -4961,44 +4961,44 @@ void chi_noncentral_cdf_values ( int *n_data, double *x, double *lambda,
 # define N_MAX 27
 
   double cdf_vec[N_MAX] = {
-    0.839944E+00, 0.695906E+00, 0.535088E+00,
+    0.839944E+00, 0.695906E+00, 0.535088E+00, 
     0.764784E+00, 0.620644E+00, 0.469167E+00,
-    0.307088E+00, 0.220382E+00, 0.150025E+00,
-    0.307116E-02, 0.176398E-02, 0.981679E-03,
-    0.165175E-01, 0.202342E-03, 0.498448E-06,
-    0.151325E-01, 0.209041E-02, 0.246502E-03,
-    0.263684E-01, 0.185798E-01, 0.130574E-01,
-    0.583804E-01, 0.424978E-01, 0.308214E-01,
+    0.307088E+00, 0.220382E+00, 0.150025E+00, 
+    0.307116E-02, 0.176398E-02, 0.981679E-03, 
+    0.165175E-01, 0.202342E-03, 0.498448E-06, 
+    0.151325E-01, 0.209041E-02, 0.246502E-03, 
+    0.263684E-01, 0.185798E-01, 0.130574E-01, 
+    0.583804E-01, 0.424978E-01, 0.308214E-01, 
     0.105788E+00, 0.794084E-01, 0.593201E-01 };
   int df_vec[N_MAX] = {
+      1,   2,   3, 
+      1,   2,   3, 
       1,   2,   3,
-      1,   2,   3,
-      1,   2,   3,
-      1,   2,   3,
-     60,  80, 100,
-      1,   2,   3,
-     10,  10,  10,
-     10,  10,  10,
+      1,   2,   3, 
+     60,  80, 100, 
+      1,   2,   3, 
+     10,  10,  10, 
+     10,  10,  10, 
      10,  10,  10 };
-  double lambda_vec[N_MAX] = {
-     0.5E+00,  0.5E+00,  0.5E+00,
-     1.0E+00,  1.0E+00,  1.0E+00,
-     5.0E+00,  5.0E+00,  5.0E+00,
-    20.0E+00, 20.0E+00, 20.0E+00,
-    30.0E+00, 30.0E+00, 30.0E+00,
-     5.0E+00,  5.0E+00,  5.0E+00,
-     2.0E+00,  3.0E+00,  4.0E+00,
-     2.0E+00,  3.0E+00,  4.0E+00,
+  double lambda_vec[N_MAX] = { 
+     0.5E+00,  0.5E+00,  0.5E+00, 
+     1.0E+00,  1.0E+00,  1.0E+00, 
+     5.0E+00,  5.0E+00,  5.0E+00, 
+    20.0E+00, 20.0E+00, 20.0E+00, 
+    30.0E+00, 30.0E+00, 30.0E+00, 
+     5.0E+00,  5.0E+00,  5.0E+00, 
+     2.0E+00,  3.0E+00,  4.0E+00, 
+     2.0E+00,  3.0E+00,  4.0E+00, 
      2.0E+00,  3.0E+00,  4.0E+00 };
   double x_vec[N_MAX] = {
-     3.000E+00,  3.000E+00,  3.000E+00,
-     3.000E+00,  3.000E+00,  3.000E+00,
-     3.000E+00,  3.000E+00,  3.000E+00,
-     3.000E+00,  3.000E+00,  3.000E+00,
-    60.000E+00, 60.000E+00, 60.000E+00,
-     0.050E+00,  0.050E+00,  0.050E+00,
-     4.000E+00,  4.000E+00,  4.000E+00,
-     5.000E+00,  5.000E+00,  5.000E+00,
+     3.000E+00,  3.000E+00,  3.000E+00, 
+     3.000E+00,  3.000E+00,  3.000E+00, 
+     3.000E+00,  3.000E+00,  3.000E+00, 
+     3.000E+00,  3.000E+00,  3.000E+00, 
+    60.000E+00, 60.000E+00, 60.000E+00, 
+     0.050E+00,  0.050E+00,  0.050E+00, 
+     4.000E+00,  4.000E+00,  4.000E+00, 
+     5.000E+00,  5.000E+00,  5.000E+00, 
      6.000E+00,  6.000E+00,  6.000E+00 };
 
   if ( *n_data < 0 )
@@ -5033,13 +5033,13 @@ void chi_square_cdf_values ( int *n_data, int *a, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    CHI_SQUARE_CDF_VALUES returns some values of the Chi-Square CDF.
 //
 //  Discussion:
 //
-//    The value of CHI_CDF ( DF, X ) can be evaluated in Mathematica by
+//    The value of CHI_CDF ( DF, X ) can be evaluated in Mathematica by 
 //    commands like:
 //
 //      Needs["Statistics`ContinuousDistributions`"]
@@ -5080,26 +5080,26 @@ void chi_square_cdf_values ( int *n_data, int *a, double *x, double *fx )
 {
 # define N_MAX 21
 
-  int a_vec[N_MAX] = {
-     1,  2,  1,  2,
-     1,  2,  3,  4,
-     1,  2,  3,  4,
-     5,  3,  3,  3,
+  int a_vec[N_MAX] = { 
+     1,  2,  1,  2, 
+     1,  2,  3,  4, 
+     1,  2,  3,  4, 
+     5,  3,  3,  3, 
      3,  3, 10, 10,
     10 };
-  double fx_vec[N_MAX] = {
-    0.0796557E+00, 0.00498752E+00, 0.112463E+00,    0.00995017E+00,
-    0.472911E+00,  0.181269E+00,   0.0597575E+00,   0.0175231E+00,
-    0.682689E+00,  0.393469E+00,   0.198748E+00,    0.090204E+00,
-    0.0374342E+00, 0.427593E+00,   0.608375E+00,    0.738536E+00,
-    0.828203E+00,  0.88839E+00,    0.000172116E+00, 0.00365985E+00,
+  double fx_vec[N_MAX] = { 
+    0.0796557E+00, 0.00498752E+00, 0.112463E+00,    0.00995017E+00, 
+    0.472911E+00,  0.181269E+00,   0.0597575E+00,   0.0175231E+00, 
+    0.682689E+00,  0.393469E+00,   0.198748E+00,    0.090204E+00, 
+    0.0374342E+00, 0.427593E+00,   0.608375E+00,    0.738536E+00, 
+    0.828203E+00,  0.88839E+00,    0.000172116E+00, 0.00365985E+00, 
     0.0185759E+00 };
-  double x_vec[N_MAX] = {
-    0.01E+00, 0.01E+00, 0.02E+00, 0.02E+00,
-    0.40E+00, 0.40E+00, 0.40E+00, 0.40E+00,
-    1.00E+00, 1.00E+00, 1.00E+00, 1.00E+00,
-    1.00E+00, 2.00E+00, 3.00E+00, 4.00E+00,
-    5.00E+00, 6.00E+00, 1.00E+00, 2.00E+00,
+  double x_vec[N_MAX] = { 
+    0.01E+00, 0.01E+00, 0.02E+00, 0.02E+00, 
+    0.40E+00, 0.40E+00, 0.40E+00, 0.40E+00, 
+    1.00E+00, 1.00E+00, 1.00E+00, 1.00E+00, 
+    1.00E+00, 2.00E+00, 3.00E+00, 4.00E+00, 
+    5.00E+00, 6.00E+00, 1.00E+00, 2.00E+00, 
     3.00E+00 };
 
   if ( *n_data < 0 )
@@ -5131,9 +5131,9 @@ void cumbet ( double *x, double *y, double *a, double *b, double *cum,
   double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMBET evaluates the cumulative incomplete beta distribution.
 //
 //  Discussion:
@@ -5146,8 +5146,8 @@ void cumbet ( double *x, double *y, double *a, double *b, double *cum,
 //
 //    A R Didonato and A H Morris,
 //    Algorithm 708:
-//    Significant Digit Computation of the Incomplete Beta Function Ratios.
-//    ACM Transactions on Mathematical Software,
+//    Significant Digit Computation of the Incomplete Beta Function Ratios. 
+//    ACM Transactions on Mathematical Software, 
 //    Volume 18, Number 3, September 1992, pages 360-373.
 //
 //  Parameters:
@@ -5186,9 +5186,9 @@ void cumbin ( double *s, double *xn, double *pr, double *ompr,
   double *cum, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMBIN evaluates the cumulative binomial distribution.
 //
 //  Discussion:
@@ -5198,8 +5198,8 @@ void cumbin ( double *s, double *xn, double *pr, double *ompr,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.24.
 //
 //  Parameters:
@@ -5214,7 +5214,7 @@ void cumbin ( double *s, double *xn, double *pr, double *ompr,
 //
 //    Output, double *CUM, the cumulative binomial distribution.
 //
-//    Output, double *CCUM, the complement of the cumulative
+//    Output, double *CCUM, the complement of the cumulative 
 //    binomial distribution.
 //
 {
@@ -5238,7 +5238,7 @@ void cumchi ( double *x, double *df, double *cum, double *ccum )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    CUMCHI evaluates the cumulative chi-square distribution.
 //
 //  Parameters:
@@ -5250,7 +5250,7 @@ void cumchi ( double *x, double *df, double *cum, double *ccum )
 //
 //    Output, double *CUM, the cumulative chi-square distribution.
 //
-//    Output, double *CCUM, the complement of the cumulative
+//    Output, double *CCUM, the complement of the cumulative 
 //    chi-square distribution.
 //
 {
@@ -5267,9 +5267,9 @@ void cumchn ( double *x, double *df, double *pnonc, double *cum,
   double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMCHN evaluates the cumulative noncentral chi-square distribution.
 //
 //  Discussion:
@@ -5282,8 +5282,8 @@ void cumchn ( double *x, double *df, double *pnonc, double *cum,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.4.25.
 //
 //  Parameters:
@@ -5292,7 +5292,7 @@ void cumchn ( double *x, double *df, double *pnonc, double *cum,
 //
 //    Input, double *DF, the number of degrees of freedom.
 //
-//    Input, double *PNONC, the noncentrality parameter of
+//    Input, double *PNONC, the noncentrality parameter of 
 //    the noncentral chi-square distribution.
 //
 //    Output, double *CUM, *CCUM, the CDF and complementary
@@ -5300,7 +5300,7 @@ void cumchn ( double *x, double *df, double *pnonc, double *cum,
 //
 //  Local Parameters:
 //
-//    Local, double EPS, the convergence criterion.  The sum
+//    Local, double EPS, the convergence criterion.  The sum 
 //    stops when a term is less than EPS*SUM.
 //
 //    Local, int NTIRED, the maximum number of terms to be evaluated
@@ -5446,9 +5446,9 @@ S80:
 void cumf ( double *f, double *dfn, double *dfd, double *cum, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMF evaluates the cumulative F distribution.
 //
 //  Discussion:
@@ -5458,8 +5458,8 @@ void cumf ( double *f, double *dfn, double *dfd, double *cum, double *ccum )
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.28.
 //
 //  Parameters:
@@ -5499,7 +5499,7 @@ S10:
     yy = prod/dsum;
     xx = done-yy;
   }
-  else
+  else  
   {
     yy = done-xx;
   }
@@ -5517,7 +5517,7 @@ void cumfnc ( double *f, double *dfn, double *dfd, double *pnonc,
   double *cum, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
 //
 //    CUMFNC evaluates the cumulative noncentral F distribution.
@@ -5547,8 +5547,8 @@ void cumfnc ( double *f, double *dfn, double *dfd, double *pnonc,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.16, 26.6.17, 26.6.18, 26.6.20.
 //
 //  Parameters:
@@ -5562,7 +5562,7 @@ void cumfnc ( double *f, double *dfn, double *dfd, double *pnonc,
 //
 //    Input, double *PNONC, the noncentrality parameter.
 //
-//    Output, double *CUM, *CCUM, the noncentral F CDF and
+//    Output, double *CUM, *CCUM, the noncentral F CDF and 
 //    complementary CDF.
 //
 {
@@ -5644,12 +5644,12 @@ S40:
 //     Now sum forwards until convergence
 //
     xmult = centwt;
-    if(aup-1.0+b == 0) upterm = exp(-gamma_log ( &aup )
+    if(aup-1.0+b == 0) upterm = exp(-gamma_log ( &aup ) 
       - gamma_log ( &b ) + (aup-1.0)*log(xx)+
       b*log(yy));
     else  {
         T6 = aup-1.0+b;
-        upterm = exp( gamma_log ( &T6 ) - gamma_log ( &aup )
+        upterm = exp( gamma_log ( &T6 ) - gamma_log ( &aup ) 
           - gamma_log ( &b ) + (aup-1.0)*log(xx)+b*
           log(yy));
     }
@@ -5677,14 +5677,14 @@ S70:
 void cumgam ( double *x, double *a, double *cum, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMGAM evaluates the cumulative incomplete gamma distribution.
 //
 //  Discussion:
 //
-//    This routine computes the cumulative distribution function of the
+//    This routine computes the cumulative distribution function of the 
 //    incomplete gamma distribution, i.e., the integral from 0 to X of
 //
 //      (1/GAM(A))*EXP(-T)*T**(A-1) DT
@@ -5727,15 +5727,15 @@ void cumnbn ( double *s, double *xn, double *pr, double *ompr,
   double *cum, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMNBN evaluates the cumulative negative binomial distribution.
 //
 //  Discussion:
 //
-//    This routine returns the probability that there will be F or
-//    fewer failures before there are S successes, with each binomial
+//    This routine returns the probability that there will be F or 
+//    fewer failures before there are S successes, with each binomial 
 //    trial having a probability of success PR.
 //
 //    Prob(# failures = F | S successes, PR)  =
@@ -5746,8 +5746,8 @@ void cumnbn ( double *s, double *xn, double *pr, double *ompr,
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.5.26.
 //
 //  Parameters:
@@ -5774,9 +5774,9 @@ void cumnbn ( double *s, double *xn, double *pr, double *ompr,
 void cumnor ( double *arg, double *result, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMNOR computes the cumulative normal distribution.
 //
 //  Discussion:
@@ -5796,7 +5796,7 @@ void cumnor ( double *arg, double *result, double *ccum )
 //    functions, and proper selection of the machine-dependent
 //    constants.
 //
-//  Author:
+//  Author: 
 //
 //    W J Cody
 //    Mathematics and Computer Science Division
@@ -5807,12 +5807,12 @@ void cumnor ( double *arg, double *result, double *ccum )
 //
 //    W J Cody,
 //    Rational Chebyshev approximations for the error function,
-//    Mathematics of Computation,
+//    Mathematics of Computation, 
 //    1969, pages 631-637.
 //
-//    W J Cody,
-//    Algorithm 715:
-//    SPECFUN - A Portable FORTRAN Package of Special Function Routines
+//    W J Cody, 
+//    Algorithm 715: 
+//    SPECFUN - A Portable FORTRAN Package of Special Function Routines 
 //      and Test Drivers,
 //    ACM Transactions on Mathematical Software,
 //    Volume 19, 1993, pages 22-32.
@@ -5826,7 +5826,7 @@ void cumnor ( double *arg, double *result, double *ccum )
 //
 //  Local Parameters:
 //
-//    Local, double EPS, the argument below which anorm(x)
+//    Local, double EPS, the argument below which anorm(x) 
 //    may be represented by 0.5D+00 and above which  x*x  will not underflow.
 //    A conservative value is the largest machine number X
 //    such that   1.0D+00 + X = 1.0D+00   to machine precision.
@@ -5952,9 +5952,9 @@ void cumnor ( double *arg, double *result, double *ccum )
 void cumpoi ( double *s, double *xlam, double *cum, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMPOI evaluates the cumulative Poisson distribution.
 //
 //  Discussion:
@@ -5964,18 +5964,18 @@ void cumpoi ( double *s, double *xlam, double *cum, double *ccum )
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
+//    Abramowitz and Stegun, 
 //    Handbook of Mathematical Functions,
 //    Formula 26.4.21.
 //
 //  Parameters:
 //
-//    Input, double *S, the upper limit of cumulation of the
+//    Input, double *S, the upper limit of cumulation of the 
 //    Poisson density function.
 //
 //    Input, double *XLAM, the mean of the Poisson distribution.
 //
-//    Output, double *CUM, *CCUM, the Poisson density CDF and
+//    Output, double *CUM, *CCUM, the Poisson density CDF and 
 //    complementary CDF.
 //
 {
@@ -5991,14 +5991,14 @@ void cumpoi ( double *s, double *xlam, double *cum, double *ccum )
 void cumt ( double *t, double *df, double *cum, double *ccum )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    CUMT evaluates the cumulative T distribution.
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
+//    Abramowitz and Stegun, 
 //    Handbook of Mathematical Functions,
 //    Formula 26.5.27.
 //
@@ -6006,7 +6006,7 @@ void cumt ( double *t, double *df, double *cum, double *ccum )
 //
 //    Input, double *T, the upper limit of integration.
 //
-//    Input, double *DF, the number of degrees of freedom of
+//    Input, double *DF, the number of degrees of freedom of 
 //    the T distribution.
 //
 //    Output, double *CUM, *CCUM, the T distribution CDF and
@@ -6046,9 +6046,9 @@ void cumt ( double *t, double *df, double *cum, double *ccum )
 double dbetrm ( double *a, double *b )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    DBETRM computes the Sterling remainder for the complete beta function.
 //
 //  Discussion:
@@ -6086,17 +6086,17 @@ double dbetrm ( double *a, double *b )
 double dexpm1 ( double *x )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    DEXPM1 evaluates the function EXP(X) - 1.
 //
 //  Reference:
 //
 //    A R DiDinato and A H Morris,
-//    Algorithm 708:
+//    Algorithm 708: 
 //    Significant Digit Computation of the Incomplete Beta Function Ratios,
-//    ACM Transactions on Mathematical Software,
+//    ACM Transactions on Mathematical Software, 
 //    Volume 18, 1993, pages 360-373.
 //
 //  Parameters:
@@ -6131,9 +6131,9 @@ S20:
 double dinvnr ( double *p, double *q )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    DINVNR computes the inverse of the normal distribution.
 //
 //  Discussion:
@@ -6146,7 +6146,7 @@ double dinvnr ( double *p, double *q )
 //
 //  Reference:
 //
-//    Kennedy and Gentle,
+//    Kennedy and Gentle, 
 //    Statistical Computing,
 //    Marcel Dekker, NY, 1980,
 //    QA276.4  K46
@@ -6221,34 +6221,34 @@ void dinvr ( int *status, double *x, double *fx,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    DINVR bounds the zero of the function and invokes DZROR.
 //
 //  Discussion:
 //
-//    This routine seeks to find bounds on a root of the function and
-//    invokes ZROR to perform the zero finding.  STINVR must have been
+//    This routine seeks to find bounds on a root of the function and 
+//    invokes ZROR to perform the zero finding.  STINVR must have been 
 //    called before this routine in order to set its parameters.
 //
 //  Reference:
 //
 //    J C P Bus and T J Dekker,
-//    Two Efficient Algorithms with Guaranteed Convergence for
+//    Two Efficient Algorithms with Guaranteed Convergence for 
 //      Finding a Zero of a Function,
 //    ACM Transactions on Mathematical Software,
 //    Volume 1, Number 4, pages 330-345, 1975.
 //
 //  Parameters:
 //
-//    Input/output, integer STATUS.  At the beginning of a zero finding
+//    Input/output, integer STATUS.  At the beginning of a zero finding 
 //    problem, STATUS should be set to 0 and INVR invoked.  The value
 //    of parameters other than X will be ignored on this call.
-//    If INVR needs the function to be evaluated, it will set STATUS to 1
-//    and return.  The value of the function should be set in FX and INVR
+//    If INVR needs the function to be evaluated, it will set STATUS to 1 
+//    and return.  The value of the function should be set in FX and INVR 
 //    again called without changing any of its other parameters.
 //    If INVR finishes without error, it returns with STATUS 0, and X an
 //    approximate root of F(X).
-//    If INVR cannot bound the function, it returns a negative STATUS and
+//    If INVR cannot bound the function, it returns a negative STATUS and 
 //    sets QLEFT and QHI.
 //
 //    Output, double precision X, the value at which F(X) is to be evaluated.
@@ -6257,7 +6257,7 @@ void dinvr ( int *status, double *x, double *fx,
 //    on the previous call, when INVR returned with STATUS = 1.
 //
 //    Output, logical QLEFT, is defined only if QMFINV returns FALSE.  In that
-//    case, QLEFT is TRUE if the stepping search terminated unsucessfully
+//    case, QLEFT is TRUE if the stepping search terminated unsucessfully 
 //    at SMALL, and FALSE if the search terminated unsucessfully at BIG.
 //
 //    Output, logical QHI, is defined only if QMFINV returns FALSE.  In that
@@ -6274,7 +6274,7 @@ double dlanor ( double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    DLANOR evaluates the logarithm of the asymptotic Normal CDF.
 //
 //  Discussion:
@@ -6286,8 +6286,8 @@ double dlanor ( double *x )
 //
 //  Reference:
 //
-//    Abramowitz and Stegun,
-//    Handbook of Mathematical Functions
+//    Abramowitz and Stegun,  
+//    Handbook of Mathematical Functions 
 //    1966, Formula 26.2.12.
 //
 //  Parameters:
@@ -6335,13 +6335,13 @@ double dpmpar ( int *i )
 //     I IS AN INTEGER HAVING ONE OF THE VALUES 1, 2, OR 3. IF THE
 //     double PRECISION ARITHMETIC BEING USED HAS M BASE B DIGITS AND
 //     ITS SMALLEST AND LARGEST EXPONENTS ARE EMIN AND EMAX, THEN
-//
+// 
 //        DPMPAR(1) = B**(1 - M), THE MACHINE PRECISION,
-//
+// 
 //        DPMPAR(2) = B**(EMIN - 1), THE SMALLEST MAGNITUDE,
-//
+// 
 //        DPMPAR(3) = B**EMAX*(1 - B**(-M)), THE LARGEST MAGNITUDE.
-//
+// 
 //     WRITTEN BY
 //        ALFRED H. MORRIS, JR.
 //        NAVAL SURFACE WARFARE CENTER
@@ -6467,14 +6467,14 @@ double dstrem ( double *z )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    DSTREM computes the Sterling remainder ln ( Gamma ( Z ) ) - Sterling ( Z ).
 //
 //  Discussion:
 //
-//    This routine returns
+//    This routine returns 
 //
-//      ln ( Gamma ( Z ) ) - Sterling ( Z )
+//      ln ( Gamma ( Z ) ) - Sterling ( Z )  
 //
 //    where Sterling(Z) is Sterling's approximation to ln ( Gamma ( Z ) ).
 //
@@ -6491,7 +6491,7 @@ double dstrem ( double *z )
 //
 //  Parameters:
 //
-//    Input, double *Z, the value at which the Sterling
+//    Input, double *Z, the value at which the Sterling 
 //    remainder is to be calculated.  Z must be positive.
 //
 //    Output, double DSTREM, the Sterling remainder.
@@ -6544,7 +6544,7 @@ void dstzr ( double *zxlo, double *zxhi, double *zabstl, double *zreltl )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    DSTXR sets quantities needed by the zero finder.
 //
 //  Discussion:
@@ -6598,7 +6598,7 @@ double dt1 ( double *p, double *q, double *df )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    DT1 computes an approximate inverse of the cumulative T distribution.
 //
 //  Discussion:
@@ -6609,10 +6609,10 @@ double dt1 ( double *p, double *q, double *df )
 //
 //  Parameters:
 //
-//    Input, double *P, *Q, the value whose inverse from the
+//    Input, double *P, *Q, the value whose inverse from the 
 //    T distribution CDF is desired, and the value (1-P).
 //
-//    Input, double *DF, the number of degrees of freedom of the
+//    Input, double *DF, the number of degrees of freedom of the 
 //    T distribution.
 //
 //    Output, double DT1, the approximate value of X for which
@@ -6657,62 +6657,62 @@ void dzror ( int *status, double *x, double *fx, double *xlo,
   double *xhi, unsigned long *qleft, unsigned long *qhi )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    DZROR seeks the zero of a function using reverse communication.
 //
 //  Discussion:
 //
 //     Performs the zero finding.  STZROR must have been called before
 //     this routine in order to set its parameters.
-//
-//
+// 
+// 
 //                              Arguments
-//
-//
+// 
+// 
 //     STATUS <--> At the beginning of a zero finding problem, STATUS
 //                 should be set to 0 and ZROR invoked.  (The value
 //                 of other parameters will be ignored on this call.)
-//
+// 
 //                 When ZROR needs the function evaluated, it will set
 //                 STATUS to 1 and return.  The value of the function
 //                 should be set in FX and ZROR again called without
 //                 changing any of its other parameters.
-//
+// 
 //                 When ZROR has finished without error, it will return
 //                 with STATUS 0.  In that case (XLO,XHI) bound the answe
-//
+// 
 //                 If ZROR finds an error (which implies that F(XLO)-Y an
 //                 F(XHI)-Y have the same sign, it returns STATUS -1.  In
 //                 this case, XLO and XHI are undefined.
 //                         INTEGER STATUS
-//
+// 
 //     X <-- The value of X at which F(X) is to be evaluated.
 //                         DOUBLE PRECISION X
-//
+// 
 //     FX --> The value of F(X) calculated when ZROR returns with
 //            STATUS = 1.
 //                         DOUBLE PRECISION FX
-//
+// 
 //     XLO <-- When ZROR returns with STATUS = 0, XLO bounds the
 //             inverval in X containing the solution below.
 //                         DOUBLE PRECISION XLO
-//
+// 
 //     XHI <-- When ZROR returns with STATUS = 0, XHI bounds the
 //             inverval in X containing the solution above.
 //                         DOUBLE PRECISION XHI
-//
+// 
 //     QLEFT <-- .TRUE. if the stepping search terminated unsucessfully
 //                at XLO.  If it is .FALSE. the search terminated
 //                unsucessfully at XHI.
 //                    QLEFT is LOGICAL
-//
+// 
 //     QHI <-- .TRUE. if F(X) .GT. Y at the termination of the
 //              search and .FALSE. if F(X) .LT. Y at the
 //              termination of the search.
 //                    QHI is LOGICAL
-//
+// 
 //
 {
   E0001(0,status,x,fx,xlo,xhi,qleft,qhi,NULL,NULL,NULL,NULL);
@@ -6803,7 +6803,7 @@ S90:
     qok = 1;
     return;
 S100:
-    qup = (qincr && yy < 0.0e0) || (!qincr && yy > 0.0e0);
+    qup = qincr && yy < 0.0e0 || !qincr && yy > 0.0e0;
 //
 //     HANDLE CASE IN WHICH WE MUST STEP HIGHER
 //
@@ -6825,7 +6825,7 @@ S120:
     goto S300;
 S130:
     yy = *fx;
-    qbdd = (qincr && yy >= 0.0e0) || (!qincr && yy <= 0.0e0);
+    qbdd = qincr && yy >= 0.0e0 || !qincr && yy <= 0.0e0;
     qlim = xub >= big;
     qcond = qbdd || qlim;
     if(qcond) goto S140;
@@ -6864,7 +6864,7 @@ S190:
     goto S300;
 S200:
     yy = *fx;
-    qbdd = (qincr && yy <= 0.0e0) || (!qincr && yy >= 0.0e0);
+    qbdd = qincr && yy <= 0.0e0 || !qincr && yy >= 0.0e0;
     qlim = xlb <= small;
     qcond = qbdd || qlim;
     if(qcond) goto S210;
@@ -6921,7 +6921,7 @@ S300:
     *status = 1;
     return;
 S310:
-    switch((int)i99999){case 1: goto S10;case 2: goto S20;case 3: goto S90;case
+    switch((int)i99999){case 1: goto S10;case 2: goto S20;case 3: goto S90;case 
       4: goto S130;case 5: goto S200;case 6: goto S270;default: break;}
 #undef qxmon
 }
@@ -7068,7 +7068,7 @@ S230:
     goto S80;
 S240:
     *xhi = c;
-    qrzero = (fc >= 0.0e0 && fb <= 0.0e0) || (fc < 0.0e0 && fb >= 0.0e0);
+    qrzero = fc >= 0.0e0 && fb <= 0.0e0 || fc < 0.0e0 && fb >= 0.0e0;
     if(!qrzero) goto S250;
     *status = 0;
     goto S260;
@@ -7099,7 +7099,7 @@ void erf_values ( int *n_data, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    ERF_VALUES returns some values of the ERF or "error" function.
 //
@@ -7135,19 +7135,19 @@ void erf_values ( int *n_data, double *x, double *fx )
 {
 # define N_MAX 21
 
-  double fx_vec[N_MAX] = {
-    0.0000000000E+00, 0.1124629160E+00, 0.2227025892E+00, 0.3286267595E+00,
-    0.4283923550E+00, 0.5204998778E+00, 0.6038560908E+00, 0.6778011938E+00,
-    0.7421009647E+00, 0.7969082124E+00, 0.8427007929E+00, 0.8802050696E+00,
-    0.9103139782E+00, 0.9340079449E+00, 0.9522851198E+00, 0.9661051465E+00,
-    0.9763483833E+00, 0.9837904586E+00, 0.9890905016E+00, 0.9927904292E+00,
+  double fx_vec[N_MAX] = { 
+    0.0000000000E+00, 0.1124629160E+00, 0.2227025892E+00, 0.3286267595E+00, 
+    0.4283923550E+00, 0.5204998778E+00, 0.6038560908E+00, 0.6778011938E+00, 
+    0.7421009647E+00, 0.7969082124E+00, 0.8427007929E+00, 0.8802050696E+00, 
+    0.9103139782E+00, 0.9340079449E+00, 0.9522851198E+00, 0.9661051465E+00, 
+    0.9763483833E+00, 0.9837904586E+00, 0.9890905016E+00, 0.9927904292E+00, 
     0.9953222650E+00 };
-  double x_vec[N_MAX] = {
-    0.0E+00, 0.1E+00, 0.2E+00, 0.3E+00,
-    0.4E+00, 0.5E+00, 0.6E+00, 0.7E+00,
-    0.8E+00, 0.9E+00, 1.0E+00, 1.1E+00,
-    1.2E+00, 1.3E+00, 1.4E+00, 1.5E+00,
-    1.6E+00, 1.7E+00, 1.8E+00, 1.9E+00,
+  double x_vec[N_MAX] = { 
+    0.0E+00, 0.1E+00, 0.2E+00, 0.3E+00, 
+    0.4E+00, 0.5E+00, 0.6E+00, 0.7E+00, 
+    0.8E+00, 0.9E+00, 1.0E+00, 1.1E+00, 
+    1.2E+00, 1.3E+00, 1.4E+00, 1.5E+00, 
+    1.6E+00, 1.7E+00, 1.8E+00, 1.9E+00, 
     2.0E+00 };
 
   if ( *n_data < 0 )
@@ -7178,7 +7178,7 @@ double erf1 ( double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    ERF1 evaluates the error function.
 //
 //  Parameters:
@@ -7253,7 +7253,7 @@ double erfc1 ( int *ind, double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    ERFC1 evaluates the complementary error function.
 //
 //  Modified:
@@ -7268,7 +7268,7 @@ double erfc1 ( int *ind, double *x )
 //
 //    Input, double *X, the argument of the function.
 //
-//    Output, double ERFC1, the value of the complementary
+//    Output, double ERFC1, the value of the complementary 
 //    error function.
 //
 {
@@ -7372,7 +7372,7 @@ double esum ( int *mu, double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    ESUM evaluates exp ( MU + X ).
 //
 //  Parameters:
@@ -7408,9 +7408,9 @@ S20:
 double eval_pol ( double a[], int *n, double *x )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    EVAL_POL evaluates a polynomial at X.
 //
 //  Discussion:
@@ -7427,7 +7427,7 @@ double eval_pol ( double a[], int *n, double *x )
 //
 //    Input, int *N, length of A.
 //
-//    Input, double *X, the point at which the polynomial
+//    Input, double *X, the point at which the polynomial 
 //    is to be evaluated.
 //
 //    Output, double EVAL_POL, the value of the polynomial at X.
@@ -7452,7 +7452,7 @@ double exparg ( int *l )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    EXPARG returns the largest or smallest legal argument for EXP.
 //
 //  Discussion:
@@ -7509,13 +7509,13 @@ void f_cdf_values ( int *n_data, int *a, int *b, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    F_CDF_VALUES returns some values of the F CDF test function.
 //
 //  Discussion:
 //
-//    The value of F_CDF ( DFN, DFD, X ) can be evaluated in Mathematica by
+//    The value of F_CDF ( DFN, DFD, X ) can be evaluated in Mathematica by 
 //    commands like:
 //
 //      Needs["Statistics`ContinuousDistributions`"]
@@ -7556,29 +7556,29 @@ void f_cdf_values ( int *n_data, int *a, int *b, double *x, double *fx )
 {
 # define N_MAX 20
 
-  int a_vec[N_MAX] = {
-    1, 1, 5, 1,
-    2, 4, 1, 6,
-    8, 1, 3, 6,
+  int a_vec[N_MAX] = { 
+    1, 1, 5, 1, 
+    2, 4, 1, 6, 
+    8, 1, 3, 6, 
     1, 1, 1, 1,
     2, 3, 4, 5 };
-  int b_vec[N_MAX] = {
-     1,  5,  1,  5,
-    10, 20,  5,  6,
-    16,  5, 10, 12,
+  int b_vec[N_MAX] = { 
+     1,  5,  1,  5, 
+    10, 20,  5,  6, 
+    16,  5, 10, 12, 
      5,  5,  5,  5,
      5,  5,  5,  5 };
-  double fx_vec[N_MAX] = {
-    0.500000E+00, 0.499971E+00, 0.499603E+00, 0.749699E+00,
-    0.750466E+00, 0.751416E+00, 0.899987E+00, 0.899713E+00,
-    0.900285E+00, 0.950025E+00, 0.950057E+00, 0.950193E+00,
-    0.975013E+00, 0.990002E+00, 0.994998E+00, 0.999000E+00,
+  double fx_vec[N_MAX] = { 
+    0.500000E+00, 0.499971E+00, 0.499603E+00, 0.749699E+00, 
+    0.750466E+00, 0.751416E+00, 0.899987E+00, 0.899713E+00, 
+    0.900285E+00, 0.950025E+00, 0.950057E+00, 0.950193E+00, 
+    0.975013E+00, 0.990002E+00, 0.994998E+00, 0.999000E+00, 
     0.568799E+00, 0.535145E+00, 0.514343E+00, 0.500000E+00 };
-  double x_vec[N_MAX] = {
-    1.00E+00,  0.528E+00, 1.89E+00,  1.69E+00,
-    1.60E+00,  1.47E+00,  4.06E+00,  3.05E+00,
-    2.09E+00,  6.61E+00,  3.71E+00,  3.00E+00,
-   10.01E+00, 16.26E+00, 22.78E+00, 47.18E+00,
+  double x_vec[N_MAX] = { 
+    1.00E+00,  0.528E+00, 1.89E+00,  1.69E+00, 
+    1.60E+00,  1.47E+00,  4.06E+00,  3.05E+00, 
+    2.09E+00,  6.61E+00,  3.71E+00,  3.00E+00, 
+   10.01E+00, 16.26E+00, 22.78E+00, 47.18E+00, 
     1.00E+00,  1.00E+00,  1.00E+00,  1.00E+00 };
 
   if ( *n_data < 0 )
@@ -7608,7 +7608,7 @@ void f_cdf_values ( int *n_data, int *a, int *b, double *x, double *fx )
 }
 //******************************************************************************
 
-void f_noncentral_cdf_values ( int *n_data, int *a, int *b, double *lambda,
+void f_noncentral_cdf_values ( int *n_data, int *a, int *b, double *lambda, 
   double *x, double *fx )
 
 //******************************************************************************
@@ -7662,39 +7662,39 @@ void f_noncentral_cdf_values ( int *n_data, int *a, int *b, double *lambda,
 # define N_MAX 22
 
   int a_vec[N_MAX] = {
-     1,  1,  1,  1,
-     1,  1,  1,  1,
-     1,  1,  2,  2,
-     3,  3,  4,  4,
-     5,  5,  6,  6,
+     1,  1,  1,  1, 
+     1,  1,  1,  1, 
+     1,  1,  2,  2, 
+     3,  3,  4,  4, 
+     5,  5,  6,  6, 
      8, 16 };
   int b_vec[N_MAX] = {
-     1,  5,  5,  5,
-     5,  5,  5,  5,
-     5,  5,  5, 10,
-     5,  5,  5,  5,
-     1,  5,  6, 12,
+     1,  5,  5,  5, 
+     5,  5,  5,  5, 
+     5,  5,  5, 10, 
+     5,  5,  5,  5, 
+     1,  5,  6, 12, 
     16,  8 };
   double fx_vec[N_MAX] = {
-    0.500000E+00, 0.636783E+00, 0.584092E+00, 0.323443E+00,
-    0.450119E+00, 0.607888E+00, 0.705928E+00, 0.772178E+00,
-    0.819105E+00, 0.317035E+00, 0.432722E+00, 0.450270E+00,
-    0.426188E+00, 0.337744E+00, 0.422911E+00, 0.692767E+00,
-    0.363217E+00, 0.421005E+00, 0.426667E+00, 0.446402E+00,
+    0.500000E+00, 0.636783E+00, 0.584092E+00, 0.323443E+00, 
+    0.450119E+00, 0.607888E+00, 0.705928E+00, 0.772178E+00, 
+    0.819105E+00, 0.317035E+00, 0.432722E+00, 0.450270E+00, 
+    0.426188E+00, 0.337744E+00, 0.422911E+00, 0.692767E+00, 
+    0.363217E+00, 0.421005E+00, 0.426667E+00, 0.446402E+00, 
     0.844589E+00, 0.816368E+00 };
   double lambda_vec[N_MAX] = {
-    0.00E+00,  0.000E+00, 0.25E+00,  1.00E+00,
-    1.00E+00,  1.00E+00,  1.00E+00,  1.00E+00,
-    1.00E+00,  2.00E+00,  1.00E+00,  1.00E+00,
-    1.00E+00,  2.00E+00,  1.00E+00,  1.00E+00,
-    0.00E+00,  1.00E+00,  1.00E+00,  1.00E+00,
+    0.00E+00,  0.000E+00, 0.25E+00,  1.00E+00, 
+    1.00E+00,  1.00E+00,  1.00E+00,  1.00E+00, 
+    1.00E+00,  2.00E+00,  1.00E+00,  1.00E+00, 
+    1.00E+00,  2.00E+00,  1.00E+00,  1.00E+00, 
+    0.00E+00,  1.00E+00,  1.00E+00,  1.00E+00, 
     1.00E+00,  1.00E+00 };
   double x_vec[N_MAX] = {
-    1.00E+00,  1.00E+00, 1.00E+00,  0.50E+00,
-    1.00E+00,  2.00E+00, 3.00E+00,  4.00E+00,
-    5.00E+00,  1.00E+00, 1.00E+00,  1.00E+00,
-    1.00E+00,  1.00E+00, 1.00E+00,  2.00E+00,
-    1.00E+00,  1.00E+00, 1.00E+00,  1.00E+00,
+    1.00E+00,  1.00E+00, 1.00E+00,  0.50E+00, 
+    1.00E+00,  2.00E+00, 3.00E+00,  4.00E+00, 
+    5.00E+00,  1.00E+00, 1.00E+00,  1.00E+00, 
+    1.00E+00,  1.00E+00, 1.00E+00,  2.00E+00, 
+    1.00E+00,  1.00E+00, 1.00E+00,  1.00E+00, 
     2.00E+00,  2.00E+00 };
 
   if ( *n_data < 0 )
@@ -7732,12 +7732,12 @@ double fifdint ( double a )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    FIFDINT truncates a double number to an integer.
 //
 //  Parameters:
 //
-// a     -     number to be truncated
+// a     -     number to be truncated 
 {
   return (double) ((int) a);
 }
@@ -7748,16 +7748,16 @@ double fifdmax1 ( double a, double b )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    FIFDMAX1 returns the maximum of two numbers a and b
 //
 //  Parameters:
 //
 //  a     -      first number
-//  b     -      second number
+//  b     -      second number 
 //
 {
-  if ( a < b )
+  if ( a < b ) 
   {
     return b;
   }
@@ -7773,13 +7773,13 @@ double fifdmin1 ( double a, double b )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    FIFDMIN1 returns the minimum of two numbers.
 //
 //  Parameters:
 //
 //  a     -     first number
-//  b     -     second number
+//  b     -     second number 
 //
 {
   if (a < b) return a;
@@ -7792,13 +7792,13 @@ double fifdsign ( double mag, double sign )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    FIFDSIGN transfers the sign of the variable "sign" to the variable "mag"
 //
 //  Parameters:
 //
 //  mag     -     magnitude
-//  sign    -     sign to be transfered
+//  sign    -     sign to be transfered 
 //
 {
   if (mag < 0) mag = -mag;
@@ -7813,20 +7813,20 @@ long fifidint ( double a )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    FIFIDINT truncates a double number to a long integer
 //
 //  Parameters:
 //
-//  a - number to be truncated
+//  a - number to be truncated 
 //
 {
-  if ( a < 1.0 )
+  if ( a < 1.0 ) 
   {
     return (long) 0;
   }
   else
-  {
+  { 
     return ( long ) a;
   }
 }
@@ -7837,13 +7837,13 @@ long fifmod ( long a, long b )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    FIFMOD returns the modulo of a and b
 //
 //  Parameters:
 //
 //  a - numerator
-//  b - denominator
+//  b - denominator 
 //
 {
   return ( a % b );
@@ -7853,18 +7853,18 @@ long fifmod ( long a, long b )
 double fpser ( double *a, double *b, double *x, double *eps )
 
 //****************************************************************************
-//
+// 
 //  Purpose:
-//
+// 
 //    FPSER evaluates IX(A,B)(X) for very small B.
 //
 //  Discussion:
 //
-//    This routine is appropriate for use when
+//    This routine is appropriate for use when 
 //
-//      B < min ( EPS, EPS * A )
+//      B < min ( EPS, EPS * A ) 
 //
-//    and
+//    and 
 //
 //      X <= 0.5.
 //
@@ -7909,20 +7909,20 @@ S20:
 }
 //****************************************************************************
 
-void ftnstop ( const char* msg )
+void ftnstop ( char *msg )
 
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    FTNSTOP prints a message to standard error and then exits.
 //
 //  Parameters:
 //
-//    Input, const const char* *MSG, the message to be printed.
+//    Input, char *MSG, the message to be printed.
 //
 {
-  if ( msg != NULL )
+  if ( msg != NULL ) 
   {
     fprintf ( stderr, "%s\n", msg );
   }
@@ -7935,7 +7935,7 @@ double gam1 ( double *a )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    GAM1 computes 1 / GAMMA(A+1) - 1 for -0.5D+00 <= A <= 1.5
 //
 //  Parameters:
@@ -8002,7 +8002,7 @@ void gamma_inc ( double *a, double *x, double *ans, double *qans, int *ind )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    GAMMA_INC evaluates the incomplete gamma ratio functions P(A,X) and Q(A,X).
 //
 //  Discussion:
@@ -8029,7 +8029,7 @@ void gamma_inc ( double *a, double *x, double *ans, double *qans, int *ind )
 //
 //    Input, int *IND, indicates the accuracy request:
 //    0, as much accuracy as possible.
-//    1, to within 1 unit of the 6-th significant digit,
+//    1, to within 1 unit of the 6-th significant digit, 
 //    otherwise, to within 1 unit of the 3rd significant digit.
 //
 {
@@ -8261,7 +8261,7 @@ S200:
     *ans = 0.5e0+(0.5e0-*qans);
     return;
 S210:
-//
+// 
 //  FINITE SUMS FOR Q WHEN A .GE. 1 AND 2*A IS AN INTEGER
 //
     sum = exp(-*x);
@@ -8430,15 +8430,15 @@ void gamma_inc_inv ( double *a, double *x, double *x0, double *p, double *q,
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    GAMMA_INC_INV computes the inverse incomplete gamma ratio function.
 //
 //  Discussion:
 //
 //    The routine is given positive A, and nonnegative P and Q where P + Q = 1.
-//    The value X is computed with the property that P(A,X) = P and Q(A,X) = Q.
+//    The value X is computed with the property that P(A,X) = P and Q(A,X) = Q.  
 //    Schroder iteration is employed.  The routine attempts to compute X
-//    to 10 significant digits if this is possible for the particular computer
+//    to 10 significant digits if this is possible for the particular computer 
 //    arithmetic being used.
 //
 //  Author:
@@ -8469,13 +8469,13 @@ void gamma_inc_inv ( double *a, double *x, double *x0, double *p, double *q,
 //    -2, A <= 0
 //    -3, No solution was obtained. The ratio Q/A is too large.
 //    -4, P + Q /= 1
-//    -6, 20 iterations were performed. The most recent value obtained
+//    -6, 20 iterations were performed. The most recent value obtained 
 //        for X is given.  This cannot occur if X0 <= 0.
 //    -7, Iteration failed. No value is given for X.
 //        This may occur when X is approximately 0.
 //    -8, A value for X has been obtained, but the routine is not certain
 //        of its accuracy.  Iteration cannot be performed in this
-//        case. If X0 <= 0, this can occur only when P or Q is
+//        case. If X0 <= 0, this can occur only when P or Q is 
 //        approximately 0. If X0 is positive then this can occur when A is
 //        exceedingly close to X and A is extremely large (say A .GE. 1.E20).
 //
@@ -8789,7 +8789,7 @@ void gamma_inc_values ( int *n_data, double *a, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    GAMMA_INC_VALUES returns some values of the incomplete Gamma function.
 //
@@ -8841,23 +8841,23 @@ void gamma_inc_values ( int *n_data, double *a, double *x, double *fx )
 {
 # define N_MAX 20
 
-  double a_vec[N_MAX] = {
-    0.1E+00,  0.1E+00,  0.1E+00,  0.5E+00,
-    0.5E+00,  0.5E+00,  1.0E+00,  1.0E+00,
-    1.0E+00,  1.1E+00,  1.1E+00,  1.1E+00,
-    2.0E+00,  2.0E+00,  2.0E+00,  6.0E+00,
+  double a_vec[N_MAX] = { 
+    0.1E+00,  0.1E+00,  0.1E+00,  0.5E+00, 
+    0.5E+00,  0.5E+00,  1.0E+00,  1.0E+00, 
+    1.0E+00,  1.1E+00,  1.1E+00,  1.1E+00, 
+    2.0E+00,  2.0E+00,  2.0E+00,  6.0E+00, 
     6.0E+00, 11.0E+00, 26.0E+00, 41.0E+00 };
-  double fx_vec[N_MAX] = {
-    0.7420263E+00, 0.9119753E+00, 0.9898955E+00, 0.2931279E+00,
-    0.7656418E+00, 0.9921661E+00, 0.0951626E+00, 0.6321206E+00,
-    0.9932621E+00, 0.0757471E+00, 0.6076457E+00, 0.9933425E+00,
-    0.0091054E+00, 0.4130643E+00, 0.9931450E+00, 0.0387318E+00,
+  double fx_vec[N_MAX] = { 
+    0.7420263E+00, 0.9119753E+00, 0.9898955E+00, 0.2931279E+00, 
+    0.7656418E+00, 0.9921661E+00, 0.0951626E+00, 0.6321206E+00, 
+    0.9932621E+00, 0.0757471E+00, 0.6076457E+00, 0.9933425E+00, 
+    0.0091054E+00, 0.4130643E+00, 0.9931450E+00, 0.0387318E+00, 
     0.9825937E+00, 0.9404267E+00, 0.4863866E+00, 0.7359709E+00 };
-  double x_vec[N_MAX] = {
-    3.1622777E-02, 3.1622777E-01, 1.5811388E+00, 7.0710678E-02,
-    7.0710678E-01, 3.5355339E+00, 0.1000000E+00, 1.0000000E+00,
-    5.0000000E+00, 1.0488088E-01, 1.0488088E+00, 5.2440442E+00,
-    1.4142136E-01, 1.4142136E+00, 7.0710678E+00, 2.4494897E+00,
+  double x_vec[N_MAX] = { 
+    3.1622777E-02, 3.1622777E-01, 1.5811388E+00, 7.0710678E-02, 
+    7.0710678E-01, 3.5355339E+00, 0.1000000E+00, 1.0000000E+00, 
+    5.0000000E+00, 1.0488088E-01, 1.0488088E+00, 5.2440442E+00, 
+    1.4142136E-01, 1.4142136E+00, 7.0710678E+00, 2.4494897E+00, 
     1.2247449E+01, 1.6583124E+01, 2.5495098E+01, 4.4821870E+01 };
 
   if ( *n_data < 0 )
@@ -8890,7 +8890,7 @@ double gamma_ln1 ( double *a )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    GAMMA_LN1 evaluates ln ( Gamma ( 1 + A ) ), for -0.2 <= A <= 1.25.
 //
 //  Parameters:
@@ -8945,7 +8945,7 @@ double gamma_log ( double *a )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    GAMMA_LOG evaluates ln ( Gamma ( A ) ) for positive A.
 //
 //  Author:
@@ -8957,7 +8957,7 @@ double gamma_log ( double *a )
 //  Reference:
 //
 //    A R DiDinato and A H Morris,
-//    Algorithm 708:
+//    Algorithm 708: 
 //    Significant Digit Computation of the Incomplete Beta Function Ratios,
 //    ACM Transactions on Mathematical Software,
 //    Volume 18, 1993, pages 360-373.
@@ -9015,7 +9015,7 @@ void gamma_rat1 ( double *a, double *x, double *r, double *p, double *q,
 
 //****************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    GAMMA_RAT1 evaluates the incomplete gamma ratio functions P(A,X) and Q(A,X).
 //
@@ -9126,7 +9126,7 @@ void gamma_values ( int *n_data, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    GAMMA_VALUES returns some values of the Gamma function.
 //
@@ -9176,17 +9176,17 @@ void gamma_values ( int *n_data, double *x, double *fx )
 {
 # define N_MAX 18
 
-  double fx_vec[N_MAX] = {
-    4.590845E+00,     2.218160E+00,     1.489192E+00,     1.164230E+00,
-    1.0000000000E+00, 0.9513507699E+00, 0.9181687424E+00, 0.8974706963E+00,
-    0.8872638175E+00, 0.8862269255E+00, 0.8935153493E+00, 0.9086387329E+00,
-    0.9313837710E+00, 0.9617658319E+00, 1.0000000000E+00, 3.6288000E+05,
+  double fx_vec[N_MAX] = { 
+    4.590845E+00,     2.218160E+00,     1.489192E+00,     1.164230E+00, 
+    1.0000000000E+00, 0.9513507699E+00, 0.9181687424E+00, 0.8974706963E+00, 
+    0.8872638175E+00, 0.8862269255E+00, 0.8935153493E+00, 0.9086387329E+00, 
+    0.9313837710E+00, 0.9617658319E+00, 1.0000000000E+00, 3.6288000E+05, 
     1.2164510E+17,    8.8417620E+30 };
-  double x_vec[N_MAX] = {
-    0.2E+00,  0.4E+00,  0.6E+00,  0.8E+00,
-    1.0E+00,  1.1E+00,  1.2E+00,  1.3E+00,
-    1.4E+00,  1.5E+00,  1.6E+00,  1.7E+00,
-    1.8E+00,  1.9E+00,  2.0E+00, 10.0E+00,
+  double x_vec[N_MAX] = { 
+    0.2E+00,  0.4E+00,  0.6E+00,  0.8E+00, 
+    1.0E+00,  1.1E+00,  1.2E+00,  1.3E+00, 
+    1.4E+00,  1.5E+00,  1.6E+00,  1.7E+00, 
+    1.8E+00,  1.9E+00,  2.0E+00, 10.0E+00, 
    20.0E+00, 30.0E+00 };
 
   if ( *n_data < 0 )
@@ -9217,7 +9217,7 @@ double gamma_x ( double *a )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    GAMMA_X evaluates the gamma function.
 //
 //  Discussion:
@@ -9372,7 +9372,7 @@ double gsumln ( double *a, double *b )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    GSUMLN evaluates the function ln(Gamma(A + B)).
 //
 //  Discussion:
@@ -9410,8 +9410,8 @@ int ipmpar ( int *i )
 //****************************************************************************
 //
 //  Purpose:
-//
-//    IPMPAR returns integer machine constants.
+//  
+//    IPMPAR returns integer machine constants. 
 //
 //  Discussion:
 //
@@ -9472,7 +9472,7 @@ int ipmpar ( int *i )
 {
   static int imach[11];
   static int ipmpar;
-//     MACHINE CONSTANTS FOR AMDAHL MACHINES.
+//     MACHINE CONSTANTS FOR AMDAHL MACHINES. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9486,7 +9486,7 @@ int ipmpar ( int *i )
 //   imach[10] = 63;
 //
 //     MACHINE CONSTANTS FOR THE AT&T 3B SERIES, AT&T
-//       PC 7300, AND AT&T 6300.
+//       PC 7300, AND AT&T 6300. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9499,7 +9499,7 @@ int ipmpar ( int *i )
 //   imach[9] = -1021;
 //   imach[10] = 1024;
 //
-//     MACHINE CONSTANTS FOR THE BURROUGHS 1700 SYSTEM.
+//     MACHINE CONSTANTS FOR THE BURROUGHS 1700 SYSTEM. 
 //
 //   imach[1] = 2;
 //   imach[2] = 33;
@@ -9512,7 +9512,7 @@ int ipmpar ( int *i )
 //   imach[9] = -256;
 //   imach[10] = 255;
 //
-//     MACHINE CONSTANTS FOR THE BURROUGHS 5700 SYSTEM.
+//     MACHINE CONSTANTS FOR THE BURROUGHS 5700 SYSTEM. 
 //
 //   imach[1] = 2;
 //   imach[2] = 39;
@@ -9525,7 +9525,7 @@ int ipmpar ( int *i )
 //   imach[9] = -50;
 //   imach[10] = 76;
 //
-//     MACHINE CONSTANTS FOR THE BURROUGHS 6700/7700 SYSTEMS.
+//     MACHINE CONSTANTS FOR THE BURROUGHS 6700/7700 SYSTEMS. 
 //
 //   imach[1] = 2;
 //   imach[2] = 39;
@@ -9540,7 +9540,7 @@ int ipmpar ( int *i )
 //
 //     MACHINE CONSTANTS FOR THE CDC 6000/7000 SERIES
 //       60 BIT ARITHMETIC, AND THE CDC CYBER 995 64 BIT
-//       ARITHMETIC (NOS OPERATING SYSTEM).
+//       ARITHMETIC (NOS OPERATING SYSTEM). 
 //
 //   imach[1] = 2;
 //   imach[2] = 48;
@@ -9554,7 +9554,7 @@ int ipmpar ( int *i )
 //   imach[10] = 1070;
 //
 //     MACHINE CONSTANTS FOR THE CDC CYBER 995 64 BIT
-//       ARITHMETIC (NOS/VE OPERATING SYSTEM).
+//       ARITHMETIC (NOS/VE OPERATING SYSTEM). 
 //
 //   imach[1] = 2;
 //   imach[2] = 63;
@@ -9567,7 +9567,7 @@ int ipmpar ( int *i )
 //   imach[9] = -4096;
 //   imach[10] = 4095;
 //
-//     MACHINE CONSTANTS FOR THE CRAY 1, XMP, 2, AND 3.
+//     MACHINE CONSTANTS FOR THE CRAY 1, XMP, 2, AND 3. 
 //
 //   imach[1] = 2;
 //   imach[2] = 63;
@@ -9580,7 +9580,7 @@ int ipmpar ( int *i )
 //   imach[9] = -8099;
 //   imach[10] = 8190;
 //
-//     MACHINE CONSTANTS FOR THE DATA GENERAL ECLIPSE S/200.
+//     MACHINE CONSTANTS FOR THE DATA GENERAL ECLIPSE S/200. 
 //
 //   imach[1] = 2;
 //   imach[2] = 15;
@@ -9593,7 +9593,7 @@ int ipmpar ( int *i )
 //   imach[9] = -64;
 //   imach[10] = 63;
 //
-//     MACHINE CONSTANTS FOR THE HARRIS 220.
+//     MACHINE CONSTANTS FOR THE HARRIS 220. 
 //
 //   imach[1] = 2;
 //   imach[2] = 23;
@@ -9607,7 +9607,7 @@ int ipmpar ( int *i )
 //   imach[10] = 127;
 //
 //     MACHINE CONSTANTS FOR THE HONEYWELL 600/6000
-//       AND DPS 8/70 SERIES.
+//       AND DPS 8/70 SERIES. 
 //
 //   imach[1] = 2;
 //   imach[2] = 35;
@@ -9621,7 +9621,7 @@ int ipmpar ( int *i )
 //   imach[10] = 127;
 //
 //     MACHINE CONSTANTS FOR THE HP 2100
-//       3 WORD DOUBLE PRECISION OPTION WITH FTN4
+//       3 WORD DOUBLE PRECISION OPTION WITH FTN4 
 //
 //   imach[1] = 2;
 //   imach[2] = 15;
@@ -9635,7 +9635,7 @@ int ipmpar ( int *i )
 //   imach[10] = 127;
 //
 //     MACHINE CONSTANTS FOR THE HP 2100
-//       4 WORD DOUBLE PRECISION OPTION WITH FTN4
+//       4 WORD DOUBLE PRECISION OPTION WITH FTN4 
 //
 //   imach[1] = 2;
 //   imach[2] = 15;
@@ -9648,7 +9648,7 @@ int ipmpar ( int *i )
 //   imach[9] = -128;
 //   imach[10] = 127;
 //
-//     MACHINE CONSTANTS FOR THE HP 9000.
+//     MACHINE CONSTANTS FOR THE HP 9000. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9663,7 +9663,7 @@ int ipmpar ( int *i )
 //
 //     MACHINE CONSTANTS FOR THE IBM 360/370 SERIES,
 //       THE ICL 2900, THE ITEL AS/6, THE XEROX SIGMA
-//       5/7/9 AND THE SEL SYSTEMS 85/86.
+//       5/7/9 AND THE SEL SYSTEMS 85/86. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9676,7 +9676,7 @@ int ipmpar ( int *i )
 //   imach[9] = -64;
 //   imach[10] = 63;
 //
-//     MACHINE CONSTANTS FOR THE IBM PC.
+//     MACHINE CONSTANTS FOR THE IBM PC. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9690,7 +9690,7 @@ int ipmpar ( int *i )
 //   imach[10] = 1024;
 //
 //     MACHINE CONSTANTS FOR THE MACINTOSH II - ABSOFT
-//       MACFORTRAN II.
+//       MACFORTRAN II. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9703,7 +9703,7 @@ int ipmpar ( int *i )
 //   imach[9] = -1021;
 //   imach[10] = 1024;
 //
-//     MACHINE CONSTANTS FOR THE MICROVAX - VMS FORTRAN.
+//     MACHINE CONSTANTS FOR THE MICROVAX - VMS FORTRAN. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9716,7 +9716,7 @@ int ipmpar ( int *i )
 //   imach[9] = -127;
 //   imach[10] = 127;
 //
-//     MACHINE CONSTANTS FOR THE PDP-10 (KA PROCESSOR).
+//     MACHINE CONSTANTS FOR THE PDP-10 (KA PROCESSOR). 
 //
 //   imach[1] = 2;
 //   imach[2] = 35;
@@ -9729,7 +9729,7 @@ int ipmpar ( int *i )
 //   imach[9] = -101;
 //   imach[10] = 127;
 //
-//     MACHINE CONSTANTS FOR THE PDP-10 (KI PROCESSOR).
+//     MACHINE CONSTANTS FOR THE PDP-10 (KI PROCESSOR). 
 //
 //   imach[1] = 2;
 //   imach[2] = 35;
@@ -9743,7 +9743,7 @@ int ipmpar ( int *i )
 //   imach[10] = 127;
 //
 //     MACHINE CONSTANTS FOR THE PDP-11 FORTRAN SUPPORTING
-//       32-BIT INTEGER ARITHMETIC.
+//       32-BIT INTEGER ARITHMETIC. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9756,7 +9756,7 @@ int ipmpar ( int *i )
 //   imach[9] = -127;
 //   imach[10] = 127;
 //
-//     MACHINE CONSTANTS FOR THE SEQUENT BALANCE 8000.
+//     MACHINE CONSTANTS FOR THE SEQUENT BALANCE 8000. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9770,7 +9770,7 @@ int ipmpar ( int *i )
 //   imach[10] = 1024;
 //
 //     MACHINE CONSTANTS FOR THE SILICON GRAPHICS IRIS-4D
-//       SERIES (MIPS R3000 PROCESSOR).
+//       SERIES (MIPS R3000 PROCESSOR). 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9785,7 +9785,7 @@ int ipmpar ( int *i )
 //
 //     MACHINE CONSTANTS FOR IEEE ARITHMETIC MACHINES, SUCH AS THE AT&T
 //       3B SERIES, MOTOROLA 68000 BASED MACHINES (E.G. SUN 3 AND AT&T
-//       PC 7300), AND 8087 BASED MICROS (E.G. IBM PC AND AT&T 6300).
+//       PC 7300), AND 8087 BASED MICROS (E.G. IBM PC AND AT&T 6300). 
 
    imach[1] = 2;
    imach[2] = 31;
@@ -9798,7 +9798,7 @@ int ipmpar ( int *i )
    imach[9] = -1021;
    imach[10] = 1024;
 
-//     MACHINE CONSTANTS FOR THE UNIVAC 1100 SERIES.
+//     MACHINE CONSTANTS FOR THE UNIVAC 1100 SERIES. 
 //
 //   imach[1] = 2;
 //   imach[2] = 35;
@@ -9811,7 +9811,7 @@ int ipmpar ( int *i )
 //   imach[9] = -1024;
 //   imach[10] = 1023;
 //
-//     MACHINE CONSTANTS FOR THE VAX 11/780.
+//     MACHINE CONSTANTS FOR THE VAX 11/780. 
 //
 //   imach[1] = 2;
 //   imach[2] = 31;
@@ -9829,7 +9829,7 @@ int ipmpar ( int *i )
 }
 //******************************************************************************
 
-void negative_binomial_cdf_values ( int *n_data, int *f, int *s, double *p,
+void negative_binomial_cdf_values ( int *n_data, int *f, int *s, double *p, 
   double *cdf )
 
 //******************************************************************************
@@ -9880,54 +9880,54 @@ void negative_binomial_cdf_values ( int *n_data, int *f, int *s, double *p,
 //
 //    Output, double *P, the probability of a success on one trial.
 //
-//    Output, double *CDF, the probability of at most F failures before the
+//    Output, double *CDF, the probability of at most F failures before the 
 //    S-th success.
 //
 {
 # define N_MAX 27
 
   double cdf_vec[N_MAX] = {
-    0.6367, 0.3633, 0.1445,
-    0.5000, 0.2266, 0.0625,
-    0.3438, 0.1094, 0.0156,
-    0.1792, 0.0410, 0.0041,
-    0.0705, 0.0109, 0.0007,
-    0.9862, 0.9150, 0.7472,
-    0.8499, 0.5497, 0.2662,
-    0.6513, 0.2639, 0.0702,
+    0.6367, 0.3633, 0.1445, 
+    0.5000, 0.2266, 0.0625, 
+    0.3438, 0.1094, 0.0156, 
+    0.1792, 0.0410, 0.0041, 
+    0.0705, 0.0109, 0.0007, 
+    0.9862, 0.9150, 0.7472, 
+    0.8499, 0.5497, 0.2662, 
+    0.6513, 0.2639, 0.0702, 
     1.0000, 0.0199, 0.0001 };
   int f_vec[N_MAX] = {
-     4,  3,  2,
-     3,  2,  1,
-     2,  1,  0,
-     2,  1,  0,
-     2,  1,  0,
-    11, 10,  9,
-    17, 16, 15,
-     9,  8,  7,
+     4,  3,  2, 
+     3,  2,  1, 
+     2,  1,  0, 
+     2,  1,  0, 
+     2,  1,  0, 
+    11, 10,  9, 
+    17, 16, 15, 
+     9,  8,  7, 
      2,  1,  0 };
   double p_vec[N_MAX] = {
-    0.50, 0.50, 0.50,
-    0.50, 0.50, 0.50,
-    0.50, 0.50, 0.50,
-    0.40, 0.40, 0.40,
-    0.30, 0.30, 0.30,
-    0.30, 0.30, 0.30,
-    0.10, 0.10, 0.10,
-    0.10, 0.10, 0.10,
+    0.50, 0.50, 0.50, 
+    0.50, 0.50, 0.50, 
+    0.50, 0.50, 0.50, 
+    0.40, 0.40, 0.40, 
+    0.30, 0.30, 0.30, 
+    0.30, 0.30, 0.30, 
+    0.10, 0.10, 0.10, 
+    0.10, 0.10, 0.10, 
     0.01, 0.01, 0.01 };
   int s_vec[N_MAX] = {
-    4, 5, 6,
-    4, 5, 6,
-    4, 5, 6,
-    4, 5, 6,
-    4, 5, 6,
-    1, 2, 3,
-    1, 2, 3,
-    1, 2, 3,
+    4, 5, 6, 
+    4, 5, 6, 
+    4, 5, 6, 
+    4, 5, 6, 
+    4, 5, 6, 
+    1, 2, 3, 
+    1, 2, 3, 
+    1, 2, 3, 
     0, 1, 2 };
 
-  if ( *n_data < 0 )
+  if ( n_data < 0 )
   {
     *n_data = 0;
   }
@@ -9959,7 +9959,7 @@ void normal_cdf_values ( int *n_data, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    NORMAL_CDF_VALUES returns some values of the Normal CDF.
 //
@@ -9991,17 +9991,17 @@ void normal_cdf_values ( int *n_data, double *x, double *fx )
 {
 # define N_MAX 13
 
-  double fx_vec[N_MAX] = {
-    0.500000000000000E+00, 0.539827837277029E+00, 0.579259709439103E+00,
-    0.617911422188953E+00, 0.655421741610324E+00, 0.691462461274013E+00,
-    0.725746882249927E+00, 0.758036347776927E+00, 0.788144601416604E+00,
-    0.815939874653241E+00, 0.841344746068543E+00, 0.933192798731142E+00,
+  double fx_vec[N_MAX] = { 
+    0.500000000000000E+00, 0.539827837277029E+00, 0.579259709439103E+00, 
+    0.617911422188953E+00, 0.655421741610324E+00, 0.691462461274013E+00, 
+    0.725746882249927E+00, 0.758036347776927E+00, 0.788144601416604E+00, 
+    0.815939874653241E+00, 0.841344746068543E+00, 0.933192798731142E+00, 
     0.977249868051821E+00 };
-  double x_vec[N_MAX] = {
-    0.00E+00, 0.10E+00, 0.20E+00,
-    0.30E+00, 0.40E+00, 0.50E+00,
-    0.60E+00, 0.70E+00, 0.80E+00,
-    0.90E+00, 1.00E+00, 1.50E+00,
+  double x_vec[N_MAX] = { 
+    0.00E+00, 0.10E+00, 0.20E+00, 
+    0.30E+00, 0.40E+00, 0.50E+00, 
+    0.60E+00, 0.70E+00, 0.80E+00, 
+    0.90E+00, 1.00E+00, 1.50E+00, 
     2.00E+00 };
 
   if ( *n_data < 0 )
@@ -10032,7 +10032,7 @@ void poisson_cdf_values ( int *n_data, double *a, int *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    POISSON_CDF_VALUES returns some values of the Poisson CDF.
 //
@@ -10075,26 +10075,26 @@ void poisson_cdf_values ( int *n_data, double *a, int *x, double *fx )
 {
 # define N_MAX 21
 
-  double a_vec[N_MAX] = {
-    0.02E+00, 0.10E+00, 0.10E+00, 0.50E+00,
-    0.50E+00, 0.50E+00, 1.00E+00, 1.00E+00,
-    1.00E+00, 1.00E+00, 2.00E+00, 2.00E+00,
-    2.00E+00, 2.00E+00, 5.00E+00, 5.00E+00,
-    5.00E+00, 5.00E+00, 5.00E+00, 5.00E+00,
+  double a_vec[N_MAX] = { 
+    0.02E+00, 0.10E+00, 0.10E+00, 0.50E+00, 
+    0.50E+00, 0.50E+00, 1.00E+00, 1.00E+00, 
+    1.00E+00, 1.00E+00, 2.00E+00, 2.00E+00, 
+    2.00E+00, 2.00E+00, 5.00E+00, 5.00E+00, 
+    5.00E+00, 5.00E+00, 5.00E+00, 5.00E+00, 
     5.00E+00 };
-  double fx_vec[N_MAX] = {
-    0.980E+00, 0.905E+00, 0.995E+00, 0.607E+00,
-    0.910E+00, 0.986E+00, 0.368E+00, 0.736E+00,
-    0.920E+00, 0.981E+00, 0.135E+00, 0.406E+00,
-    0.677E+00, 0.857E+00, 0.007E+00, 0.040E+00,
-    0.125E+00, 0.265E+00, 0.441E+00, 0.616E+00,
+  double fx_vec[N_MAX] = { 
+    0.980E+00, 0.905E+00, 0.995E+00, 0.607E+00, 
+    0.910E+00, 0.986E+00, 0.368E+00, 0.736E+00, 
+    0.920E+00, 0.981E+00, 0.135E+00, 0.406E+00, 
+    0.677E+00, 0.857E+00, 0.007E+00, 0.040E+00, 
+    0.125E+00, 0.265E+00, 0.441E+00, 0.616E+00, 
     0.762E+00 };
-  int x_vec[N_MAX] = {
-     0, 0, 1, 0,
-     1, 2, 0, 1,
-     2, 3, 0, 1,
-     2, 3, 0, 1,
-     2, 3, 4, 5,
+  int x_vec[N_MAX] = { 
+     0, 0, 1, 0, 
+     1, 2, 0, 1, 
+     2, 3, 0, 1, 
+     2, 3, 0, 1, 
+     2, 3, 4, 5, 
      6 };
 
   if ( *n_data < 0 )
@@ -10127,13 +10127,13 @@ double psi ( double *xx )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    PSI evaluates the psi or digamma function, d/dx ln(gamma(x)).
 //
 //  Discussion:
 //
 //    The main computation involves evaluation of rational Chebyshev
-//    approximations.  PSI was written at Argonne National Laboratory
+//    approximations.  PSI was written at Argonne National Laboratory 
 //    for FUNPACK, and subsequently modified by A. H. Morris of NSWC.
 //
 //  Reference:
@@ -10147,7 +10147,7 @@ double psi ( double *xx )
 //
 //    Input, double *XX, the argument of the psi function.
 //
-//    Output, double PSI, the value of the psi function.  PSI
+//    Output, double PSI, the value of the psi function.  PSI 
 //    is assigned the value 0 when the psi function is undefined.
 //
 {
@@ -10300,7 +10300,7 @@ void psi_values ( int *n_data, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    PSI_VALUES returns some values of the Psi or Digamma function.
 //
@@ -10340,15 +10340,15 @@ void psi_values ( int *n_data, double *x, double *fx )
 {
 # define N_MAX 11
 
-  double fx_vec[N_MAX] = {
-    -0.5772156649E+00, -0.4237549404E+00, -0.2890398966E+00,
-    -0.1691908889E+00, -0.0613845446E+00, -0.0364899740E+00,
-     0.1260474528E+00,  0.2085478749E+00,  0.2849914333E+00,
+  double fx_vec[N_MAX] = { 
+    -0.5772156649E+00, -0.4237549404E+00, -0.2890398966E+00, 
+    -0.1691908889E+00, -0.0613845446E+00, -0.0364899740E+00, 
+     0.1260474528E+00,  0.2085478749E+00,  0.2849914333E+00, 
      0.3561841612E+00,  0.4227843351E+00 };
-  double x_vec[N_MAX] = {
-    1.0E+00,  1.1E+00,  1.2E+00,
-    1.3E+00,  1.4E+00,  1.5E+00,
-    1.6E+00,  1.7E+00,  1.8E+00,
+  double x_vec[N_MAX] = { 
+    1.0E+00,  1.1E+00,  1.2E+00,  
+    1.3E+00,  1.4E+00,  1.5E+00,  
+    1.6E+00,  1.7E+00,  1.8E+00,  
     1.9E+00,  2.0E+00 };
 
   if ( *n_data < 0 )
@@ -10379,7 +10379,7 @@ double rcomp ( double *a, double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    RCOMP evaluates exp(-X) * X**A / Gamma(A).
 //
 //  Parameters:
@@ -10420,7 +10420,7 @@ double rexp ( double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    REXP evaluates the function EXP(X) - 1.
 //
 //  Modified:
@@ -10461,7 +10461,7 @@ double rlog ( double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    RLOG computes  X - 1 - LN(X).
 //
 //  Modified:
@@ -10522,7 +10522,7 @@ double rlog1 ( double *x )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    RLOG1 evaluates the function X - ln ( 1 + X ).
 //
 //  Parameters:
@@ -10578,7 +10578,7 @@ void student_cdf_values ( int *n_data, int *a, double *x, double *fx )
 
 //*******************************************************************************
 //
-//  Purpose:
+//  Purpose: 
 //
 //    STUDENT_CDF_VALUES returns some values of the Student CDF.
 //
@@ -10612,20 +10612,20 @@ void student_cdf_values ( int *n_data, int *a, double *x, double *fx )
 {
 # define N_MAX 13
 
-  int a_vec[N_MAX] = {
-    1, 2, 3, 4,
-    5, 2, 5, 2,
-    5, 2, 3, 4,
+  int a_vec[N_MAX] = { 
+    1, 2, 3, 4, 
+    5, 2, 5, 2, 
+    5, 2, 3, 4, 
     5 };
-  double fx_vec[N_MAX] = {
-    0.60E+00, 0.60E+00, 0.60E+00, 0.60E+00,
-    0.60E+00, 0.75E+00, 0.75E+00, 0.95E+00,
-    0.95E+00, 0.99E+00, 0.99E+00, 0.99E+00,
+  double fx_vec[N_MAX] = { 
+    0.60E+00, 0.60E+00, 0.60E+00, 0.60E+00, 
+    0.60E+00, 0.75E+00, 0.75E+00, 0.95E+00, 
+    0.95E+00, 0.99E+00, 0.99E+00, 0.99E+00, 
     0.99E+00 };
-  double x_vec[N_MAX] = {
-    0.325E+00, 0.289E+00, 0.277E+00, 0.271E+00,
-    0.267E+00, 0.816E+00, 0.727E+00, 2.920E+00,
-    2.015E+00, 6.965E+00, 4.541E+00, 3.747E+00,
+  double x_vec[N_MAX] = { 
+    0.325E+00, 0.289E+00, 0.277E+00, 0.271E+00, 
+    0.267E+00, 0.816E+00, 0.727E+00, 2.920E+00, 
+    2.015E+00, 6.965E+00, 4.541E+00, 3.747E+00, 
     3.365E+00 };
 
   if ( *n_data < 0 )
@@ -10659,26 +10659,26 @@ double stvaln ( double *p )
 //****************************************************************************
 //
 //  Purpose:
-//
+// 
 //    STVALN provides starting values for the inverse of the normal distribution.
 //
 //  Discussion:
 //
-//    The routine returns X such that
-//      P = CUMNOR(X),
-//    that is,
+//    The routine returns X such that 
+//      P = CUMNOR(X),  
+//    that is, 
 //      P = Integral from -infinity to X of (1/SQRT(2*PI)) EXP(-U*U/2) dU.
 //
 //  Reference:
 //
 //    Kennedy and Gentle,
-//    Statistical Computing,
+//    Statistical Computing, 
 //    Marcel Dekker, NY, 1980, page 95,
 //    QA276.4  K46
 //
 //  Parameters:
 //
-//    Input, double *P, the probability whose normal deviate
+//    Input, double *P, the probability whose normal deviate 
 //    is sought.
 //
 //    Output, double STVALN, the normal deviate whose probability
@@ -10713,6 +10713,7 @@ S20:
 
 /*void timestamp ( void )
 
+//**********************************************************************
 //
 //  Purpose:
 //
@@ -10737,7 +10738,7 @@ S20:
 {
 #define TIME_SIZE 40
 
-  static const const char* time_buffer[TIME_SIZE];
+  static char time_buffer[TIME_SIZE];
   const struct tm *tm;
   size_t len;
   time_t now;
@@ -10747,7 +10748,7 @@ S20:
 
   len = strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
 
-  std::cout << time_buffer << "\n";
+  cout << time_buffer << "\n";
 
   return;
 #undef TIME_SIZE

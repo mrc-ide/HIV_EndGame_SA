@@ -333,10 +333,10 @@ change_prep_prev_year  <- function(formatted_data,
   # data <- readLines("Rollout_Original.txt")
   # formatted_data2 <- format_data(data, dictionary) # reads in original value in editable format
   for (year in prep_change_years){ #loops over each prep decrease year and changes the proportion reduction of probability
-    formatted_data2 <- edit_formatted_data_prev_year(formatted_data, "rel_rate_prep_msm_over_20", 
-                                                     new_values = (1 - prep_rel_rate), 
-                                                     starting_year = year)
-    formatted_data2 <- edit_formatted_data_prev_year(formatted_data2, "rel_rate_prep_women_over_20", 
+    # formatted_data2 <- edit_formatted_data_prev_year(formatted_data, "rel_rate_prep_msm_over_20",
+    #                                                  new_values = (1 - prep_rel_rate),
+    #                                                  starting_year = year)
+    formatted_data2 <- edit_formatted_data_prev_year(formatted_data, "prop_msm_elig_prep", 
                                                      new_values = (1 - prep_rel_rate), 
                                                      starting_year = year)
     
@@ -349,10 +349,10 @@ maintain_prep <- function(formatted_data2,
                          output_names, 
                          prep_maintenance_years){
   for (year in prep_maintenance_years){ #loops over each prep maintenance year and makes all years the same value as last reduction
-    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_prep_msm_over_20", 
+    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "prop_msm_elig_prep", 
                                                     starting_year = year)
-    formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_prep_women_over_20", 
-                                                    starting_year = year)
+    # formatted_data2 <- edit_formatted_data_maintain(formatted_data2, "rel_rate_prep_women_over_20", 
+    #                                                 starting_year = year)
   }
   return(formatted_data2)
 }

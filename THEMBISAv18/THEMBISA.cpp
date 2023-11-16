@@ -8994,6 +8994,7 @@ void ResultsAtStartOfYr()
 			Temp1 += TotalPositive_S[ia][0] + TotalPositive_S[ia][1];
 			Temp2 += TotalPop_S[ia][0] + TotalPop_S[ia][1];
 		}
+		Total15plus.out[CurrSim - 1][iy] = Temp2;
 		TotalHIV.out[CurrSim - 1][iy] = Temp1 + Temp3;
 		TotHIV50plus.out[CurrSim - 1][iy] = Temp1 - TotHIV15to49.out[CurrSim - 1][iy];
 		TotPop.out[CurrSim - 1][iy] = Temp2 + Temp4;
@@ -9978,6 +9979,13 @@ void ResultsAtStartOfYr()
 		VLsuppressed15total.out[CurrSim - 1][iy] = (VLsuppressedM.out[CurrSim - 1][iy] * TotalART15M.out[CurrSim - 1][iy] +
 		  VLsuppressedF.out[CurrSim - 1][iy] * TotalART15F.out[CurrSim - 1][iy]) / TotHIV15.out[CurrSim - 1][iy];
 		VLunsuppressed15total.out[CurrSim - 1][iy] = 1 - VLsuppressed15total.out[CurrSim - 1][iy];
+
+		// ART coverage 15 to 49
+		Temp1 = 0.0; 
+		for (ia = 15; ia<50; ia++){
+			Temp1 += TotalART[ia][0] + TotalART[ia][1];
+		ARTcoverage15to49.out[CurrSim - 1][iy] = Temp1 / TotHIV15to49.out[CurrSim - 1][iy];	
+		}
 
 		if (CurrYear == 2012){
 			// Calculate profile by age and sex in 2012
@@ -13327,6 +13335,8 @@ void ResultsAtEndOfYr2()
 
 	// Incidence:prevalence ratio
 	IncPrevRatio.out[CurrSim - 1][iy] = TotalNewHIV.out[CurrSim - 1][iy] / TotalHIV.out[CurrSim - 1][iy];
+	IncPrevRatio15to49.out[CurrSim - 1][iy] = NewHIV15to49.out[CurrSim - 1][iy] / TotHIV15to49.out[CurrSim-1][iy];
+	IncPrevRatio15plus.out[CurrSim - 1][iy] = (NewHIV15F.out[CurrSim - 1][iy] + NewHIV15M.out[CurrSim - 1][iy]) / TotHIV15.out[CurrSim-1][iy];
 	IncPrevRatioFtoM.out[CurrSim - 1][iy] = NewHIV15F.out[CurrSim - 1][iy] / TotHIV15M.out[CurrSim - 1][iy];
 	IncPrevRatioMtoF.out[CurrSim - 1][iy] = NewHIV15M.out[CurrSim - 1][iy] / TotHIV15F.out[CurrSim - 1][iy];
 
@@ -16647,6 +16657,7 @@ void RunSample()
 	TotHIV50plusF.RecordSample("TotHIV50plusF.txt");
     // Prev15to24.RecordSample("Prev15to24.txt");
   Prev15to49.RecordSample("Prev15to49.txt");
+  Prev15plus.RecordSample("Prev15plus.txt");
     // Prev25plus.RecordSample("Prev25plus.txt");
     // Prev0to14.RecordSample("Prev0to14.txt");
     // Prev2to14.RecordSample("Prev2to14.txt");
@@ -16667,6 +16678,8 @@ void RunSample()
 	MSMprev25plus.RecordSample("MSMprev25plus.txt");*/
 	MSMprev18plus.RecordSample("MSMprev18plus.txt");
 	TotalMSM.RecordSample("TotalMSM.txt");
+	IncPrevRatio15to49.RecordSample("IncPrevRatio15to49.txt");
+	IncPrevRatio15plus.RecordSample("IncPrevRatio15plus.txt");
 
 	// Write HIV incidence outputs to text files
   NewHIVinFSW.RecordSample("NewHIVinFSW.txt");
@@ -16703,6 +16716,7 @@ void RunSample()
 	HIVinc50.RecordSample("HIVinc50.txt");
 	HIVinc15plusM.RecordSample("HIVinc15plusM.txt");
 	HIVinc15plusF.RecordSample("HIVinc15plusF.txt");
+	HIVinc15plus.RecordSample("HIVinc15plus.txt");
 	HIVincFSW.RecordSample("HIVincFSW.txt"); 
 	HIVincMSM.RecordSample("HIVincMSM.txt");
 	HIVincClients.RecordSample("HIVincClients.txt");
@@ -16799,6 +16813,7 @@ void RunSample()
 	StartingART_M15.RecordSample("StartingART_M15.txt");
 	StartingART_F15.RecordSample("StartingART_F15.txt");
 	StartingARTtot.RecordSample("StartingARTtot.txt");
+	ARTcoverage15to49.RecordSample("ARTcoverage15to49.txt");
 	ARTcoverageAdult.RecordSample("ARTcoverageAdult.txt");
 	ARTcoverageDiag.RecordSample("ARTcoverageDiag.txt");
 	ARTcoverageDiag15.RecordSample("ARTcoverageDiag15.txt");
@@ -16842,6 +16857,8 @@ void RunSample()
 
 	// Write other outputs to text files
 	TotPop.RecordSample("TotPop.txt");
+	Total15to49.RecordSample("Total15to49.txt");
+	Total15plus.RecordSample("Total15plus.txt");
 	/*TotBirthsHIV.RecordSample("TotBirthsHIV.txt");
 	TotBirthsART.RecordSample("TotBirthsART.txt");
 	NegChildrenU15.RecordSample("NegChildrenU15.txt");

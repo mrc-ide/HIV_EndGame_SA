@@ -44,6 +44,26 @@ run_on_cluster(pitc_reduction_years = 2025,
 cumulative_prep <- read_csv("results/cumulative_prep.csv")
 prep_summary <- read_csv("results/prep.csv")
 
+
+cumulative_costs <- bind_rows(cumulative_costs_0, cumulative_costs_25, 
+                              cumulative_costs_50, cumulative_costs_75,
+                              cumulative_costs_100)
+write_csv(cumulative_costs, "~/Documents/clean_results/cumulative_costs.csv")
+
+
+cost_summary_0 <- read_csv("results/costs_0.csv")
+cost_summary_25 <- read_csv("results/costs_25.csv")
+cost_summary_50 <- read_csv("results/costs_50.csv")
+cost_summary_75 <- read_csv("results/costs_75.csv")
+cost_summary_100 <- read_csv("results/costs_100.csv")
+
+cost_summary <- bind_rows(cost_summary_0, cost_summary_25,
+                          cost_summary_50, cost_summary_75,
+                          cost_summary_100)
+
+write_csv(cost_summary, "~/Documents/clean_results/cost_summary.csv")
+
+# plwh_summary <- read_csv("results/plwh_on_art.csv")
 # smoothed annual costs over time
 
 annual_costs <- cost_summary %>% 

@@ -80,7 +80,7 @@ fig1a <- test_reduction_only %>% mutate(test_reduction = as.factor(test_reductio
         aspect.ratio=1, 
         legend.title = element_text(size = 11)) +
   scale_y_continuous("HIV incidence per 1000", labels =(function(l) {round(l*1e3,1)}), breaks = c(0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008),expand = c(0, 0)) +
-  scale_fill_brewer("General\nHTS\nreduction", labels = c("None", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  scale_fill_brewer("General\nHTS\nreduction", labels = c("Status quo", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
   ggtitle("HIV incidence \n(per 1000; 15-49 years)") 
 ```
 

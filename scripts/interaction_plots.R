@@ -4,7 +4,6 @@ library(tidyr)
 library(readr)
 library(ggplot2)
 library(gridExtra)
-library(gridExtra)
 library(metR)
 library(ggpubr)
 library(ggfx)
@@ -63,6 +62,8 @@ cost_summary <- bind_rows(cost_summary_0, cost_summary_25,
 
 write_csv(cost_summary, "~/Documents/clean_results/cost_summary.csv")
 
+cost_summary <- read_csv("~/Documents/clean_results/cost_summary.csv")
+cumulative_costs <- read_csv("~/Documents/clean_results/cumulative_costs.csv")
 # plwh_summary <- read_csv("results/plwh_on_art.csv")
 # smoothed annual costs over time
 
@@ -1126,6 +1127,7 @@ annual_cost_line <- cost_summary %>%
          year >= 2020, 
          test_reduction %in% c(0, 25, 50, 75, 100),
          discount == "undiscounted") %>% 
+  mutate(indicator = factor(indicator, levels = c("cost_total", "cost_total_testing", "cost_total_treatment", "cost_total_care"))) %>% 
   ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
   geom_line(aes(colour = test_reduction), show.legend = T) +
@@ -1142,19 +1144,19 @@ annual_cost_line <- cost_summary %>%
         strip.text = element_text(size = 10, vjust = 1),
         strip.background = element_blank(),
         strip.placement = "outside") +
-  scale_y_continuous("", labels =(function(l) {paste0(round(l/1e6,1),"m")}),expand = c(0, 0)) +
+  scale_y_continuous("Cost (US$ millions)", labels =(function(l) {paste0("$",round(l/1e6,1),"m")}),expand = c(0, 0)) +
   scale_fill_brewer("General\nHTS\nreduction", 
-                    labels = c("None", "25%,", "50%", "75%", "100%"), 
+                    labels = c("None\n(Status quo)", "25%,", "50%", "75%", "100%"), 
                     aesthetics = c("colour", "fill"), 
                     palette = "Set1",
                     direction = 1) + 
-  ggtitle("Total annual costs\n(Undiscounted)") + 
+  ggtitle("Annual costs (2023 US$ millions)\n(Undiscounted)") + 
   facet_wrap(~indicator, scale = "free", 
              nrow = 1,
              strip.position = "top",
              labeller = as_labeller(c("cost_total_testing" = "Testing",
                                       "cost_total_treatment" = "Treatment",
-                                      "cost_total_care" = "Care",
+                                      "cost_total_care" = "Inpatient",
                                       "cost_total" = "Total")))
 
 ggsave(plot = annual_cost_line, filename = "figures/annual_cost_line.png", width = 20, device = "png", units = "cm")

@@ -9287,6 +9287,24 @@ void ResultsAtStartOfYr()
 		Adults350to499.out[CurrSim-1][iy] = TempCD4[1]/Temp1;
 		AdultsOver500.out[CurrSim-1][iy] = TempCD4[0]/Temp1;
 	}
+	for (is = 0; is<4; is++){
+                     TempCD4[is] = 0.0;}
+              for (ia = 5; ia<81; ia++){
+                     for (is = 0; is<4; is++){ // Current CD4
+                           for (ii = 1; ii<5; ii++){ // baseline CD4
+                                  for (id = 1; id < 5; id++){ // ART duration
+                                         TempCD4[is] += (SumGroupsM[ia][15 + ii * 5 + id] * OnARThalfIntDur[id][0] +
+                                                SumGroupsF[ia][15 + ii * 5 + id] * OnARThalfIntDur[id][1]) * CD4dbnNonIntDur[is][4 - ii][id];
+                                  }
+                           }
+                     }
+              }
+              OnARTcurrUnder200.out[CurrSim - 1][iy] = TempCD4[3];
+              OnARTcurr200to349.out[CurrSim - 1][iy] = TempCD4[2];
+              OnARTcurr350to499.out[CurrSim - 1][iy] = TempCD4[1];
+              OnARTcurrOver500.out[CurrSim - 1][iy] = TempCD4[0];
+
+
 
 	// ART totals
 	Temp1 = 0.0;
@@ -10361,6 +10379,7 @@ void ResultsAtStartOfYr()
 		OnART350to499.out[CurrSim - 1][iy] = TempCD4[1];
 		OnART200to349.out[CurrSim - 1][iy] = TempCD4[2];
 		OnARTunder200.out[CurrSim - 1][iy] = TempCD4[3];
+		
 		for (is = 0; is < 4; is++){
 			TempCD4[is] = 0.0;
 		}
@@ -13091,6 +13110,8 @@ void ResultsAtEndOfYr()
 			(NewlyTestedPos[0] + NewlyTestedPos[1]);
 		AdultHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTestedPos[0] + NewlyTestedPos[1]);
 		AdultHIVtestsNeg.out[CurrSim - 1][iy] = (NewlyTestedNeg[0] + NewlyTestedNeg[1]);
+		PaedsHIVtestsPos.out[CurrSim - 1][iy] = NewlyTestedPos[2];
+		PaedsHIVtestsNeg.out[CurrSim - 1][iy] = NewlyTestedNeg[2];
         Number1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]);
         Prop1stHIVtestsPos.out[CurrSim - 1][iy] = (NewlyTested1stPos[0] + NewlyTested1stPos[1]) / (NewlyTestedNeg[0] + NewlyTestedNeg[1] +
         NewlyTestedPos[0] + NewlyTestedPos[1]);
@@ -16750,11 +16771,11 @@ void RunSample()
 	AIDSdeathsPaed.RecordSample("AIDSdeathsPaed.txt");*/
 	AIDSdeathsAdultM.RecordSample("AIDSdeathsAdultM.txt");
 	AIDSdeathsAdultF.RecordSample("AIDSdeathsAdultF.txt");
-	/*AIDSdeaths0.RecordSample("AIDSdeaths0.txt");
+	AIDSdeaths0.RecordSample("AIDSdeaths0.txt");
 	AIDSdeaths1to4.RecordSample("AIDSdeaths1to4.txt");
 	AIDSdeaths5to9.RecordSample("AIDSdeaths5to9.txt");
 	AIDSdeaths10to14.RecordSample("AIDSdeaths10to14.txt");
-	AIDSdeaths20to59M.RecordSample("AIDSdeaths20to59M.txt");
+	/*AIDSdeaths20to59M.RecordSample("AIDSdeaths20to59M.txt");
 	AIDSdeaths20to59F.RecordSample("AIDSdeaths20to59F.txt");
 	NonAIDSdeaths2005.RecordSample("NonAIDSdeaths2005.txt");
 	IMR.RecordSample("IMR.txt");
@@ -16779,6 +16800,10 @@ void RunSample()
 	Adults200to349.RecordSample("Adults200to349.txt");
 	Adults350to499.RecordSample("Adults350to499.txt");
 	AdultsOver500.RecordSample("AdultsOver500.txt");*/
+	OnARTcurrUnder200.RecordSample("OnARTcurrUnder200.txt");
+	OnARTcurr200to349.RecordSample("OnARTcurr200to349.txt");
+	OnARTcurr350to499.RecordSample("OnARTcurr350to499.txt");
+	OnARTcurrOver500.RecordSample("OnARTcurrOver500.txt");
 	StartingART0.RecordSample("StartingART0.txt");
 	StartingART1.RecordSample("StartingART1.txt");
 	StartingART1to2.RecordSample("StartingART1to2.txt");
@@ -16862,15 +16887,17 @@ void RunSample()
 	AdultsEverTested.RecordSample("AdultsEverTested.txt");*/
 	//TestingBias.RecordSample("TestingBias.txt");
 	TotalHIVtests.RecordSample("TotalHIVtests.txt");
-	/*HIVtestsPos.RecordSample("HIVtestsPos.txt");
+	//HIVtestsPos.RecordSample("HIVtestsPos.txt");
 	TotalHIVtestsU15.RecordSample("TotalHIVtestsU15.txt");
-	HIVtestsPosU15.RecordSample("HIVtestsPosU15.txt");
+	/*HIVtestsPosU15.RecordSample("HIVtestsPosU15.txt");
 	FalseNegPropn.RecordSample("FalseNegPropn.txt");*/
 	// FirstHIVtestsPos.RecordSample("FirstHIVtestsPos.txt");
     Number1stHIVtestsPos.RecordSample("Number1stHIVtestsPos.txt");
     Prop1stHIVtestsPos.RecordSample("Prop1stHIVtestsPos.txt");
 	AdultHIVtestsPos.RecordSample("AdultHIVtestsPos.txt");
 	AdultHIVtestsNeg.RecordSample("AdultHIVtestsNeg.txt");
+	PaedsHIVtestsPos.RecordSample("PaedsHIVtestsPos.txt");
+	PaedsHIVtestsNeg.RecordSample("PaedsHIVtestsNeg.txt");
 	/*TotSTestFixedPoint.RecordSample("TotSTestFixedPoint.txt");
 	TotSTestTaxi.RecordSample("TotSTestTaxi.txt");
 	TotSTestANC.RecordSample("TotSTestANC.txt");

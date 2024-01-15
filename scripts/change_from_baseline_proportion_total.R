@@ -87,6 +87,8 @@ cost_cum_treatment$percentage_change_baseline <- (cost_cum_treatment$cumulative_
 
 cumulative_change_from_baseline_total <- bind_rows(cost_cum_intervention,cost_cum_testing,cost_cum_treatment,cost_cum_care)
 
+write_csv(cumulative_change_from_baseline_total, "results/cumulative_change_from_baseline_total.csv")
+
 cumulative_change_from_baseline_total <- cumulative_change_from_baseline_total %>% 
   mutate(indicator = factor(indicator,
                             labels = c("Total", "Testing", "Treatment", "Inpatient"),

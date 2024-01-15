@@ -15,37 +15,40 @@ source("R/cluster_function_orderly.R")
 setwd("~/Documents/HIV_EndGame_SA/THEMBISAv18")
 system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
 system("./thembisa")
-for (i in c(0, 25, 50, 75, 100)) {
-  run_on_cluster(pitc_reduction_years = 2025, 
-                 pitc_reduction_percentage = i,
-                 condom_usage_reduction = FALSE,
-                 condom_usage_decrease = 0,
-                 condom_decr_start = 2025,
-                 condom_usage_promotion = FALSE,
-                 condom_usage_increase = 0,
-                 condom_incr_start = 2025,
-                 art_coverage_increase = FALSE,
-                 art_interrupt_rate_decrease = 0,
-                 art_incr_start = 2025,
-                 art_coverage_decrease = FALSE,
-                 art_interrupt_rate_increase = 0,
-                 art_decr_start = 2025,
-                 cumulative_years_list = c(9, 49),
-                 summary_name = paste0("costs_", i) 
-  )
-}
 
+run_on_cluster(pitc_reduction_years = 2025, 
+               pitc_reduction_percentage = c(100),
+               condom_usage_reduction = FALSE,
+               condom_usage_decrease = 0,
+               condom_decr_start = 2025,
+               condom_usage_promotion = FALSE,
+               condom_usage_increase = 0,
+               condom_incr_start = 2025,
+               art_coverage_increase = FALSE,
+               art_interrupt_rate_decrease = 0,
+               art_incr_start = 2025,
+               art_coverage_decrease = FALSE,
+               art_interrupt_rate_increase = 0,
+               art_decr_start = 2025,
+               cumulative_years_list = 50,
+               change_mmc = FALSE,
+               mmc_rel_rate = 0,
+               mmc_change_start = 2025,
+               change_prep = TRUE,
+               prep_rel_rate = 1, 
+               prep_change_start = 2025, 
+               summary_name = "prep" 
+)
 
-cumulative_costs_0 <- read_csv("results/cumulative_costs_0.csv")
-cumulative_costs_25 <- read_csv("results/cumulative_costs_25.csv")
-cumulative_costs_50 <- read_csv("results/cumulative_costs_50.csv")
-cumulative_costs_75 <- read_csv("results/cumulative_costs_75.csv")
-cumulative_costs_100 <- read_csv("results/cumulative_costs_100.csv")
+cumulative_prep <- read_csv("results/cumulative_prep.csv")
+prep_summary <- read_csv("results/prep.csv")
+
 
 cumulative_costs <- bind_rows(cumulative_costs_0, cumulative_costs_25, 
                               cumulative_costs_50, cumulative_costs_75,
                               cumulative_costs_100)
 write_csv(cumulative_costs, "~/Documents/clean_results/cumulative_costs.csv")
+
 
 cost_summary_0 <- read_csv("results/costs_0.csv")
 cost_summary_25 <- read_csv("results/costs_25.csv")
@@ -59,6 +62,8 @@ cost_summary <- bind_rows(cost_summary_0, cost_summary_25,
 
 write_csv(cost_summary, "~/Documents/clean_results/cost_summary.csv")
 
+cost_summary <- read_csv("~/Documents/clean_results/cost_summary.csv")
+cumulative_costs <- read_csv("~/Documents/clean_results/cumulative_costs.csv")
 # plwh_summary <- read_csv("results/plwh_on_art.csv")
 # smoothed annual costs over time
 
@@ -110,9 +115,6 @@ annual_costs <- cost_summary %>%
              strip.position = "left")
 ggsave(plot = annual_costs, "figures/annual_cost_dif.png", device = "png", units = "cm", height = 29.7, width = 20)
 
-# add this to the supplementary figure??
-
-
 ## difference from baseline - undiscounted
 figA <- cumulative_costs %>% 
   filter(indicator %in% c("cost_total_testing", "cost_total_treatment", "cost_total_care"),
@@ -130,7 +132,7 @@ figA <- cumulative_costs %>%
   scale_y_continuous("",
                      breaks = seq(-3e9, 4e9, 1e9), 
                      labels = (function(l) {paste0("$",round(l/1e9,1),"b")}),
-                     limits = c(-3.5e9, 6e9)) + 
+                     limits = c(-3.5e9, 4.5e9)) + 
   geom_point(data = filter(cumulative_costs,indicator %in% c("cost_total"),
                            scenario %in% c("absolute_dif"),
                            cumulative_years %in% c(4, 9, 24, 49),
@@ -192,7 +194,7 @@ figB <- cumulative_costs %>%
   scale_y_continuous("",
                      breaks = seq(-3e9, 4e9, 1e9), 
                      labels = (function(l) {paste0("$",round(l/1e9,1),"b")}),
-                     limits = c(-3.5e9, 6e9)) + 
+                     limits = c(-3.5e9, 4.5e9)) + 
   geom_point(data = filter(cumulative_costs,indicator %in% c("cost_total"),
                            scenario %in% c("absolute_dif"),
                            cumulative_years %in% c(4, 9, 24, 49),
@@ -257,7 +259,7 @@ figC <- cumulative_costs %>%
   scale_y_continuous("",
                      breaks = seq(-3e9, 4e9, 1e9), 
                      labels = (function(l) {paste0("$",round(l/1e9,1),"b")}),
-                     limits = c(-3.5e9, 6e9)) + 
+                     limits = c(-3.5e9, 4.5e9)) + 
   geom_point(data = filter(cumulative_costs,indicator %in% c("cost_total"),
                            scenario %in% c("absolute_dif"),
                            cumulative_years %in% c(4, 9, 24, 49),
@@ -318,9 +320,9 @@ cum_costs_25_red <- cumulative_costs %>%
            #width = 0.85, alpha = 0.75
   ) +
   scale_y_continuous("",
-                     breaks = seq(-4e9, 8e9, 2e9), 
+                     breaks = seq(-4e9, 4e9, 2e9), 
                      labels = (function(l) {paste0("$",round(l/1e9,1),"b")}),
-                     limits = c(-3.5e9, 7e9)) + 
+                     limits = c(-3.5e9, 4.5e9)) + 
   geom_point(data = filter(cumulative_costs,indicator %in% c("cost_total"),
                            scenario %in% c("absolute_dif"),
                            cumulative_years %in% c(4, 9, 24, 49),
@@ -381,9 +383,9 @@ cum_costs_50_red <- cumulative_costs %>%
            #width = 0.85, alpha = 0.75
   ) +
   scale_y_continuous("",
-                     breaks = seq(-4e9, 8e9, 2e9), 
+                     breaks = seq(-4e9, 4e9, 2e9), 
                      labels = (function(l) {paste0("$",round(l/1e9,1),"b")}),
-                     limits = c(-3.5e9, 7e9)) + 
+                     limits = c(-3.5e9, 4.5e9)) + 
   geom_point(data = filter(cumulative_costs,indicator %in% c("cost_total"),
                            scenario %in% c("absolute_dif"),
                            cumulative_years %in% c(4, 9, 24, 49),
@@ -444,9 +446,9 @@ cum_costs_75_red <- cumulative_costs %>%
            #width = 0.85, alpha = 0.75
   ) +
   scale_y_continuous("",
-                     breaks = seq(-4e9, 8e9, 2e9), 
+                     breaks = seq(-4e9, 4e9, 2e9), 
                      labels = (function(l) {paste0("$",round(l/1e9,1),"b")}),
-                     limits = c(-3.5e9, 7e9)) + 
+                     limits = c(-3.5e9, 4.5e9)) + 
   geom_point(data = filter(cumulative_costs,indicator %in% c("cost_total"),
                            scenario %in% c("absolute_dif"),
                            cumulative_years %in% c(4, 9, 24, 49),
@@ -507,9 +509,9 @@ cum_costs_100_red <- cumulative_costs %>%
            #width = 0.85, alpha = 0.75
   ) +
   scale_y_continuous("",
-                     breaks = seq(-4e9, 8e9, 2e9), 
+                     breaks = seq(-4e9, 4e9, 2e9), 
                      labels = (function(l) {paste0("$",round(l/1e9,1),"b")}),
-                     limits = c(-3.5e9, 7e9)) + 
+                     limits = c(-3.5e9, 4.5e9)) + 
   geom_point(data = filter(cumulative_costs,indicator %in% c("cost_total"),
                            scenario %in% c("absolute_dif"),
                            cumulative_years %in% c(4, 9, 24, 49),
@@ -680,7 +682,7 @@ annual_cost_50 <- cost_summary %>%
         axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.25),
+        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.15),
         aspect.ratio=1,
         strip.text = element_text(size = 11, vjust = 1, face = "bold"),
         strip.background = element_blank(),
@@ -746,7 +748,7 @@ annual_cost_75 <- cost_summary %>%
         axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.25),
+        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.15),
         aspect.ratio=1,
         strip.text = element_text(size = 11, vjust = 1, face = "bold"),
         strip.background = element_blank(),
@@ -812,7 +814,7 @@ annual_cost_100 <- cost_summary %>%
         axis.title.y = element_text(size = 11), 
         axis.title.x = element_text(size = 11),
         legend.text = element_text(size = 11), 
-        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.25),
+        plot.title = element_text(size = 10, hjust = 0.5,vjust = -0.15),
         aspect.ratio=1,
         strip.text = element_text(size = 11, vjust = 1, face = "bold"),
         strip.background = element_blank(),
@@ -837,29 +839,25 @@ annual_cost_100
 
 annual_cost_combo <- ggarrange(annual_cost_25, annual_cost_50, annual_cost_75, annual_cost_100,
                                ncol =1, common.legend = TRUE, legend = "right", align = "h")
-annual_cost_combo <- annotate_figure(annual_cost_combo, top = text_grob("Annual cost difference\n(2023 US$; Undiscounted)", 
-                                          color = "black", 
-                                          face = "bold", size = 11.5, hjust = 0.32))
+annual_cost_combo <- annotate_figure(annual_cost_combo, top = text_grob("Annual cost difference\n (undiscounted)", 
+                                          color = "black", face = "bold", size = 11.5, hjust = 0.19))
 
-# annual_cost_combo
-# ggsave(plot = annual_cost_combo, filename = "figures/annual_cost_combo.png", device = "png", 
-#        units = "cm", height = 29, width = 20)
+annual_cost_combo
+ggsave(plot = annual_cost_combo, filename = "figures/annual_cost_combo.png", device = "png", 
+       units = "cm", height = 29, width = 20)
 
 #### combining annual and cumulative costs ####
 
 percent_combo <- ggarrange(annual_cost_combo, percent_change, ncol = 2, common.legend = TRUE, legend = "right",
-                           widths = c(4.175,8.3), heights = c(4.175,8.3), align = "hv", labels = "AUTO")
+                           widths = c(4.175,8.3), heights = c(4.175,8.3), align = "hv", labels = "AUTO",label.x = 0.08)
 
 ggsave(plot = percent_combo, filename = "figures/percent_combo.png", device = "png", 
        units = "cm", height = 20, width = 20)
 
-ggsave(plot = percent_combo, filename = "figures/percent_combo.pdf", device = "pdf", 
+big_combo <- ggarrange(annual_cost_combo, cum_costs, ncol = 2, common.legend = TRUE, legend = "right",
+                       widths = c(4,8.3), heights = c(4,8.3), align = "hv", labels = "AUTO")
+ggsave(plot = big_combo, filename = "figures/big_combo.png", device = "png", 
        units = "cm", height = 20, width = 20)
-
-# big_combo <- ggarrange(annual_cost_combo, cum_costs, ncol = 2, common.legend = TRUE, legend = "right",
-#                        widths = c(4,8.3), heights = c(4,8.3), align = "hv", labels = "AUTO")
-# ggsave(plot = big_combo, filename = "figures/big_combo.png", device = "png", 
-#        units = "cm", height = 20, width = 20)
 
 ## difference from baseline - undiscounted, 3%, 6% discounted
 
@@ -1129,6 +1127,7 @@ annual_cost_line <- cost_summary %>%
          year >= 2020, 
          test_reduction %in% c(0, 25, 50, 75, 100),
          discount == "undiscounted") %>% 
+  mutate(indicator = factor(indicator, levels = c("cost_total", "cost_total_testing", "cost_total_treatment", "cost_total_care"))) %>% 
   ggplot(aes(year, mean, group = test_reduction, fill = test_reduction)) +
   geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
   geom_line(aes(colour = test_reduction), show.legend = T) +
@@ -1145,19 +1144,14 @@ annual_cost_line <- cost_summary %>%
         strip.text = element_text(size = 10, vjust = 1),
         strip.background = element_blank(),
         strip.placement = "outside") +
-  scale_y_continuous("Cost (US$ millions)", labels =(function(l) {paste0(round(l/1e6,1))}),expand = c(0, 0)) +
+  scale_y_continuous("Cost (US$ millions)", labels =(function(l) {paste0("$",round(l/1e6,1),"m")}),expand = c(0, 0)) +
   scale_fill_brewer("General\nHTS\nreduction", 
-                    labels = c("None", "25%", "50%", "75%", "100%"), 
+                    labels = c("None\n(Status quo)", "25%,", "50%", "75%", "100%"), 
                     aesthetics = c("colour", "fill"), 
                     palette = "Set1",
                     direction = 1) + 
   ggtitle("Annual costs (2023 US$ millions)\n(Undiscounted)") + 
-  facet_wrap(~factor(indicator, 
-                     level = c("cost_total",
-                               "cost_total_testing",
-                               "cost_total_treatment",
-                               "cost_total_care")), 
-             scale = "free", 
+  facet_wrap(~indicator, scale = "free", 
              nrow = 1,
              strip.position = "top",
              labeller = as_labeller(c("cost_total_testing" = "Testing",
@@ -1165,24 +1159,16 @@ annual_cost_line <- cost_summary %>%
                                       "cost_total_care" = "Inpatient",
                                       "cost_total" = "Total")))
 
-# ggsave(plot = annual_cost_line, filename = "figures/annual_cost_line.png", width = 20, device = "png", units = "cm")
+ggsave(plot = annual_cost_line, filename = "figures/annual_cost_line.png", width = 20, device = "png", units = "cm")
 
 total_annual_costs <- ggarrange(annual_cost_line, annual_percentage_fig,
-          ncol =1, align = "h", labels = "AUTO", widths = c(0.75, 1), 
-          heights = c(0.75, 1))
+          ncol =1, align = "h", labels = "AUTO")
 
 ggsave(plot = total_annual_costs, 
        filename = "figures/total_annual_costs.png", 
-       width = 21, 
-       height = 15,
+       width = 20, 
+       height = 20,
        device = "png", 
-       units = "cm")
-
-ggsave(plot = total_annual_costs, 
-       filename = "figures/total_annual_costs.pdf", 
-       width = 21, 
-       height = 15,
-       device = "pdf", 
        units = "cm")
 
 cost_summary %>% 

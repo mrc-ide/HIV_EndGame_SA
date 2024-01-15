@@ -16,7 +16,7 @@ workdir <- "M:/HIV_EndGame_SA/orderly/thembisa_orderly/src/thembisa"
 setwd(workdir)
 getwd()
 
-# # check that orderly works where you are
+# # uncomment to check that orderly works where you are
 # orderly::orderly_run(parameters = list(pitc_reduction_years = 2025,
 #                                        pitc_reduction_percentage = 5,
 #                                        condom_usage_reduction = FALSE,

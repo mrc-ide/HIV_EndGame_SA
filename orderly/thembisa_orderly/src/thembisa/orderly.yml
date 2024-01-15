@@ -48,7 +48,6 @@ artefacts:
       description: Summary outputs over time, cumulative outputs and individual output parameters
       filenames:
         - results/summary.csv
-        - results/cumulative_summary.csv
         - AdultARTinterrupters.txt 
         - AdultInterruptPropn.txt 
         - AIDSdeathsAdultF.txt
@@ -109,6 +108,44 @@ artefacts:
         - ARTcoverageDiag15.txt
         - VLsuppressed15.txt
         - VLunsuppressed15.txt
+        - TotalART15M2L.txt
+        - TotalART15F2L.txt
+        - AdultHIVtestsPos.txt
+        - AdultHIVtestsNeg.txt
+        - PreARTunder200M.txt
+        - PreART200to349M.txt
+        - PreART350to499M.txt
+        - PreARTover500M.txt
+        - PreARTunder200F.txt
+        - PreART200to349F.txt
+        - PreART350to499F.txt
+        - PreARTover500F.txt
+        - OnARTcurrUnder200.txt
+        - OnARTcurr200to349.txt
+        - OnARTcurr350to499.txt
+        - OnARTcurrOver500.txt
+        - DiscARTover500.txt
+        - DiscART350to499.txt
+        - DiscART200to349.txt
+        - DiscARTunder200.txt 
+        - StartingART0.txt
+        - StartingART1.txt
+        - StartingART1to2.txt
+        - StartingART3to5.txt
+        - StartingART6to9.txt
+        - StartingART10to14.txt
+        - TotalART1to2.txt
+        - TotalART3to5.txt 
+        - TotalART6to9.txt 
+        - TotalART10to14.txt
+        - StartingART_M15.txt
+        - StartingART_F15.txt
+        - AIDSdeaths0.txt
+        - AIDSdeaths1to4.txt
+        - AIDSdeaths5to9.txt
+        - AIDSdeaths10to14.txt
+        - PaedsHIVtestsPos.txt
+        - PaedsHIVtestsNeg.txt
 
 # An optional name to describe the report in more detail than its
 # directory name (which must be short) but less detail than
@@ -140,8 +177,15 @@ parameters:
   art_coverage_decrease: ~
   art_interrupt_rate_increase: ~
   art_decr_start: ~
-  cumulative_years: ~
+  cumulative_years_list: ~
   summary_name: ~
+  change_mmc: ~
+  mmc_rel_rate: ~
+  mmc_change_start: ~
+  change_prep: ~
+  prep_rel_rate: ~
+  prep_change_start: ~
+  
   
 #
 # would declare a parameter called 'a' with a default value of 1, and

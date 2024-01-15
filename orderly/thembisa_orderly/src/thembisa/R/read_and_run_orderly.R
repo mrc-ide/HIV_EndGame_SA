@@ -422,47 +422,47 @@ run_thembisa_scenario_prev_year <- function(pitc_reduction_year,
     formatted_data2 <- maintain_condom_usage(formatted_data2, output_names,
                                              condom_maintenance_years)
   }
-  if (change_mmc == TRUE & !change_prep){
-    formatted_data2 <- change_mmc_prev_year(formatted_data2, output_names,
-                                            rel_rate_mmc_10_to_14_yr,
-                                            rel_rate_mmc_15_to_19_yr,
-                                            rel_rate_mmc_20_to_24_yr,
-                                            rel_rate_mmc_25_to_49_yr,
-                                            rel_rate_mmc_over_50_yr,
-                                            mmc_change_years,
-                                            mmc_rel_rate)
-    formatted_data2 <- maintain_mmc(formatted_data2, output_names,
-                                             mmc_maintenance_years)
-    
-  }
-  if (change_prep == TRUE & !change_mmc){
-    formatted_data2 <- change_prep_prev_year(formatted_data2, output_names,
-                                             rel_rate_prep_msm_over_20,
-                                             rel_rate_prep_women_over_20,
-                                             prep_change_years,
-                                             prep_rel_rate)
-    formatted_data2 <- maintain_prep(formatted_data2, output_names,
-                                     prep_maintenance_years)
-  }
-  if (change_mmc & change_prep){
-    formatted_data2 <- change_mmc_prev_year(formatted_data2, output_names,
-                                            rel_rate_mmc_10_to_14_yr,
-                                            rel_rate_mmc_15_to_19_yr,
-                                            rel_rate_mmc_20_to_24_yr,
-                                            rel_rate_mmc_25_to_49_yr,
-                                            rel_rate_mmc_over_50_yr,
-                                            mmc_change_years,
-                                            mmc_rel_rate)
-    formatted_data2 <- maintain_mmc(formatted_data2, output_names,
-                                    mmc_maintenance_years)
-    formatted_data2 <- change_prep_prev_year(formatted_data2, output_names,
-                                             rel_rate_prep_msm_over_20,
-                                             rel_rate_prep_women_over_20,
-                                             prep_change_years,
-                                             prep_rel_rate)
-    formatted_data2 <- maintain_prep(formatted_data2, output_names,
-                                     prep_maintenance_years)
-  }
+  # if (change_mmc == TRUE & change_prep == FALSE){
+  #   formatted_data2 <- change_mmc_prev_year(formatted_data2, output_names,
+  #                                           rel_rate_mmc_10_to_14_yr,
+  #                                           rel_rate_mmc_15_to_19_yr,
+  #                                           rel_rate_mmc_20_to_24_yr,
+  #                                           rel_rate_mmc_25_to_49_yr,
+  #                                           rel_rate_mmc_over_50_yr,
+  #                                           mmc_change_years,
+  #                                           mmc_rel_rate)
+  #   formatted_data2 <- maintain_mmc(formatted_data2, output_names,
+  #                                            mmc_maintenance_years)
+  #   
+  # }
+  # if (change_prep == TRUE & change_mmc == FALSE){
+  #   formatted_data2 <- change_prep_prev_year(formatted_data2, output_names,
+  #                                            rel_rate_prep_msm_over_20,
+  #                                            rel_rate_prep_women_over_20,
+  #                                            prep_change_years,
+  #                                            prep_rel_rate)
+  #   formatted_data2 <- maintain_prep(formatted_data2, output_names,
+  #                                    prep_maintenance_years)
+  # }
+  # if (change_mmc & change_prep){
+  #   formatted_data2 <- change_mmc_prev_year(formatted_data2, output_names,
+  #                                           rel_rate_mmc_10_to_14_yr,
+  #                                           rel_rate_mmc_15_to_19_yr,
+  #                                           rel_rate_mmc_20_to_24_yr,
+  #                                           rel_rate_mmc_25_to_49_yr,
+  #                                           rel_rate_mmc_over_50_yr,
+  #                                           mmc_change_years,
+  #                                           mmc_rel_rate)
+  #   formatted_data2 <- maintain_mmc(formatted_data2, output_names,
+  #                                   mmc_maintenance_years)
+  #   formatted_data2 <- change_prep_prev_year(formatted_data2, output_names,
+  #                                            rel_rate_prep_msm_over_20,
+  #                                            rel_rate_prep_women_over_20,
+  #                                            prep_change_years,
+  #                                            prep_rel_rate)
+  #   formatted_data2 <- maintain_prep(formatted_data2, output_names,
+  #                                    prep_maintenance_years)
+  # }
   if (!is.na(pitc_reduction_year)){
     formatted_data2 <- edit_formatted_data_incremental(formatted_data2, 
                                                        "rate_first_test_neg_fem_under_25", 

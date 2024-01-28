@@ -335,18 +335,26 @@ test_costs_only_undiscount_tests %>%
 #          upper_CI_test_anc_positivity = (upper_CI_test_cost_anc_test_pos/ upper_CI_test_anc_total)) %>% 
 #   pivot_longer(-(year:upper_CI_test), names_to = "indicator",values_to = "mean_test") 
 #    
-test_diag_pos <- test_costs_only_undiscount_tests %>% 
-  select(-c(mean, lower_CI, upper_CI)) %>% 
-  pivot_longer(cols = c(mean_test, upper_CI_test, lower_CI_test)) %>% 
+
+
+test_reduction_update <- read_csv("~/Documents/HIV_EndGame_SA/results/test_reduction_update.csv")
+
+test_reduction_reduced <- test_reduction_update %>% 
+  filter(scenario == "intervention", 
+         indicator %in% c("AdultHIVtestsPos",
+                          "TotalHIVtests",
+                          "Number1stHIVtestsPos",
+                          "MalesOver15",
+                          "FemalesOver15")) %>% 
+  pivot_longer(cols = c(mean, upper_CI, lower_CI)) %>% 
   pivot_wider(names_from = indicator) %>% 
-  mutate(gen_total = (cost_general_hts_neg + cost_general_hts_pos)) %>%
-  mutate(anc_total = (cost_anc_test_neg + cost_anc_test_pos)) %>% 
-  mutate(gen_positivity =(cost_general_hts_pos / gen_total),
-         anc_positivity = (cost_anc_test_pos/ anc_total)) %>% 
+  mutate(test_positiviy = AdultHIVtestsPos/TotalHIVtests) %>%
+  mutate(first_time_test_positiviy = Number1stHIVtestsPos/TotalHIVtests) %>% 
+  mutate(pos_tests_per_adult = Number1stHIVtestsPos / (MalesOver15+FemalesOver15)) %>% 
   pivot_longer(-(year:name), names_to = "indicator") %>% 
   pivot_wider()
 
-total_diagnoses <- test_diag_pos %>% 
+test_reduction_reduced <- test_diag_pos %>% 
   filter(indicator %in% c("cost_anc_test_pos",
                           "cost_general_hts_pos"),
          test_reduction %in% c(0, 25, 50, 75, 100)) %>% 

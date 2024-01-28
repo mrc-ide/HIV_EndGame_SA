@@ -47,7 +47,7 @@ condom_change_cumulative <- read_csv("results/condom_change_cumulative.csv")
 
 ```{r art_cost_data, include = FALSE}
 
-art_needs_costs <- read_csv("results/cost_analysis.csv")
+cost_summary <- read_csv("results/cost_summary.csv")
 
 ```
 
@@ -163,19 +163,82 @@ fig1d <- test_reduction_only %>% mutate(test_reduction = as.factor(test_reductio
         plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         aspect.ratio=1, 
         legend.title = element_text(size = 11)) +
-  scale_y_continuous("HIV tests per 100 adults", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
+  scale_y_continuous("HIV tests per 100", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
   scale_fill_brewer("General\nHTS\nreduction", labels = c("None\n(Status quo)", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
-  ggtitle("HIV tests per 100 adults\n(15+ years)")
+  ggtitle("HIV tests\n(per 100; 15+ years)")
 
+```
+
+```{r fig1_extra, echo=FALSE}
+test_reduction_update <- read_csv("~/Documents/HIV_EndGame_SA/results/test_reduction_update.csv")
+
+test_reduction_reduced <- test_reduction_update %>% 
+  filter(scenario == "intervention", 
+         indicator %in% c("AdultHIVtestsPos",
+                          "TotalHIVtests",
+                          "Number1stHIVtestsPos",
+                          "MalesOver15",
+                          "FemalesOver15")) %>% 
+  pivot_longer(cols = c(mean, upper_CI, lower_CI)) %>% 
+  pivot_wider(names_from = indicator) %>% 
+  mutate(test_positiviy = AdultHIVtestsPos/TotalHIVtests) %>%
+  mutate(first_time_test_positiviy = Number1stHIVtestsPos/TotalHIVtests) %>% 
+  mutate(pos_tests_per_adult = Number1stHIVtestsPos / (MalesOver15+FemalesOver15)) %>% 
+  pivot_longer(-(year:name), names_to = "indicator") %>% 
+  pivot_wider() %>% 
+  mutate(test_reduction = 100 - test_reduction)
+
+fig1_extra1 <- test_reduction_reduced %>% 
+  filter(indicator %in% c("pos_tests_per_adult"),
+         year >= 2020,
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+   ggplot(aes(year, mean, group = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("Positive HIV tests per 100", labels =(function(l) {round(l*1e2,1)}),expand = c(0, 0)) +
+  scale_fill_brewer("General\nHTS\nreduction", labels = c("None\n(Status quo)", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("Positive HIV tests\n(per 100; 15+ years)")
+fig1_extra1
+
+fig1_extra2 <- test_reduction_reduced %>% filter(indicator %in% c(
+                          "test_positiviy"), year >=2020,
+         test_reduction %in% c(0, 25, 50, 75, 100)) %>% 
+  mutate(test_reduction = as.factor(test_reduction)) %>% 
+   ggplot(aes(year, mean, group = test_reduction)) +
+  geom_ribbon(aes(ymin = lower_CI, ymax = upper_CI, fill = test_reduction), alpha = 0.10, show.legend = F) +
+  geom_line(aes(colour = test_reduction), show.legend = T) +
+  scale_x_continuous("",expand = c(0, 0)) +
+  expand_limits(y=0) + theme_classic() + 
+  theme(axis.text = element_text(size = 11), 
+        axis.title.y = element_text(size = 11), 
+        axis.title.x = element_text(size = 11),
+        legend.text = element_text(size = 11), 
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        aspect.ratio=1, 
+        legend.title = element_text(size = 11)) +
+  scale_y_continuous("HIV test positivity", labels =(function(l) {paste0(round(l*1e2,1),"%")}),expand = c(0, 0)) +
+  scale_fill_brewer("General\nHTS\nreduction", labels = c("None\n(Status quo)", "25%", "50%", "75%", "100%"), aesthetics = c("colour", "fill"), palette = "Set1") + 
+  ggtitle("HIV test positivity\n(15+ years)")
+fig1_extra2
 ```
 
 ### Combined figure 1
 
 ``` {r fig1, echo = FALSE}
 # detach("package:egg", unload = TRUE)
-fig1 <- ggarrange(fig1a, fig1b, fig1c, fig1d, nrow = 2, ncol = 2, common.legend = TRUE, legend = "right", labels = "AUTO", font.label = list(size = 14))
-ggsave(filename = "figures/fig1.pdf", plot = fig1, device = "pdf", width = 20, units = "cm")
-ggsave(filename = "figures/fig1.png", plot = fig1, device = "png", width = 20, units = "cm")
+fig1 <- ggarrange(fig1a, fig1b, fig1c, fig1d, fig1_extra1,fig1_extra2, nrow = 3, ncol = 2, common.legend = TRUE, legend = "right", labels = "AUTO", font.label = list(size = 14))
+ggsave(filename = "figures/Figure_1.pdf", plot = fig1, device = "pdf", height =20, units = "cm")
+ggsave(filename = "figures/fig1.png", plot = fig1, device = "png", height =20, units = "cm")
 fig1
 ```
 
@@ -297,7 +360,7 @@ fig1h
 ```{r fig2_costs, echo = FALSE}
 # read dataframes
 cost_summary <- read_csv("~/Documents/clean_results/cost_summary.csv")
-cumulative_change_from_baseline_total <- read_csv("results/cumulative_change_from_baseline_total.csv")
+cumulative_change_from_baseline_total <- read_csv("~/Documents/clean_results/cumulative_change_from_baseline_total.csv")
 
 
 #### Figure 2A ####

@@ -1,0 +1,852 @@
+---
+title: "cleaning_csv_dfs"
+output: html_document
+date: "2023-07-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(metR)
+library(ggpubr)
+library(ggfx)
+```
+
+# Combining ART increase and decrease scenarios and calculating ART coverage in 2035
+
+## Load data of decrease and increase ART scenarios, assign final ART interruption rate and combine
+
+``` {r combined art change summary, echo = FALSE}
+
+decrease_art_retention_0 <- read_csv("THEMBISAv18/results/art_increase_0_summary.csv")
+decrease_art_retention_0_5 <- read_csv("THEMBISAv18/results/art_increase_0.5_summary.csv")
+decrease_art_retention_1 <- read_csv("THEMBISAv18/results/art_increase_1_summary.csv")
+decrease_art_retention_1_5 <- read_csv("THEMBISAv18/results/art_increase_1.5_summary.csv")
+decrease_art_retention_2 <- read_csv("THEMBISAv18/results/art_increase_2_summary.csv")
+decrease_art_retention_2_5 <- read_csv("THEMBISAv18/results/art_increase_2.5_summary.csv")
+decrease_art_retention_3 <- read_csv("THEMBISAv18/results/art_increase_3_summary.csv")
+decrease_art_retention_3_5 <- read_csv("THEMBISAv18/results/art_increase_3.5_summary.csv")
+decrease_art_retention_4 <- read_csv("THEMBISAv18/results/art_increase_4_summary.csv")
+decrease_art_retention_4_5 <- read_csv("THEMBISAv18/results/art_increase_4.5_summary.csv")
+decrease_art_retention_5 <- read_csv("THEMBISAv18/results/art_increase_5_summary.csv")
+decrease_art_retention_5_5 <- read_csv("THEMBISAv18/results/art_increase_5.5_summary.csv")
+decrease_art_retention_6 <- read_csv("THEMBISAv18/results/art_increase_6_summary.csv")
+decrease_art_retention_6_5 <- read_csv("THEMBISAv18/results/art_increase_6.5_summary.csv")
+decrease_art_retention_7 <- read_csv("THEMBISAv18/results/art_increase_7_summary.csv")
+decrease_art_retention_7_5 <- read_csv("THEMBISAv18/results/art_increase_7.5_summary.csv")
+decrease_art_retention_8 <- read_csv("THEMBISAv18/results/art_increase_8_summary.csv")
+decrease_art_retention_8_5 <- read_csv("THEMBISAv18/results/art_increase_8.5_summary.csv")
+decrease_art_retention_9 <- read_csv("THEMBISAv18/results/art_increase_9_summary.csv")
+decrease_art_retention_9_5 <- read_csv("THEMBISAv18/results/art_increase_9.5_summary.csv")
+decrease_art_retention_10 <- read_csv("THEMBISAv18/results/art_increase_10_summary.csv")
+decrease_art_retention_10_5 <- read_csv("THEMBISAv18/results/art_increase_10.5_summary.csv")
+decrease_art_retention_11 <- read_csv("THEMBISAv18/results/art_increase_11_summary.csv")
+decrease_art_retention_11_5 <- read_csv("THEMBISAv18/results/art_increase_11.5_summary.csv")
+decrease_art_retention_12 <- read_csv("THEMBISAv18/results/art_increase_12_summary.csv")
+decrease_art_retention_12_5 <- read_csv("THEMBISAv18/results/art_increase_12.5_summary.csv")
+decrease_art_retention_13 <- read_csv("THEMBISAv18/results/art_increase_13_summary.csv")
+decrease_art_retention_13_5 <- read_csv("THEMBISAv18/results/art_increase_13.5_summary.csv")
+decrease_art_retention_14 <- read_csv("THEMBISAv18/results/art_increase_14_summary.csv")
+
+decrease_art_retention_summary <- bind_rows(decrease_art_retention_0, 
+                                            decrease_art_retention_0_5,
+                                            decrease_art_retention_1,
+                                            decrease_art_retention_1_5,
+                                            decrease_art_retention_2,
+                                            decrease_art_retention_2_5,
+                                            decrease_art_retention_3,
+                                            decrease_art_retention_3_5,
+                                            decrease_art_retention_4,
+                                            decrease_art_retention_4_5,
+                                            decrease_art_retention_5,
+                                            decrease_art_retention_5_5,
+                                            decrease_art_retention_6,
+                                            decrease_art_retention_6_5,
+                                            decrease_art_retention_7,
+                                            decrease_art_retention_7_5,
+                                            decrease_art_retention_8,
+                                            decrease_art_retention_8_5,
+                                            decrease_art_retention_9,
+                                            decrease_art_retention_9_5,
+                                            decrease_art_retention_10,
+                                            decrease_art_retention_10_5,
+                                            decrease_art_retention_11,
+                                            decrease_art_retention_11_5,
+                                            decrease_art_retention_12,
+                                            decrease_art_retention_12_5,
+                                            decrease_art_retention_13,
+                                            decrease_art_retention_13_5,
+                                            decrease_art_retention_14
+                                            )
+
+increase_art_retention_0 <- read_csv("THEMBISAv18/results/art_decrease_0_summary.csv")
+increase_art_retention_0_5 <- read_csv("THEMBISAv18/results/art_decrease_0.5_summary.csv")
+increase_art_retention_1 <- read_csv("THEMBISAv18/results/art_decrease_1_summary.csv")
+increase_art_retention_1_5 <- read_csv("THEMBISAv18/results/art_decrease_1.5_summary.csv")
+increase_art_retention_2 <- read_csv("THEMBISAv18/results/art_decrease_2_summary.csv")
+increase_art_retention_2_5 <- read_csv("THEMBISAv18/results/art_decrease_2.5_summary.csv")
+increase_art_retention_3 <- read_csv("THEMBISAv18/results/art_decrease_3_summary.csv")
+increase_art_retention_3_5 <- read_csv("THEMBISAv18/results/art_decrease_3.5_summary.csv")
+increase_art_retention_4 <- read_csv("THEMBISAv18/results/art_decrease_4_summary.csv")
+increase_art_retention_4_5 <- read_csv("THEMBISAv18/results/art_decrease_4.5_summary.csv")
+increase_art_retention_5 <- read_csv("THEMBISAv18/results/art_decrease_5_summary.csv")
+increase_art_retention_5_5 <- read_csv("THEMBISAv18/results/art_decrease_5.5_summary.csv")
+increase_art_retention_6 <- read_csv("THEMBISAv18/results/art_decrease_6_summary.csv")
+increase_art_retention_6_5 <- read_csv("THEMBISAv18/results/art_decrease_6.5_summary.csv")
+increase_art_retention_7 <- read_csv("THEMBISAv18/results/art_decrease_7_summary.csv")
+increase_art_retention_7_5 <- read_csv("THEMBISAv18/results/art_decrease_7.5_summary.csv")
+increase_art_retention_8 <- read_csv("THEMBISAv18/results/art_decrease_8_summary.csv")
+increase_art_retention_8_5 <- read_csv("THEMBISAv18/results/art_decrease_8.5_summary.csv")
+increase_art_retention_9 <- read_csv("THEMBISAv18/results/art_decrease_9_summary.csv")
+increase_art_retention_9_5 <- read_csv("THEMBISAv18/results/art_decrease_9.5_summary.csv")
+increase_art_retention_10 <- read_csv("THEMBISAv18/results/art_decrease_10_summary.csv")
+increase_art_retention_10_5 <- read_csv("THEMBISAv18/results/art_decrease_10.5_summary.csv")
+increase_art_retention_11 <- read_csv("THEMBISAv18/results/art_decrease_11_summary.csv")
+increase_art_retention_11_5 <- read_csv("THEMBISAv18/results/art_decrease_11.5_summary.csv")
+increase_art_retention_12 <- read_csv("THEMBISAv18/results/art_decrease_12_summary.csv")
+increase_art_retention_12_5 <- read_csv("THEMBISAv18/results/art_decrease_12.5_summary.csv")
+increase_art_retention_13 <- read_csv("THEMBISAv18/results/art_decrease_13_summary.csv")
+increase_art_retention_13_5 <- read_csv("THEMBISAv18/results/art_decrease_13.5_summary.csv")
+increase_art_retention_14 <- read_csv("THEMBISAv18/results/art_decrease_14_summary.csv")
+
+increase_art_retention_summary <- bind_rows(increase_art_retention_0, 
+                                            increase_art_retention_0_5,
+                                            increase_art_retention_1,
+                                            increase_art_retention_1_5,
+                                            increase_art_retention_2,
+                                            increase_art_retention_2_5,
+                                            increase_art_retention_3,
+                                            increase_art_retention_3_5,
+                                            increase_art_retention_4,
+                                            increase_art_retention_4_5,
+                                            increase_art_retention_5,
+                                            increase_art_retention_5_5,
+                                            increase_art_retention_6,
+                                            increase_art_retention_6_5,
+                                            increase_art_retention_7,
+                                            increase_art_retention_7_5,
+                                            increase_art_retention_8,
+                                            increase_art_retention_8_5,
+                                            increase_art_retention_9,
+                                            increase_art_retention_9_5,
+                                            increase_art_retention_10,
+                                            increase_art_retention_10_5,
+                                            increase_art_retention_11,
+                                            increase_art_retention_11_5,
+                                            increase_art_retention_12,
+                                            increase_art_retention_12_5,
+                                            increase_art_retention_13,
+                                            increase_art_retention_13_5,
+                                            increase_art_retention_14
+                                            )
+
+increase_art_retention_summary <- read_csv("THEMBISAv18/results/art_decrease_summary.csv")
+
+art_change_summary <- bind_rows(increase_art_retention_summary, decrease_art_retention_summary)
+
+art_change_summary <- art_change_summary %>% mutate(art_int_rate = case_when(
+  future_variability == "art_deterioration" ~ (0.1486*((1+(as.numeric(future_value)))**10)),
+  future_variability == "art_improvement" ~ (0.1486*((1-(as.numeric(future_value)))**10))))
+art_change_summary <- art_change_summary %>% mutate(art_ret_rate = 1 - art_int_rate)
+
+write_csv(art_change_summary,"THEMBISAv18/results/art_change_summary.csv")
+
+decrease_art_retention_0 <- read_csv("THEMBISAv18/results/art_increase_0_cumulative.csv")
+decrease_art_retention_0_5 <- read_csv("THEMBISAv18/results/art_increase_0.5_cumulative.csv")
+decrease_art_retention_1 <- read_csv("THEMBISAv18/results/art_increase_1_cumulative.csv")
+decrease_art_retention_1_5 <- read_csv("THEMBISAv18/results/art_increase_1.5_cumulative.csv")
+decrease_art_retention_2 <- read_csv("THEMBISAv18/results/art_increase_2_cumulative.csv")
+decrease_art_retention_2_5 <- read_csv("THEMBISAv18/results/art_increase_2.5_cumulative.csv")
+decrease_art_retention_3 <- read_csv("THEMBISAv18/results/art_increase_3_cumulative.csv")
+decrease_art_retention_3_5 <- read_csv("THEMBISAv18/results/art_increase_3.5_cumulative.csv")
+decrease_art_retention_4 <- read_csv("THEMBISAv18/results/art_increase_4_cumulative.csv")
+decrease_art_retention_4_5 <- read_csv("THEMBISAv18/results/art_increase_4.5_cumulative.csv")
+decrease_art_retention_5 <- read_csv("THEMBISAv18/results/art_increase_5_cumulative.csv")
+decrease_art_retention_5_5 <- read_csv("THEMBISAv18/results/art_increase_5.5_cumulative.csv")
+decrease_art_retention_6 <- read_csv("THEMBISAv18/results/art_increase_6_cumulative.csv")
+decrease_art_retention_6_5 <- read_csv("THEMBISAv18/results/art_increase_6.5_cumulative.csv")
+decrease_art_retention_7 <- read_csv("THEMBISAv18/results/art_increase_7_cumulative.csv")
+decrease_art_retention_7_5 <- read_csv("THEMBISAv18/results/art_increase_7.5_cumulative.csv")
+decrease_art_retention_8 <- read_csv("THEMBISAv18/results/art_increase_8_cumulative.csv")
+decrease_art_retention_8_5 <- read_csv("THEMBISAv18/results/art_increase_8.5_cumulative.csv")
+decrease_art_retention_9 <- read_csv("THEMBISAv18/results/art_increase_9_cumulative.csv")
+decrease_art_retention_9_5 <- read_csv("THEMBISAv18/results/art_increase_9.5_cumulative.csv")
+decrease_art_retention_10 <- read_csv("THEMBISAv18/results/art_increase_10_cumulative.csv")
+decrease_art_retention_10_5 <- read_csv("THEMBISAv18/results/art_increase_10.5_cumulative.csv")
+decrease_art_retention_11 <- read_csv("THEMBISAv18/results/art_increase_11_cumulative.csv")
+decrease_art_retention_11_5 <- read_csv("THEMBISAv18/results/art_increase_11.5_cumulative.csv")
+decrease_art_retention_12 <- read_csv("THEMBISAv18/results/art_increase_12_cumulative.csv")
+decrease_art_retention_12_5 <- read_csv("THEMBISAv18/results/art_increase_12.5_cumulative.csv")
+decrease_art_retention_13 <- read_csv("THEMBISAv18/results/art_increase_13_cumulative.csv")
+decrease_art_retention_13_5 <- read_csv("THEMBISAv18/results/art_increase_13.5_cumulative.csv")
+decrease_art_retention_14 <- read_csv("THEMBISAv18/results/art_increase_14_cumulative.csv")
+
+decrease_art_retention_cumulative <- bind_rows(decrease_art_retention_0, 
+                                            decrease_art_retention_0_5,
+                                            decrease_art_retention_1,
+                                            decrease_art_retention_1_5,
+                                            decrease_art_retention_2,
+                                            decrease_art_retention_2_5,
+                                            decrease_art_retention_3,
+                                            decrease_art_retention_3_5,
+                                            decrease_art_retention_4,
+                                            decrease_art_retention_4_5,
+                                            decrease_art_retention_5,
+                                            decrease_art_retention_5_5,
+                                            decrease_art_retention_6,
+                                            decrease_art_retention_6_5,
+                                            decrease_art_retention_7,
+                                            decrease_art_retention_7_5,
+                                            decrease_art_retention_8,
+                                            decrease_art_retention_8_5,
+                                            decrease_art_retention_9,
+                                            decrease_art_retention_9_5,
+                                            decrease_art_retention_10,
+                                            decrease_art_retention_10_5,
+                                            decrease_art_retention_11,
+                                            decrease_art_retention_11_5,
+                                            decrease_art_retention_12,
+                                            decrease_art_retention_12_5,
+                                            decrease_art_retention_13,
+                                            decrease_art_retention_13_5,
+                                            decrease_art_retention_14
+                                            )
+
+increase_art_retention_0 <- read_csv("THEMBISAv18/results/art_decrease_0_cumulative.csv")
+increase_art_retention_0_5 <- read_csv("THEMBISAv18/results/art_decrease_0.5_cumulative.csv")
+increase_art_retention_1 <- read_csv("THEMBISAv18/results/art_decrease_1_cumulative.csv")
+increase_art_retention_1_5 <- read_csv("THEMBISAv18/results/art_decrease_1.5_cumulative.csv")
+increase_art_retention_2 <- read_csv("THEMBISAv18/results/art_decrease_2_cumulative.csv")
+increase_art_retention_2_5 <- read_csv("THEMBISAv18/results/art_decrease_2.5_cumulative.csv")
+increase_art_retention_3 <- read_csv("THEMBISAv18/results/art_decrease_3_cumulative.csv")
+increase_art_retention_3_5 <- read_csv("THEMBISAv18/results/art_decrease_3.5_cumulative.csv")
+increase_art_retention_4 <- read_csv("THEMBISAv18/results/art_decrease_4_cumulative.csv")
+increase_art_retention_4_5 <- read_csv("THEMBISAv18/results/art_decrease_4.5_cumulative.csv")
+increase_art_retention_5 <- read_csv("THEMBISAv18/results/art_decrease_5_cumulative.csv")
+increase_art_retention_5_5 <- read_csv("THEMBISAv18/results/art_decrease_5.5_cumulative.csv")
+increase_art_retention_6 <- read_csv("THEMBISAv18/results/art_decrease_6_cumulative.csv")
+increase_art_retention_6_5 <- read_csv("THEMBISAv18/results/art_decrease_6.5_cumulative.csv")
+increase_art_retention_7 <- read_csv("THEMBISAv18/results/art_decrease_7_cumulative.csv")
+increase_art_retention_7_5 <- read_csv("THEMBISAv18/results/art_decrease_7.5_cumulative.csv")
+increase_art_retention_8 <- read_csv("THEMBISAv18/results/art_decrease_8_cumulative.csv")
+increase_art_retention_8_5 <- read_csv("THEMBISAv18/results/art_decrease_8.5_cumulative.csv")
+increase_art_retention_9 <- read_csv("THEMBISAv18/results/art_decrease_9_cumulative.csv")
+increase_art_retention_9_5 <- read_csv("THEMBISAv18/results/art_decrease_9.5_cumulative.csv")
+increase_art_retention_10 <- read_csv("THEMBISAv18/results/art_decrease_10_cumulative.csv")
+increase_art_retention_10_5 <- read_csv("THEMBISAv18/results/art_decrease_10.5_cumulative.csv")
+increase_art_retention_11 <- read_csv("THEMBISAv18/results/art_decrease_11_cumulative.csv")
+increase_art_retention_11_5 <- read_csv("THEMBISAv18/results/art_decrease_11.5_cumulative.csv")
+increase_art_retention_12 <- read_csv("THEMBISAv18/results/art_decrease_12_cumulative.csv")
+increase_art_retention_12_5 <- read_csv("THEMBISAv18/results/art_decrease_12.5_cumulative.csv")
+increase_art_retention_13 <- read_csv("THEMBISAv18/results/art_decrease_13_cumulative.csv")
+increase_art_retention_13_5 <- read_csv("THEMBISAv18/results/art_decrease_13.5_cumulative.csv")
+increase_art_retention_14 <- read_csv("THEMBISAv18/results/art_decrease_14_cumulative.csv")
+
+increase_art_retention_cumulative <- bind_rows(increase_art_retention_0, 
+                                            increase_art_retention_0_5,
+                                            increase_art_retention_1,
+                                            increase_art_retention_1_5,
+                                            increase_art_retention_2,
+                                            increase_art_retention_2_5,
+                                            increase_art_retention_3,
+                                            increase_art_retention_3_5,
+                                            increase_art_retention_4,
+                                            increase_art_retention_4_5,
+                                            increase_art_retention_5,
+                                            increase_art_retention_5_5,
+                                            increase_art_retention_6,
+                                            increase_art_retention_6_5,
+                                            increase_art_retention_7,
+                                            increase_art_retention_7_5,
+                                            increase_art_retention_8,
+                                            increase_art_retention_8_5,
+                                            increase_art_retention_9,
+                                            increase_art_retention_9_5,
+                                            increase_art_retention_10,
+                                            increase_art_retention_10_5,
+                                            increase_art_retention_11,
+                                            increase_art_retention_11_5,
+                                            increase_art_retention_12,
+                                            increase_art_retention_12_5,
+                                            increase_art_retention_13,
+                                            increase_art_retention_13_5,
+                                            increase_art_retention_14
+                                            )
+
+cumulative_art_change <- cumulative_art_change %>% 
+  mutate(art_int_rate = case_when(
+  future_variability == "art_deterioration" ~ (0.1486*((1+(as.numeric(future_value)))**10)),
+  future_variability == "art_improvement" ~ (0.1486*((1-(as.numeric(future_value)))**10)))) %>% 
+  mutate(art_ret_rate = 1 - art_int_rate)
+
+write_csv(cumulative_art_change, "THEMBISAv18/results/art_change_cumulative.csv")
+
+```
+
+## Summary: Add column for ART coverage in 2035
+
+``` {r add columns art summary, echo = FALSE}
+
+art_coverage_range <- art_change_summary %>% filter(indicator == "ARTcoverageAdult", 
+                                                    test_reduction == 0, pitc_reduction_year == 2025,
+                                                    year == 2035, scenario == "intervention") %>% select(mean)
+art_coverage_labels <- round(art_coverage_range$mean,3)
+unique_future_values_art <- unique(art_change_summary$future_value)
+art_change_summary <- art_change_summary %>% mutate(art_coverage_2035 = case_when(future_value == unique_future_values_art[1] & future_variability == "art_improvement" ~ art_coverage_labels[1],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_improvement" ~ art_coverage_labels[2],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_improvement" ~ art_coverage_labels[3],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_improvement" ~ art_coverage_labels[4],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_improvement" ~ art_coverage_labels[5],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_improvement" ~ art_coverage_labels[6],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_improvement" ~ art_coverage_labels[7],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_improvement" ~ art_coverage_labels[8],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_improvement" ~ art_coverage_labels[9],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_improvement" ~ art_coverage_labels[10],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_improvement" ~ art_coverage_labels[11],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_improvement" ~ art_coverage_labels[12],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_improvement" ~ art_coverage_labels[13],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_improvement" ~ art_coverage_labels[14],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_improvement" ~ art_coverage_labels[15],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_improvement" ~ art_coverage_labels[16],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_improvement" ~ art_coverage_labels[17],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_improvement" ~ art_coverage_labels[18],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_improvement" ~ art_coverage_labels[19],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_improvement" ~ art_coverage_labels[20],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_improvement" ~ art_coverage_labels[21],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_improvement" ~ art_coverage_labels[22],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_improvement" ~ art_coverage_labels[23],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_improvement" ~ art_coverage_labels[24],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_improvement" ~ art_coverage_labels[25],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_improvement" ~ art_coverage_labels[26],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_improvement" ~ art_coverage_labels[27],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_improvement" ~ art_coverage_labels[28],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_improvement" ~ art_coverage_labels[29],
+                                                                                  future_value == unique_future_values_art[1] & future_variability == "art_deterioration" ~ art_coverage_labels[30],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_deterioration" ~ art_coverage_labels[31],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_deterioration" ~ art_coverage_labels[32],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_deterioration" ~ art_coverage_labels[33],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_deterioration" ~ art_coverage_labels[34],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_deterioration" ~ art_coverage_labels[35],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_deterioration" ~ art_coverage_labels[36],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_deterioration" ~ art_coverage_labels[37],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_deterioration" ~ art_coverage_labels[38],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_deterioration" ~ art_coverage_labels[39],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_deterioration" ~ art_coverage_labels[40],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_deterioration" ~ art_coverage_labels[41],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_deterioration" ~ art_coverage_labels[42],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_deterioration" ~ art_coverage_labels[43],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_deterioration" ~ art_coverage_labels[44],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_deterioration" ~ art_coverage_labels[45],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_deterioration" ~ art_coverage_labels[46],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_deterioration" ~ art_coverage_labels[47],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_deterioration" ~ art_coverage_labels[48],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_deterioration" ~ art_coverage_labels[49],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_deterioration" ~ art_coverage_labels[50],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_deterioration" ~ art_coverage_labels[51],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_deterioration" ~ art_coverage_labels[52],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_deterioration" ~ art_coverage_labels[53],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_deterioration" ~ art_coverage_labels[54],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_deterioration" ~ art_coverage_labels[55],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_deterioration" ~ art_coverage_labels[56],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_deterioration" ~ art_coverage_labels[57],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_deterioration" ~ art_coverage_labels[58]))
+
+write_csv(art_change_summary, "THEMBISAv18/results/art_change_summary.csv")
+```
+
+## Cumulative: Add column for ART coverage in 2035
+
+```{r add cols art_cumulative, echo = FALSE}
+cumulative_art_change <- cumulative_art_change %>% mutate(art_coverage_2035 = case_when(future_value == unique_future_values_art[1] & future_variability == "art_improvement" ~ art_coverage_labels[1],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_improvement" ~ art_coverage_labels[2],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_improvement" ~ art_coverage_labels[3],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_improvement" ~ art_coverage_labels[4],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_improvement" ~ art_coverage_labels[5],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_improvement" ~ art_coverage_labels[6],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_improvement" ~ art_coverage_labels[7],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_improvement" ~ art_coverage_labels[8],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_improvement" ~ art_coverage_labels[9],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_improvement" ~ art_coverage_labels[10],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_improvement" ~ art_coverage_labels[11],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_improvement" ~ art_coverage_labels[12],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_improvement" ~ art_coverage_labels[13],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_improvement" ~ art_coverage_labels[14],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_improvement" ~ art_coverage_labels[15],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_improvement" ~ art_coverage_labels[16],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_improvement" ~ art_coverage_labels[17],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_improvement" ~ art_coverage_labels[18],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_improvement" ~ art_coverage_labels[19],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_improvement" ~ art_coverage_labels[20],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_improvement" ~ art_coverage_labels[21],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_improvement" ~ art_coverage_labels[22],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_improvement" ~ art_coverage_labels[23],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_improvement" ~ art_coverage_labels[24],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_improvement" ~ art_coverage_labels[25],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_improvement" ~ art_coverage_labels[26],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_improvement" ~ art_coverage_labels[27],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_improvement" ~ art_coverage_labels[28],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_improvement" ~ art_coverage_labels[29],
+                                                                                  future_value == unique_future_values_art[1] & future_variability == "art_deterioration" ~ art_coverage_labels[30],
+                                                                                  future_value == unique_future_values_art[2]  & future_variability == "art_deterioration" ~ art_coverage_labels[31],
+                                                                                  future_value == unique_future_values_art[3]  & future_variability == "art_deterioration" ~ art_coverage_labels[32],
+                                                                                  future_value == unique_future_values_art[4]  & future_variability == "art_deterioration" ~ art_coverage_labels[33],
+                                                                                  future_value == unique_future_values_art[5]  & future_variability == "art_deterioration" ~ art_coverage_labels[34],
+                                                                                  future_value == unique_future_values_art[6]  & future_variability == "art_deterioration" ~ art_coverage_labels[35],
+                                                                                  future_value == unique_future_values_art[7]  & future_variability == "art_deterioration" ~ art_coverage_labels[36],
+                                                                                  future_value == unique_future_values_art[8]  & future_variability == "art_deterioration" ~ art_coverage_labels[37],
+                                                                                  future_value == unique_future_values_art[9]  & future_variability == "art_deterioration" ~ art_coverage_labels[38],
+                                                                                  future_value == unique_future_values_art[10]  & future_variability == "art_deterioration" ~ art_coverage_labels[39],
+                                                                                  future_value == unique_future_values_art[11]  & future_variability == "art_deterioration" ~ art_coverage_labels[40],
+                                                                                  future_value == unique_future_values_art[12]  & future_variability == "art_deterioration" ~ art_coverage_labels[41],
+                                                                                  future_value == unique_future_values_art[13]  & future_variability == "art_deterioration" ~ art_coverage_labels[42],
+                                                                                  future_value == unique_future_values_art[14]  & future_variability == "art_deterioration" ~ art_coverage_labels[43],
+                                                                                  future_value == unique_future_values_art[15]  & future_variability == "art_deterioration" ~ art_coverage_labels[44],
+                                                                                  future_value == unique_future_values_art[16]  & future_variability == "art_deterioration" ~ art_coverage_labels[45],
+                                                                                  future_value == unique_future_values_art[17]  & future_variability == "art_deterioration" ~ art_coverage_labels[46],
+                                                                                  future_value == unique_future_values_art[18]  & future_variability == "art_deterioration" ~ art_coverage_labels[47],
+                                                                                  future_value == unique_future_values_art[19]  & future_variability == "art_deterioration" ~ art_coverage_labels[48],
+                                                                                  future_value == unique_future_values_art[20]  & future_variability == "art_deterioration" ~ art_coverage_labels[49],
+                                                                                  future_value == unique_future_values_art[21]  & future_variability == "art_deterioration" ~ art_coverage_labels[50],
+                                                                                  future_value == unique_future_values_art[22]  & future_variability == "art_deterioration" ~ art_coverage_labels[51],
+                                                                                  future_value == unique_future_values_art[23]  & future_variability == "art_deterioration" ~ art_coverage_labels[52],
+                                                                                  future_value == unique_future_values_art[24]  & future_variability == "art_deterioration" ~ art_coverage_labels[53],
+                                                                                  future_value == unique_future_values_art[25]  & future_variability == "art_deterioration" ~ art_coverage_labels[54],
+                                                                                  future_value == unique_future_values_art[26]  & future_variability == "art_deterioration" ~ art_coverage_labels[55],
+                                                                                  future_value == unique_future_values_art[27]  & future_variability == "art_deterioration" ~ art_coverage_labels[56],
+                                                                                  future_value == unique_future_values_art[28]  & future_variability == "art_deterioration" ~ art_coverage_labels[57],
+                                                                                  future_value == unique_future_values_art[29]  & future_variability == "art_deterioration" ~ art_coverage_labels[58]))
+
+write_csv(cumulative_art_change, "THEMBISAv18/results/art_change_cumulative.csv")
+```
+
+# Load condom reduction and promotion scenarios, assign ART coverage in 2035 and combine
+
+```{r condom combine scenarios, echo = FALSE}
+
+#### read csv from cluster ####
+
+condom_reduction_0 <- read_csv("THEMBISAv18/results/condom_decrease_0_summary.csv")
+condom_reduction_0_5 <- read_csv("THEMBISAv18/results/condom_decrease_0.5_summary.csv")
+condom_reduction_1 <- read_csv("THEMBISAv18/results/condom_decrease_1_summary.csv")
+condom_reduction_1_5 <- read_csv("THEMBISAv18/results/condom_decrease_1.5_summary.csv")
+condom_reduction_2 <- read_csv("THEMBISAv18/results/condom_decrease_2_summary.csv")
+condom_reduction_2_5 <- read_csv("THEMBISAv18/results/condom_decrease_2.5_summary.csv")
+condom_reduction_3 <- read_csv("THEMBISAv18/results/condom_decrease_3_summary.csv")
+condom_reduction_3_5 <- read_csv("THEMBISAv18/results/condom_decrease_3.5_summary.csv")
+condom_reduction_4 <- read_csv("THEMBISAv18/results/condom_decrease_4_summary.csv")
+condom_reduction_4_5 <- read_csv("THEMBISAv18/results/condom_decrease_4.5_summary.csv")
+condom_reduction_5 <- read_csv("THEMBISAv18/results/condom_decrease_5_summary.csv")
+condom_reduction_5_5 <- read_csv("THEMBISAv18/results/condom_decrease_5.5_summary.csv")
+condom_reduction_6 <- read_csv("THEMBISAv18/results/condom_decrease_6_summary.csv")
+condom_reduction_6_5 <- read_csv("THEMBISAv18/results/condom_decrease_6.5_summary.csv")
+condom_reduction_7 <- read_csv("THEMBISAv18/results/condom_decrease_7_summary.csv")
+condom_reduction_7_5 <- read_csv("THEMBISAv18/results/condom_decrease_7.5_summary.csv")
+condom_reduction_8 <- read_csv("THEMBISAv18/results/condom_decrease_8_summary.csv")
+condom_reduction_8_5 <- read_csv("THEMBISAv18/results/condom_decrease_8.5_summary.csv")
+condom_reduction_9 <- read_csv("THEMBISAv18/results/condom_decrease_9_summary.csv")
+condom_reduction_9_5 <- read_csv("THEMBISAv18/results/condom_decrease_9.5_summary.csv")
+condom_reduction_10 <- read_csv("THEMBISAv18/results/condom_decrease_10_summary.csv")
+condom_reduction_10_5 <- read_csv("THEMBISAv18/results/condom_decrease_10.5_summary.csv")
+condom_reduction_11 <- read_csv("THEMBISAv18/results/condom_decrease_11_summary.csv")
+condom_reduction_11_5 <- read_csv("THEMBISAv18/results/condom_decrease_11.5_summary.csv")
+condom_reduction_12 <- read_csv("THEMBISAv18/results/condom_decrease_12_summary.csv")
+condom_reduction_12_5 <- read_csv("THEMBISAv18/results/condom_decrease_12.5_summary.csv")
+condom_reduction_13 <- read_csv("THEMBISAv18/results/condom_decrease_13_summary.csv")
+condom_reduction_13_5 <- read_csv("THEMBISAv18/results/condom_decrease_13.5_summary.csv")
+condom_reduction_14 <- read_csv("THEMBISAv18/results/condom_decrease_14_summary.csv")
+
+condom_reduction_summary <- bind_rows(condom_reduction_0, 
+                                            condom_reduction_0_5,
+                                            condom_reduction_1,
+                                            condom_reduction_1_5,
+                                            condom_reduction_2,
+                                            condom_reduction_2_5,
+                                            condom_reduction_3,
+                                            condom_reduction_3_5,
+                                            condom_reduction_4,
+                                            condom_reduction_4_5,
+                                            condom_reduction_5,
+                                            condom_reduction_5_5,
+                                            condom_reduction_6,
+                                            condom_reduction_6_5,
+                                            condom_reduction_7,
+                                            condom_reduction_7_5,
+                                            condom_reduction_8,
+                                            condom_reduction_8_5,
+                                            condom_reduction_9,
+                                            condom_reduction_9_5,
+                                            condom_reduction_10,
+                                            condom_reduction_10_5,
+                                            condom_reduction_11,
+                                            condom_reduction_11_5,
+                                            condom_reduction_12,
+                                            condom_reduction_12_5,
+                                            condom_reduction_13,
+                                            condom_reduction_13_5,
+                                            condom_reduction_14
+                                            )
+
+unique_future_values <- unique(condom_reduction_summary$future_value)
+
+
+#### calculating absolute condom usage values
+overall_condom_usage_range <- condom_reduction_summary %>% filter(indicator == "CondomUsage", 
+                                                                  test_reduction == 5, pitc_reduction_year == 2025,
+                                                                  year == 2035, scenario == "intervention") %>% select(mean)
+condom_usage_reduction_labels <- round(overall_condom_usage_range$mean,1)
+
+condom_reduction_summary <- condom_reduction_summary %>% mutate(overall_condom_usage = case_when(future_value == unique_future_values[1] ~ condom_usage_reduction_labels[1],
+                                                                                                 future_value == unique_future_values[2] ~ condom_usage_reduction_labels[2],
+                                                                                                 future_value == unique_future_values[3] ~ condom_usage_reduction_labels[3],
+                                                                                                 future_value == unique_future_values[4] ~ condom_usage_reduction_labels[4],
+                                                                                                 future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5],
+                                                                                                 future_value == unique_future_values[6] ~ condom_usage_reduction_labels[6],
+                                                                                                 future_value == unique_future_values[7] ~ condom_usage_reduction_labels[7],
+                                                                                                 future_value == unique_future_values[8] ~ condom_usage_reduction_labels[8],
+                                                                                                 future_value == unique_future_values[9] ~ condom_usage_reduction_labels[9],
+                                                                                                 future_value == unique_future_values[10] ~ condom_usage_reduction_labels[10],
+                                                                                                 future_value == unique_future_values[11] ~ condom_usage_reduction_labels[11],
+                                                                                                 future_value == unique_future_values[12] ~ condom_usage_reduction_labels[12],
+                                                                                                 future_value == unique_future_values[13] ~ condom_usage_reduction_labels[13],
+                                                                                                 future_value == unique_future_values[14] ~ condom_usage_reduction_labels[14],
+                                                                                                 future_value == unique_future_values[15] ~ condom_usage_reduction_labels[15],
+                                                                                                 future_value == unique_future_values[16] ~ condom_usage_reduction_labels[16],
+                                                                                                 future_value == unique_future_values[17] ~ condom_usage_reduction_labels[17],
+                                                                                                 future_value == unique_future_values[18] ~ condom_usage_reduction_labels[18],
+                                                                                                 future_value == unique_future_values[19] ~ condom_usage_reduction_labels[19],
+                                                                                                 future_value == unique_future_values[20] ~ condom_usage_reduction_labels[20],
+                                                                                                 future_value == unique_future_values[21] ~ condom_usage_reduction_labels[21],
+                                                                                                 future_value == unique_future_values[22] ~ condom_usage_reduction_labels[22],
+                                                                                                 future_value == unique_future_values[23] ~ condom_usage_reduction_labels[23],
+                                                                                                 future_value == unique_future_values[24] ~ condom_usage_reduction_labels[24],
+                                                                                                 future_value == unique_future_values[25] ~ condom_usage_reduction_labels[25],
+                                                                                                 future_value == unique_future_values[26] ~ condom_usage_reduction_labels[26],
+                                                                                                 future_value == unique_future_values[27] ~ condom_usage_reduction_labels[27],
+                                                                                                 future_value == unique_future_values[28] ~ condom_usage_reduction_labels[28],
+                                                                                                 future_value == unique_future_values[29] ~ condom_usage_reduction_labels[29],
+                                                                                                 future_value == unique_future_values[30] ~ condom_usage_reduction_labels[30]))
+
+#### condom promotion ####
+
+#### read csv from cluster ####
+
+condom_promotion_0 <- read_csv("THEMBISAv18/results/condom_increase_0_summary.csv")
+condom_promotion_0_5 <- read_csv("THEMBISAv18/results/condom_increase_0.5_summary.csv")
+condom_promotion_1 <- read_csv("THEMBISAv18/results/condom_increase_1_summary.csv")
+condom_promotion_1_5 <- read_csv("THEMBISAv18/results/condom_increase_1.5_summary.csv")
+condom_promotion_2 <- read_csv("THEMBISAv18/results/condom_increase_2_summary.csv")
+condom_promotion_2_5 <- read_csv("THEMBISAv18/results/condom_increase_2.5_summary.csv")
+condom_promotion_3 <- read_csv("THEMBISAv18/results/condom_increase_3_summary.csv")
+condom_promotion_3_5 <- read_csv("THEMBISAv18/results/condom_increase_3.5_summary.csv")
+condom_promotion_4 <- read_csv("THEMBISAv18/results/condom_increase_4_summary.csv")
+condom_promotion_4_5 <- read_csv("THEMBISAv18/results/condom_increase_4.5_summary.csv")
+condom_promotion_5 <- read_csv("THEMBISAv18/results/condom_increase_5_summary.csv")
+condom_promotion_5_5 <- read_csv("THEMBISAv18/results/condom_increase_5.5_summary.csv")
+condom_promotion_6 <- read_csv("THEMBISAv18/results/condom_increase_6_summary.csv")
+condom_promotion_6_5 <- read_csv("THEMBISAv18/results/condom_increase_6.5_summary.csv")
+condom_promotion_7 <- read_csv("THEMBISAv18/results/condom_increase_7_summary.csv")
+condom_promotion_7_5 <- read_csv("THEMBISAv18/results/condom_increase_7.5_summary.csv")
+condom_promotion_8 <- read_csv("THEMBISAv18/results/condom_increase_8_summary.csv")
+condom_promotion_8_5 <- read_csv("THEMBISAv18/results/condom_increase_8.5_summary.csv")
+condom_promotion_9 <- read_csv("THEMBISAv18/results/condom_increase_9_summary.csv")
+condom_promotion_9_5 <- read_csv("THEMBISAv18/results/condom_increase_9.5_summary.csv")
+condom_promotion_10 <- read_csv("THEMBISAv18/results/condom_increase_10_summary.csv")
+condom_promotion_10_5 <- read_csv("THEMBISAv18/results/condom_increase_10.5_summary.csv")
+condom_promotion_11 <- read_csv("THEMBISAv18/results/condom_increase_11_summary.csv")
+condom_promotion_11_5 <- read_csv("THEMBISAv18/results/condom_increase_11.5_summary.csv")
+condom_promotion_12 <- read_csv("THEMBISAv18/results/condom_increase_12_summary.csv")
+condom_promotion_12_5 <- read_csv("THEMBISAv18/results/condom_increase_12.5_summary.csv")
+condom_promotion_13 <- read_csv("THEMBISAv18/results/condom_increase_13_summary.csv")
+condom_promotion_13_5 <- read_csv("THEMBISAv18/results/condom_increase_13.5_summary.csv")
+condom_promotion_14 <- read_csv("THEMBISAv18/results/condom_increase_14_summary.csv")
+
+condom_promotion_summary <- bind_rows(condom_reduction_0, 
+                                            condom_reduction_0_5,
+                                            condom_reduction_1,
+                                            condom_reduction_1_5,
+                                            condom_reduction_2,
+                                            condom_reduction_2_5,
+                                            condom_reduction_3,
+                                            condom_reduction_3_5,
+                                            condom_reduction_4,
+                                            condom_reduction_4_5,
+                                            condom_reduction_5,
+                                            condom_reduction_5_5,
+                                            condom_reduction_6,
+                                            condom_reduction_6_5,
+                                            condom_reduction_7,
+                                            condom_reduction_7_5,
+                                            condom_reduction_8,
+                                            condom_reduction_8_5,
+                                            condom_reduction_9,
+                                            condom_reduction_9_5,
+                                            condom_reduction_10,
+                                            condom_reduction_10_5,
+                                            condom_reduction_11,
+                                            condom_reduction_11_5,
+                                            condom_reduction_12,
+                                            condom_reduction_12_5,
+                                            condom_reduction_13,
+                                            condom_reduction_13_5,
+                                            condom_reduction_14
+                                            )
+
+unique_future_values <- unique(condom_promotion_summary$future_value)
+overall_condom_usage_range <- condom_promotion_summary %>% filter(indicator == "CondomUsage", 
+                                                                  test_reduction == 5, pitc_reduction_year == 2025,
+                                                                  year == 2035, scenario == "intervention") %>% select(mean)
+condom_usage_reduction_labels <- round(overall_condom_usage_range$mean,1)
+condom_promotion_summary <- condom_promotion_summary %>% mutate(overall_condom_usage = case_when(future_value == unique_future_values[1] ~ condom_usage_reduction_labels[1],
+                                                                                                 future_value == unique_future_values[2] ~ condom_usage_reduction_labels[2],
+                                                                                                 future_value == unique_future_values[3] ~ condom_usage_reduction_labels[3],
+                                                                                                 future_value == unique_future_values[4] ~ condom_usage_reduction_labels[4],
+                                                                                                 future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5],
+                                                                                                 future_value == unique_future_values[6] ~ condom_usage_reduction_labels[6],
+                                                                                                 future_value == unique_future_values[7] ~ condom_usage_reduction_labels[7],
+                                                                                                 future_value == unique_future_values[8] ~ condom_usage_reduction_labels[8],
+                                                                                                 future_value == unique_future_values[9] ~ condom_usage_reduction_labels[9],
+                                                                                                 future_value == unique_future_values[10] ~ condom_usage_reduction_labels[10],
+                                                                                                 future_value == unique_future_values[11] ~ condom_usage_reduction_labels[11],
+                                                                                                 future_value == unique_future_values[12] ~ condom_usage_reduction_labels[12],
+                                                                                                 future_value == unique_future_values[13] ~ condom_usage_reduction_labels[13],
+                                                                                                 future_value == unique_future_values[14] ~ condom_usage_reduction_labels[14],
+                                                                                                 future_value == unique_future_values[15] ~ condom_usage_reduction_labels[15],
+                                                                                                 future_value == unique_future_values[16] ~ condom_usage_reduction_labels[16],
+                                                                                                 future_value == unique_future_values[17] ~ condom_usage_reduction_labels[17],
+                                                                                                 future_value == unique_future_values[18] ~ condom_usage_reduction_labels[18],
+                                                                                                 future_value == unique_future_values[19] ~ condom_usage_reduction_labels[19],
+                                                                                                 future_value == unique_future_values[20] ~ condom_usage_reduction_labels[20],
+                                                                                                 future_value == unique_future_values[21] ~ condom_usage_reduction_labels[21],
+                                                                                                 future_value == unique_future_values[22] ~ condom_usage_reduction_labels[22],
+                                                                                                 future_value == unique_future_values[23] ~ condom_usage_reduction_labels[23],
+                                                                                                 future_value == unique_future_values[24] ~ condom_usage_reduction_labels[24],
+                                                                                                 future_value == unique_future_values[25] ~ condom_usage_reduction_labels[25],
+                                                                                                 future_value == unique_future_values[26] ~ condom_usage_reduction_labels[26],
+                                                                                                 future_value == unique_future_values[27] ~ condom_usage_reduction_labels[27],
+                                                                                                 future_value == unique_future_values[28] ~ condom_usage_reduction_labels[28],
+                                                                                                 future_value == unique_future_values[29] ~ condom_usage_reduction_labels[29],
+                                                                                                 future_value == unique_future_values[30] ~ condom_usage_reduction_labels[30]))
+
+#### condom usage cumulative ####
+# reduction
+
+condom_reduction_0 <- read_csv("THEMBISAv18/results/condom_decrease_0_cumulative.csv")
+condom_reduction_0_5 <- read_csv("THEMBISAv18/results/condom_decrease_0.5_cumulative.csv")
+condom_reduction_1 <- read_csv("THEMBISAv18/results/condom_decrease_1_cumulative.csv")
+condom_reduction_1_5 <- read_csv("THEMBISAv18/results/condom_decrease_1.5_cumulative.csv")
+condom_reduction_2 <- read_csv("THEMBISAv18/results/condom_decrease_2_cumulative.csv")
+condom_reduction_2_5 <- read_csv("THEMBISAv18/results/condom_decrease_2.5_cumulative.csv")
+condom_reduction_3 <- read_csv("THEMBISAv18/results/condom_decrease_3_cumulative.csv")
+condom_reduction_3_5 <- read_csv("THEMBISAv18/results/condom_decrease_3.5_cumulative.csv")
+condom_reduction_4 <- read_csv("THEMBISAv18/results/condom_decrease_4_cumulative.csv")
+condom_reduction_4_5 <- read_csv("THEMBISAv18/results/condom_decrease_4.5_cumulative.csv")
+condom_reduction_5 <- read_csv("THEMBISAv18/results/condom_decrease_5_cumulative.csv")
+condom_reduction_5_5 <- read_csv("THEMBISAv18/results/condom_decrease_5.5_cumulative.csv")
+condom_reduction_6 <- read_csv("THEMBISAv18/results/condom_decrease_6_cumulative.csv")
+condom_reduction_6_5 <- read_csv("THEMBISAv18/results/condom_decrease_6.5_cumulative.csv")
+condom_reduction_7 <- read_csv("THEMBISAv18/results/condom_decrease_7_cumulative.csv")
+condom_reduction_7_5 <- read_csv("THEMBISAv18/results/condom_decrease_7.5_cumulative.csv")
+condom_reduction_8 <- read_csv("THEMBISAv18/results/condom_decrease_8_cumulative.csv")
+condom_reduction_8_5 <- read_csv("THEMBISAv18/results/condom_decrease_8.5_cumulative.csv")
+condom_reduction_9 <- read_csv("THEMBISAv18/results/condom_decrease_9_cumulative.csv")
+condom_reduction_9_5 <- read_csv("THEMBISAv18/results/condom_decrease_9.5_cumulative.csv")
+condom_reduction_10 <- read_csv("THEMBISAv18/results/condom_decrease_10_cumulative.csv")
+condom_reduction_10_5 <- read_csv("THEMBISAv18/results/condom_decrease_10.5_cumulative.csv")
+condom_reduction_11 <- read_csv("THEMBISAv18/results/condom_decrease_11_cumulative.csv")
+condom_reduction_11_5 <- read_csv("THEMBISAv18/results/condom_decrease_11.5_cumulative.csv")
+condom_reduction_12 <- read_csv("THEMBISAv18/results/condom_decrease_12_cumulative.csv")
+condom_reduction_12_5 <- read_csv("THEMBISAv18/results/condom_decrease_12.5_cumulative.csv")
+condom_reduction_13 <- read_csv("THEMBISAv18/results/condom_decrease_13_cumulative.csv")
+condom_reduction_13_5 <- read_csv("THEMBISAv18/results/condom_decrease_13.5_cumulative.csv")
+condom_reduction_14 <- read_csv("THEMBISAv18/results/condom_decrease_14_cumulative.csv")
+
+condom_reduction_cumulative <- bind_rows(condom_reduction_0, 
+                                            condom_reduction_0_5,
+                                            condom_reduction_1,
+                                            condom_reduction_1_5,
+                                            condom_reduction_2,
+                                            condom_reduction_2_5,
+                                            condom_reduction_3,
+                                            condom_reduction_3_5,
+                                            condom_reduction_4,
+                                            condom_reduction_4_5,
+                                            condom_reduction_5,
+                                            condom_reduction_5_5,
+                                            condom_reduction_6,
+                                            condom_reduction_6_5,
+                                            condom_reduction_7,
+                                            condom_reduction_7_5,
+                                            condom_reduction_8,
+                                            condom_reduction_8_5,
+                                            condom_reduction_9,
+                                            condom_reduction_9_5,
+                                            condom_reduction_10,
+                                            condom_reduction_10_5,
+                                            condom_reduction_11,
+                                            condom_reduction_11_5,
+                                            condom_reduction_12,
+                                            condom_reduction_12_5,
+                                            condom_reduction_13,
+                                            condom_reduction_13_5,
+                                            condom_reduction_14
+                                            )
+
+unique_future_values <- unique(condom_reduction_summary$future_value)
+overall_condom_usage_range <- condom_reduction_summary %>% filter(indicator == "CondomUsage", 
+                                                                  test_reduction == 5, pitc_reduction_year == 2025,
+                                                                  year == 2035, scenario == "intervention") %>% select(mean)
+condom_usage_reduction_labels <- round(overall_condom_usage_range$mean,1)
+condom_reduction_cumulative <- condom_reduction_cumulative %>% mutate(overall_condom_usage = case_when(future_value == unique_future_values[1] ~ condom_usage_reduction_labels[1],
+                                                                                                 future_value == unique_future_values[2] ~ condom_usage_reduction_labels[2],
+                                                                                                 future_value == unique_future_values[3] ~ condom_usage_reduction_labels[3],
+                                                                                                 future_value == unique_future_values[4] ~ condom_usage_reduction_labels[4],
+                                                                                                 future_value == unique_future_values[5] ~ condom_usage_reduction_labels[5],
+                                                                                                 future_value == unique_future_values[6] ~ condom_usage_reduction_labels[6],
+                                                                                                 future_value == unique_future_values[7] ~ condom_usage_reduction_labels[7],
+                                                                                                 future_value == unique_future_values[8] ~ condom_usage_reduction_labels[8],
+                                                                                                 future_value == unique_future_values[9] ~ condom_usage_reduction_labels[9],
+                                                                                                 future_value == unique_future_values[10] ~ condom_usage_reduction_labels[10],
+                                                                                                 future_value == unique_future_values[11] ~ condom_usage_reduction_labels[11],
+                                                                                                 future_value == unique_future_values[12] ~ condom_usage_reduction_labels[12],
+                                                                                                 future_value == unique_future_values[13] ~ condom_usage_reduction_labels[13],
+                                                                                                 future_value == unique_future_values[14] ~ condom_usage_reduction_labels[14],
+                                                                                                 future_value == unique_future_values[15] ~ condom_usage_reduction_labels[15],
+                                                                                                 future_value == unique_future_values[16] ~ condom_usage_reduction_labels[16],
+                                                                                                 future_value == unique_future_values[17] ~ condom_usage_reduction_labels[17],
+                                                                                                 future_value == unique_future_values[18] ~ condom_usage_reduction_labels[18],
+                                                                                                 future_value == unique_future_values[19] ~ condom_usage_reduction_labels[19],
+                                                                                                 future_value == unique_future_values[20] ~ condom_usage_reduction_labels[20],
+                                                                                                 future_value == unique_future_values[21] ~ condom_usage_reduction_labels[21],
+                                                                                                 future_value == unique_future_values[22] ~ condom_usage_reduction_labels[22],
+                                                                                                 future_value == unique_future_values[23] ~ condom_usage_reduction_labels[23],
+                                                                                                 future_value == unique_future_values[24] ~ condom_usage_reduction_labels[24],
+                                                                                                 future_value == unique_future_values[25] ~ condom_usage_reduction_labels[25],
+                                                                                                 future_value == unique_future_values[26] ~ condom_usage_reduction_labels[26],
+                                                                                                 future_value == unique_future_values[27] ~ condom_usage_reduction_labels[27],
+                                                                                                 future_value == unique_future_values[28] ~ condom_usage_reduction_labels[28],
+                                                                                                 future_value == unique_future_values[29] ~ condom_usage_reduction_labels[29],
+                                                                                                 future_value == unique_future_values[30] ~ condom_usage_reduction_labels[30]))
+
+# promotion
+
+condom_promotion_0 <- read_csv("THEMBISAv18/results/condom_increase_0_cumulative.csv")
+condom_promotion_0_5 <- read_csv("THEMBISAv18/results/condom_increase_0.5_cumulative.csv")
+condom_promotion_1 <- read_csv("THEMBISAv18/results/condom_increase_1_cumulative.csv")
+condom_promotion_1_5 <- read_csv("THEMBISAv18/results/condom_increase_1.5_cumulative.csv")
+condom_promotion_2 <- read_csv("THEMBISAv18/results/condom_increase_2_cumulative.csv")
+condom_promotion_2_5 <- read_csv("THEMBISAv18/results/condom_increase_2.5_cumulative.csv")
+condom_promotion_3 <- read_csv("THEMBISAv18/results/condom_increase_3_cumulative.csv")
+condom_promotion_3_5 <- read_csv("THEMBISAv18/results/condom_increase_3.5_cumulative.csv")
+condom_promotion_4 <- read_csv("THEMBISAv18/results/condom_increase_4_cumulative.csv")
+condom_promotion_4_5 <- read_csv("THEMBISAv18/results/condom_increase_4.5_cumulative.csv")
+condom_promotion_5 <- read_csv("THEMBISAv18/results/condom_increase_5_cumulative.csv")
+condom_promotion_5_5 <- read_csv("THEMBISAv18/results/condom_increase_5.5_cumulative.csv")
+condom_promotion_6 <- read_csv("THEMBISAv18/results/condom_increase_6_cumulative.csv")
+condom_promotion_6_5 <- read_csv("THEMBISAv18/results/condom_increase_6.5_cumulative.csv")
+condom_promotion_7 <- read_csv("THEMBISAv18/results/condom_increase_7_cumulative.csv")
+condom_promotion_7_5 <- read_csv("THEMBISAv18/results/condom_increase_7.5_cumulative.csv")
+condom_promotion_8 <- read_csv("THEMBISAv18/results/condom_increase_8_cumulative.csv")
+condom_promotion_8_5 <- read_csv("THEMBISAv18/results/condom_increase_8.5_cumulative.csv")
+condom_promotion_9 <- read_csv("THEMBISAv18/results/condom_increase_9_cumulative.csv")
+condom_promotion_9_5 <- read_csv("THEMBISAv18/results/condom_increase_9.5_cumulative.csv")
+condom_promotion_10 <- read_csv("THEMBISAv18/results/condom_increase_10_cumulative.csv")
+condom_promotion_10_5 <- read_csv("THEMBISAv18/results/condom_increase_10.5_cumulative.csv")
+condom_promotion_11 <- read_csv("THEMBISAv18/results/condom_increase_11_cumulative.csv")
+condom_promotion_11_5 <- read_csv("THEMBISAv18/results/condom_increase_11.5_cumulative.csv")
+condom_promotion_12 <- read_csv("THEMBISAv18/results/condom_increase_12_cumulative.csv")
+condom_promotion_12_5 <- read_csv("THEMBISAv18/results/condom_increase_12.5_cumulative.csv")
+condom_promotion_13 <- read_csv("THEMBISAv18/results/condom_increase_13_cumulative.csv")
+condom_promotion_13_5 <- read_csv("THEMBISAv18/results/condom_increase_13.5_cumulative.csv")
+condom_promotion_14 <- read_csv("THEMBISAv18/results/condom_increase_14_cumulative.csv")
+
+condom_promotion_cumulative <- bind_rows(condom_reduction_0, 
+                                            condom_reduction_0_5,
+                                            condom_reduction_1,
+                                            condom_reduction_1_5,
+                                            condom_reduction_2,
+                                            condom_reduction_2_5,
+                                            condom_reduction_3,
+                                            condom_reduction_3_5,
+                                            condom_reduction_4,
+                                            condom_reduction_4_5,
+                                            condom_reduction_5,
+                                            condom_reduction_5_5,
+                                            condom_reduction_6,
+                                            condom_reduction_6_5,
+                                            condom_reduction_7,
+                                            condom_reduction_7_5,
+                                            condom_reduction_8,
+                                            condom_reduction_8_5,
+                                            condom_reduction_9,
+                                            condom_reduction_9_5,
+                                            condom_reduction_10,
+                                            condom_reduction_10_5,
+                                            condom_reduction_11,
+                                            condom_reduction_11_5,
+                                            condom_reduction_12,
+                                            condom_reduction_12_5,
+                                            condom_reduction_13,
+                                            condom_reduction_13_5,
+                                            condom_reduction_14
+                                            )
+
+unique_future_values <- unique(condom_promotion_summary$future_value)
+overall_condom_usage_range <- condom_promotion_summary %>% filter(indicator == "CondomUsage", 
+                                                                  test_reduction == 5, pitc_reduction_year == 2025,
+                                                                  year == 2035, scenario == "intervention") %>% select(mean)
+
+
+unique_future_values <- unique(condom_promotion_summary$future_value)
+overall_condom_usage_range <- condom_promotion_summary %>% filter(indicator == "CondomUsage", 
+                                                                  test_reduction == 5, pitc_reduction_year == 2025,
+                                                                  year == 2035, scenario == "intervention") %>% select(mean)
+condom_usage_promotion_labels <- round(overall_condom_usage_range$mean,1)
+condom_promotion_cumulative <- condom_promotion_cumulative %>% mutate(overall_condom_usage = case_when(future_value == unique_future_values[1] ~ condom_usage_promotion_labels[1],
+                                                                                                       future_value == unique_future_values[2] ~ condom_usage_promotion_labels[2],
+                                                                                                       future_value == unique_future_values[3] ~ condom_usage_promotion_labels[3],
+                                                                                                       future_value == unique_future_values[4] ~ condom_usage_promotion_labels[4],
+                                                                                                       future_value == unique_future_values[5] ~ condom_usage_promotion_labels[5],
+                                                                                                       future_value == unique_future_values[6] ~ condom_usage_promotion_labels[6],
+                                                                                                       future_value == unique_future_values[7] ~ condom_usage_promotion_labels[7],
+                                                                                                       future_value == unique_future_values[8] ~ condom_usage_promotion_labels[8],
+                                                                                                       future_value == unique_future_values[9] ~ condom_usage_promotion_labels[9],
+                                                                                                       future_value == unique_future_values[10] ~ condom_usage_promotion_labels[10],
+                                                                                                       future_value == unique_future_values[11] ~ condom_usage_promotion_labels[11],
+                                                                                                       future_value == unique_future_values[12] ~ condom_usage_promotion_labels[12],
+                                                                                                       future_value == unique_future_values[13] ~ condom_usage_promotion_labels[13],
+                                                                                                       future_value == unique_future_values[14] ~ condom_usage_promotion_labels[14],
+                                                                                                       future_value == unique_future_values[15] ~ condom_usage_promotion_labels[15],
+                                                                                                       future_value == unique_future_values[16] ~ condom_usage_promotion_labels[16],
+                                                                                                       future_value == unique_future_values[17] ~ condom_usage_promotion_labels[17],
+                                                                                                       future_value == unique_future_values[18] ~ condom_usage_promotion_labels[18],
+                                                                                                       future_value == unique_future_values[19] ~ condom_usage_promotion_labels[19],
+                                                                                                       future_value == unique_future_values[20] ~ condom_usage_promotion_labels[20],
+                                                                                                       future_value == unique_future_values[21] ~ condom_usage_promotion_labels[21],
+                                                                                                       future_value == unique_future_values[22] ~ condom_usage_promotion_labels[22],
+                                                                                                       future_value == unique_future_values[23] ~ condom_usage_promotion_labels[23],
+                                                                                                       future_value == unique_future_values[24] ~ condom_usage_promotion_labels[24],
+                                                                                                       future_value == unique_future_values[25] ~ condom_usage_promotion_labels[25],
+                                                                                                       future_value == unique_future_values[26] ~ condom_usage_promotion_labels[26],
+                                                                                                       future_value == unique_future_values[27] ~ condom_usage_promotion_labels[27],
+                                                                                                       future_value == unique_future_values[28] ~ condom_usage_promotion_labels[28],
+                                                                                                       future_value == unique_future_values[29] ~ condom_usage_promotion_labels[29],
+                                                                                                       future_value == unique_future_values[30] ~ condom_usage_promotion_labels[30]))
+
+#### joining condom usage dfs ####
+
+condom_change_summary <- bind_rows(condom_promotion_summary,
+                                   condom_reduction_summary)
+
+condom_change_cumulative <- bind_rows(condom_promotion_cumulative, 
+                                      condom_reduction_cumulative)
+
+write_csv(condom_change_summary, "THEMBISAv18/results/condom_change_summary.csv")
+
+write_csv(condom_change_cumulative, "THEMBISAv18/results/condom_change_cumulative.csv")
+
+```

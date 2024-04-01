@@ -1,0 +1,245 @@
+---
+title: "running_scenarios"
+author: "Stefan Rautenbach"
+date: "2024-03-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Load packages
+
+```{r libraries, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(metR)
+library(ggpubr)
+library(ggfx)
+library(RColorBrewer)
+library(cowplot)
+```
+
+# Source scripts and functions
+
+```{r source, include=FALSE}
+source("R/modify_rollout_orderly.R")
+source("R/read_and_run_orderly.R")
+source("R/cluster_function_orderly.R")
+```
+
+# Run scenarios
+
+## Compile Thembisa
+This compiles the executable file of thembisa - if this provides errors then the scenarios below will not run
+
+```{r compile, echo = FALSE}
+system("g++ -std=c++14 THEMBISA.cpp StatFunctions.cpp mersenne.cpp -o thembisa -O2")
+```
+
+## Testing reduction only scenario
+
+These data were used for Figures 1, 3, S1, S2, S3, S4, S12, S13
+
+```{r testing_reduction, include=FALSE}
+
+run_on_cluster(pitc_reduction_years = seq(2025, 2050, 5),
+               pitc_reduction_percentage = seq(0,100,5),
+               condom_usage_reduction = FALSE,
+               condom_usage_decrease = 0,
+               condom_decr_start = 2025,
+               condom_usage_promotion = FALSE,
+               condom_usage_increase = 0,
+               condom_incr_start = 2025,
+               art_coverage_increase = FALSE,
+               art_interrupt_rate_decrease = 0,
+               art_incr_start = 2025,
+               art_coverage_decrease = FALSE,
+               art_interrupt_rate_increase = 0,
+               art_decr_start = 2025,
+               cumulative_years_list = 50,
+               change_mmc = FALSE,
+               mmc_rel_rate = 0,
+               mmc_change_start = 2025,
+               change_prep = FALSE,
+               prep_rel_rate = 0, 
+               prep_change_start = 2025, 
+               summary_name = "test_reduction_only" 
+               
+)
+
+
+```
+
+## Testing reduction cost analysis - implemented in 2025
+
+These data were used for Figures 2 and S11
+
+```{r cost analysis data, include=FALSE}
+
+run_on_cluster(pitc_reduction_years = 2025, 
+               pitc_reduction_percentage = seq(0,100,25),
+               condom_usage_reduction = FALSE,
+               condom_usage_decrease = 0,
+               condom_decr_start = 2025,
+               condom_usage_promotion = FALSE,
+               condom_usage_increase = 0,
+               condom_incr_start = 2025,
+               art_coverage_increase = FALSE,
+               art_interrupt_rate_decrease = 0,
+               art_incr_start = 2025,
+               art_coverage_decrease = FALSE,
+               art_interrupt_rate_increase = 0,
+               art_decr_start = 2025,
+               cumulative_years_list = c(9, 49),
+               change_mmc = FALSE,
+               mmc_rel_rate = 0,
+               mmc_change_start = 2025,
+               change_prep = FALSE,
+               prep_rel_rate = 0, 
+               prep_change_start = 2025, 
+               summary_name = "costs" 
+               
+)
+
+```
+
+## Decreased ART interruption rate & testing reduction - implemented in 2025
+
+These data were used for Figures 4, S5, and S7
+
+```{r decrease art int, include=FALSE}
+
+for (i in seq(0, 14, 0.5)){
+  run_on_cluster(pitc_reduction_years = 2025, 
+               pitc_reduction_percentage = seq(0,100,5),
+               condom_usage_reduction = FALSE,
+               condom_usage_decrease = 0,
+               condom_decr_start = 2025,
+               condom_usage_promotion = FALSE,
+               condom_usage_increase = 0,
+               condom_incr_start = 2025,
+               art_coverage_increase = TRUE,
+               art_interrupt_rate_decrease = i,
+               art_incr_start = 2025,
+               art_coverage_decrease = FALSE,
+               art_interrupt_rate_increase = 0,
+               art_decr_start = 2025,
+               cumulative_years_list = c(50),
+               change_mmc = FALSE,
+               mmc_rel_rate = 0,
+               mmc_change_start = 2025,
+               change_prep = FALSE,
+               prep_rel_rate = 0, 
+               prep_change_start = 2025, 
+               summary_name = paste0("art_decrease_", i) 
+               
+)
+}
+
+```
+
+## Increased ART interruption rate & testing reduction - implemented in 2025
+
+These data were used for Figures 4, S5, and S8
+
+```{r increase art int, include=FALSE}
+for (i in seq(0, 14, 0.5)){
+  run_on_cluster(
+               pitc_reduction_years = 2025, 
+               pitc_reduction_percentage = seq(0,100,5),
+               condom_usage_reduction = FALSE,
+               condom_usage_decrease = 0,
+               condom_decr_start = 2025,
+               condom_usage_promotion = FALSE,
+               condom_usage_increase = 0,
+               condom_incr_start = 2025,
+               art_coverage_increase = FALSE,
+               art_interrupt_rate_decrease = 0,
+               art_incr_start = 2025,
+               art_coverage_decrease = TRUE,
+               art_interrupt_rate_increase = i,
+               art_decr_start = 2025,
+               cumulative_years_list = c(50),
+               change_mmc = FALSE,
+               mmc_rel_rate = 0,
+               mmc_change_start = 2025,
+               change_prep = FALSE,
+               prep_rel_rate = 0, 
+               prep_change_start = 2025,
+               summary_name = paste0("art_increase_", i)
+               ) 
+}
+
+
+```
+
+## Increased probability of condom usage & testing reduction - implemented in 2025
+
+These data were used for Figures 5, S6, and S9
+
+```{r increase condom, include=FALSE}
+for (i in seq(0, 14, 0.5)){
+  run_on_cluster(pitc_reduction_years = 2025, 
+                 pitc_reduction_percentage = seq(0,100,5),
+                 condom_usage_reduction = FALSE,
+                 condom_usage_decrease = 0,
+                 condom_decr_start = 2025,
+                 condom_usage_promotion = TRUE,
+                 condom_usage_increase = i,
+                 condom_incr_start = 2025,
+                 art_coverage_increase = FALSE,
+                 art_interrupt_rate_decrease = 0,
+                 art_incr_start = 2025,
+                 art_coverage_decrease = FALSE,
+                 art_interrupt_rate_increase = 0,
+                 art_decr_start = 2025,
+                 cumulative_years_list = c(50),
+                 change_mmc = FALSE,
+                 mmc_rel_rate = 0,
+                 mmc_change_start = 2025,
+                 change_prep = FALSE,
+                 prep_rel_rate = 0, 
+                 prep_change_start = 2025, 
+                 summary_name = paste0("condom_increase_",i) 
+                 
+  )
+}
+```
+
+## Decreased probability of condom usage & testing reduction - implemented in 2025
+
+These data were used for Figures 4, S5, and S10
+
+```{r decrease condom, include=FALSE}
+for (i in seq(0, 14, 0.5)){
+  run_on_cluster(pitc_reduction_years = 2025, 
+                 pitc_reduction_percentage = seq(0,100,5),
+                 condom_usage_reduction = TRUE,
+                 condom_usage_decrease = i,
+                 condom_decr_start = 2025,
+                 condom_usage_promotion = FALSE,
+                 condom_usage_increase = 0,
+                 condom_incr_start = 2025,
+                 art_coverage_increase = FALSE,
+                 art_interrupt_rate_decrease = 0,
+                 art_incr_start = 2025,
+                 art_coverage_decrease = FALSE,
+                 art_interrupt_rate_increase = 0,
+                 art_decr_start = 2025,
+                 cumulative_years_list = c(50),
+                 change_mmc = FALSE,
+                 mmc_rel_rate = 0,
+                 mmc_change_start = 2025,
+                 change_prep = FALSE,
+                 prep_rel_rate = 0, 
+                 prep_change_start = 2025, 
+                 summary_name = paste0("condom_decrease_",i) 
+                 
+  )
+}
+```

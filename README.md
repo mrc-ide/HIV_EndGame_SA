@@ -1,4 +1,4 @@
-Contents of SA_longterm_HTS
+Contents of repository
 
 This repository contains all the code necessary to reproduce the results in the paper, entitled: 
 Future HIV epidemic trajectories in South Africa and projected long-term consequences of reductions in general population HIV testing: a mathematical modelling study by Rautenbach et al., 2024. 
